@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth, signOut } from "@/auth";
 import { getTripsForUser } from "@/lib/trips";
@@ -31,16 +32,28 @@ export default async function DashboardPage() {
         </form>
       </header>
 
-      <h1>Your trips</h1>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "1rem",
+        }}
+      >
+        <h1>Your trips</h1>
+        <Link href="/trips/new">+ New trip</Link>
+      </div>
       {trips.length === 0 ? (
         <p style={{ opacity: 0.8 }}>
-          No trips yet. Trip creation arrives in the next milestone.
+          No trips yet. <Link href="/trips/new">Create your first trip</Link>.
         </p>
       ) : (
-        <ul>
+        <ul style={{ listStyle: "none", padding: 0, display: "grid", gap: "0.5rem" }}>
           {trips.map((trip) => (
             <li key={trip.id}>
-              <strong>{trip.name}</strong>
+              <Link href={`/trips/${trip.id}`}>
+                <strong>{trip.name}</strong>
+              </Link>
               {trip.mainDestination ? ` — ${trip.mainDestination}` : ""} ·{" "}
               {trip.status} · your role: {trip.role}
             </li>
