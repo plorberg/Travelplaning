@@ -56,3 +56,31 @@ export const tripInputSchema = z
   });
 
 export type TripInput = z.infer<typeof tripInputSchema>;
+
+const optionalLat = z.preprocess(
+  emptyToUndefined,
+  z.coerce.number().min(-90).max(90).optional(),
+);
+const optionalLng = z.preprocess(
+  emptyToUndefined,
+  z.coerce.number().min(-180).max(180).optional(),
+);
+
+export const stopInputSchema = z
+  .object({
+    city: z.string().trim().min(1, "City is required.").max(200),
+    country: optionalText(120),
+    arrivalDate: optionalDate,
+    departureDate: optionalDate,
+    accommodationName: optionalText(200),
+    accommodationAddress: optionalText(300),
+    lat: optionalLat,
+    lng: optionalLng,
+    notes: optionalText(5000),
+  })
+  .refine(
+    (d) => !d.arrivalDate || !d.departureDate || d.departureDate >= d.arrivalDate,
+    { message: "Departure can't be before arrival.", path: ["departureDate"] },
+  );
+
+export type StopInput = z.infer<typeof stopInputSchema>;

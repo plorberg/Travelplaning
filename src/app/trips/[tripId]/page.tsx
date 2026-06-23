@@ -2,12 +2,15 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { getTripForUser, listMembers } from "@/lib/trips";
+import { listStops } from "@/lib/stops";
 import { countOwners, hasAtLeastRole } from "@/lib/authz";
+import { stopDateWarnings } from "@/lib/dates";
 import {
   changeMemberRoleAction,
   deleteTripAction,
   removeMemberAction,
 } from "@/app/trips/actions";
+import { deleteStopAction, moveStopAction } from "@/app/trips/stop-actions";
 
 export const dynamic = "force-dynamic";
 
@@ -25,7 +28,10 @@ export default async function TripPage({
   const trip = await getTripForUser(user.id, tripId);
   if (!trip) notFound();
 
-  const members = await listMembers(user.id, tripId);
+  const [members, stops] = await Promise.all([
+    listMembers(user.id, tripId),
+    listStops(user.id, tripId),
+  ]);
   const isOwner = trip.role === "owner";
   const canEdit = hasAtLeastRole(trip.role, "editor");
   const ownerCount = countOwners(members);
@@ -80,6 +86,79 @@ export default async function TripPage({
           <p style={{ whiteSpace: "pre-wrap" }}>{trip.notes}</p>
         </>
       ) : null}
+
+      <section>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "1rem",
+          }}
+        >
+          <h2>Stops</h2>
+          {canEdit ? <Link href={`/trips/${tripId}/stops/new`}>+ Add stop</Link> : null}
+        </div>
+        {stops.length === 0 ? (
+          <p style={{ opacity: 0.8 }}>No stops yet.</p>
+        ) : (
+          <ol style={{ display: "grid", gap: "0.75rem", paddingLeft: "1.25rem" }}>
+            {stops.map((stop, i) => {
+              const warnings = stopDateWarnings(trip, stop);
+              return (
+                <li key={stop.id}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      gap: "1rem",
+                      alignItems: "flex-start",
+                    }}
+                  >
+                    <div>
+                      <strong>
+                        {stop.city}
+                        {stop.country ? `, ${stop.country}` : ""}
+                      </strong>
+                      <div style={{ opacity: 0.8, fontSize: "0.85rem" }}>
+                        {stop.arrivalDate ?? "—"} → {stop.departureDate ?? "—"}
+                        {stop.accommodationName ? ` · ${stop.accommodationName}` : ""}
+                      </div>
+                      {warnings.map((w) => (
+                        <div key={w} style={{ color: "#b8860b", fontSize: "0.8rem" }}>
+                          ⚠ {w}
+                        </div>
+                      ))}
+                    </div>
+                    {canEdit ? (
+                      <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
+                        <form action={moveStopAction.bind(null, tripId, stop.id, "up")}>
+                          <button type="submit" disabled={i === 0} title="Move up">
+                            ↑
+                          </button>
+                        </form>
+                        <form action={moveStopAction.bind(null, tripId, stop.id, "down")}>
+                          <button
+                            type="submit"
+                            disabled={i === stops.length - 1}
+                            title="Move down"
+                          >
+                            ↓
+                          </button>
+                        </form>
+                        <Link href={`/trips/${tripId}/stops/${stop.id}/edit`}>Edit</Link>
+                        <form action={deleteStopAction.bind(null, tripId, stop.id)}>
+                          <button type="submit">Delete</button>
+                        </form>
+                      </div>
+                    ) : null}
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
+        )}
+      </section>
 
       <section>
         <h2>Members</h2>
