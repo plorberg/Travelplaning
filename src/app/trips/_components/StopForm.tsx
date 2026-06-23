@@ -1,0 +1,99 @@
+"use client";
+
+import { useActionState } from "react";
+import type { FormState } from "@/app/trips/actions";
+
+type Defaults = {
+  city?: string;
+  country?: string;
+  arrivalDate?: string;
+  departureDate?: string;
+  accommodationName?: string;
+  accommodationAddress?: string;
+  lat?: string;
+  lng?: string;
+  notes?: string;
+};
+
+function Field({
+  label,
+  error,
+  children,
+}: {
+  label: string;
+  error?: string[];
+  children: React.ReactNode;
+}) {
+  return (
+    <label style={{ display: "grid", gap: "0.25rem" }}>
+      <span style={{ fontSize: "0.85rem", opacity: 0.8 }}>{label}</span>
+      {children}
+      {error?.length ? (
+        <span style={{ color: "crimson", fontSize: "0.8rem" }}>{error[0]}</span>
+      ) : null}
+    </label>
+  );
+}
+
+export function StopForm({
+  action,
+  defaults = {},
+  submitLabel,
+}: {
+  action: (prev: FormState, formData: FormData) => Promise<FormState>;
+  defaults?: Defaults;
+  submitLabel: string;
+}) {
+  const [state, formAction, pending] = useActionState<FormState, FormData>(
+    action,
+    {},
+  );
+  const fe = state.fieldErrors ?? {};
+
+  return (
+    <form
+      action={formAction}
+      style={{ display: "grid", gap: "0.75rem", maxWidth: 480 }}
+    >
+      <Field label="City / location" error={fe.city}>
+        <input name="city" defaultValue={defaults.city ?? ""} required />
+      </Field>
+      <Field label="Country" error={fe.country}>
+        <input name="country" defaultValue={defaults.country ?? ""} />
+      </Field>
+      <div style={{ display: "flex", gap: "0.75rem" }}>
+        <Field label="Arrival date" error={fe.arrivalDate}>
+          <input type="date" name="arrivalDate" defaultValue={defaults.arrivalDate ?? ""} />
+        </Field>
+        <Field label="Departure date" error={fe.departureDate}>
+          <input type="date" name="departureDate" defaultValue={defaults.departureDate ?? ""} />
+        </Field>
+      </div>
+      <Field label="Accommodation name" error={fe.accommodationName}>
+        <input name="accommodationName" defaultValue={defaults.accommodationName ?? ""} />
+      </Field>
+      <Field label="Accommodation address" error={fe.accommodationAddress}>
+        <input
+          name="accommodationAddress"
+          defaultValue={defaults.accommodationAddress ?? ""}
+        />
+      </Field>
+      <div style={{ display: "flex", gap: "0.75rem" }}>
+        <Field label="Latitude" error={fe.lat}>
+          <input name="lat" inputMode="decimal" defaultValue={defaults.lat ?? ""} />
+        </Field>
+        <Field label="Longitude" error={fe.lng}>
+          <input name="lng" inputMode="decimal" defaultValue={defaults.lng ?? ""} />
+        </Field>
+      </div>
+      <Field label="Notes" error={fe.notes}>
+        <textarea name="notes" rows={3} defaultValue={defaults.notes ?? ""} />
+      </Field>
+
+      {state.error ? <p style={{ color: "crimson" }}>{state.error}</p> : null}
+      <button type="submit" disabled={pending} style={{ padding: "0.5rem 1rem" }}>
+        {pending ? "Saving…" : submitLabel}
+      </button>
+    </form>
+  );
+}
