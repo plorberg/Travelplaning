@@ -84,3 +84,15 @@ export const stopInputSchema = z
   );
 
 export type StopInput = z.infer<typeof stopInputSchema>;
+
+export const inviteInputSchema = z.object({
+  email: z.preprocess(
+    (v) => (typeof v === "string" ? v.trim().toLowerCase() : v),
+    z
+      .string()
+      .regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Enter a valid email address."),
+  ),
+  role: z.enum(["editor", "viewer"]),
+});
+
+export type InviteInput = z.infer<typeof inviteInputSchema>;

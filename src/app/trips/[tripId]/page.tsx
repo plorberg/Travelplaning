@@ -11,6 +11,12 @@ import {
   removeMemberAction,
 } from "@/app/trips/actions";
 import { deleteStopAction, moveStopAction } from "@/app/trips/stop-actions";
+import {
+  inviteAction,
+  revokeInvitationAction,
+} from "@/app/trips/invite-actions";
+import { listTripInvitations } from "@/lib/invitations";
+import { InviteForm } from "@/app/trips/_components/InviteForm";
 
 export const dynamic = "force-dynamic";
 
@@ -35,6 +41,7 @@ export default async function TripPage({
   const isOwner = trip.role === "owner";
   const canEdit = hasAtLeastRole(trip.role, "editor");
   const ownerCount = countOwners(members);
+  const invitations = isOwner ? await listTripInvitations(user.id, tripId) : [];
 
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
@@ -202,9 +209,27 @@ export default async function TripPage({
           })}
         </ul>
         {isOwner ? (
-          <p style={{ opacity: 0.7, fontSize: "0.85rem" }}>
-            Inviting people by email arrives in the collaboration milestone.
-          </p>
+          <div style={{ marginTop: "1rem", display: "grid", gap: "0.5rem" }}>
+            <h3 style={{ margin: 0, fontSize: "1rem" }}>Invite someone</h3>
+            <InviteForm action={inviteAction.bind(null, tripId)} />
+            {invitations.length > 0 ? (
+              <ul style={{ listStyle: "none", padding: 0, display: "grid", gap: "0.35rem" }}>
+                {invitations.map((inv) => (
+                  <li
+                    key={inv.id}
+                    style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}
+                  >
+                    <span style={{ minWidth: 220 }}>
+                      {inv.email} · {inv.role} · pending
+                    </span>
+                    <form action={revokeInvitationAction.bind(null, tripId, inv.id)}>
+                      <button type="submit">Revoke</button>
+                    </form>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
         ) : null}
       </section>
     </main>
