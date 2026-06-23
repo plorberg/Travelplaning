@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { auth } from "@/auth";
+import { getCurrentUser } from "@/lib/auth";
 import { createTripAction } from "@/app/trips/actions";
 import { TripForm } from "@/app/trips/_components/TripForm";
 
 export const dynamic = "force-dynamic";
 
 export default async function NewTripPage() {
-  const session = await auth();
-  if (!session?.user) redirect("/");
+  const user = await getCurrentUser();
+  if (!user) redirect("/");
 
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "2.5rem 1.5rem" }}>

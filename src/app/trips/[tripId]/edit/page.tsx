@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { auth } from "@/auth";
+import { getCurrentUser } from "@/lib/auth";
 import { getTripForUser } from "@/lib/trips";
 import { hasAtLeastRole } from "@/lib/authz";
 import { updateTripAction } from "@/app/trips/actions";
@@ -14,10 +14,10 @@ export default async function EditTripPage({
   params: Promise<{ tripId: string }>;
 }) {
   const { tripId } = await params;
-  const session = await auth();
-  if (!session?.user) redirect("/");
+  const user = await getCurrentUser();
+  if (!user) redirect("/");
 
-  const trip = await getTripForUser(session.user.id, tripId);
+  const trip = await getTripForUser(user.id, tripId);
   if (!trip) notFound();
   if (!hasAtLeastRole(trip.role, "editor")) redirect(`/trips/${tripId}`);
 

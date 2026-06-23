@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { auth, signIn } from "@/auth";
+import { getCurrentUser } from "@/lib/auth";
+import { SignInButton } from "@/app/_components/SignInButton";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const session = await auth();
+  const user = await getCurrentUser();
 
   return (
     <main style={{ maxWidth: 640, margin: "0 auto", padding: "4rem 1.5rem" }}>
@@ -13,21 +14,12 @@ export default async function Home() {
         Plan, organize, and manage your trips — solo or with others.
       </p>
 
-      {session?.user ? (
+      {user ? (
         <p>
           <Link href="/dashboard">Go to your dashboard →</Link>
         </p>
       ) : (
-        <form
-          action={async () => {
-            "use server";
-            await signIn("google", { redirectTo: "/dashboard" });
-          }}
-        >
-          <button type="submit" style={{ padding: "0.6rem 1rem", fontSize: "1rem" }}>
-            Sign in with Google
-          </button>
-        </form>
+        <SignInButton />
       )}
     </main>
   );

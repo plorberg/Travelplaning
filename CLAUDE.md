@@ -75,14 +75,15 @@ conversion, and collaboration.
 
 ## Architecture (decided 2026-06-23)
 
-**Stack:** Next.js (App Router, TypeScript) on Vercel · Auth.js (NextAuth v5)
-with Google OAuth · Neon serverless Postgres via Drizzle ORM · Zod validation.
+**Stack:** Next.js (App Router, TypeScript) on Vercel · Firebase Authentication
+(Google sign-in) · Neon serverless Postgres via Drizzle ORM · Zod validation.
 
-Chosen over Firebase-based options because the domain is relational and
+The data layer is Postgres (not Firestore) because the domain is relational and
 aggregation-heavy (trips ↔ stops ↔ members ↔ expenses ↔ itinerary, with
-"spend by stop", "budget vs actual", splits, role-based membership). Postgres
-models this directly; this stack is genuinely free with no credit card, keeps
-authorization and secrets server-side, and has low vendor lock-in.
+"spend by stop", "budget vs actual", splits, role-based membership); Postgres
+models this directly. Authentication uses Firebase (Google sign-in), verified
+server-side. Both run on genuinely free tiers with no credit card and keep
+authorization and secrets server-side.
 
 ### Hard rules
 - **Supabase is forbidden.** Do not add Supabase Auth, Database, Storage, Edge
@@ -90,6 +91,9 @@ authorization and secrets server-side, and has low vendor lock-in.
   not rely on Supabase RLS as the auth mechanism). Postgres is used directly via
   Neon + Drizzle. (The repo currently contains no Supabase code — keep it that
   way.)
+- **Firebase is used for authentication only.** App data stays in Postgres
+  (Neon + Drizzle) — do not introduce Firestore, Realtime Database, or Firebase
+  Storage as the data store.
 - Core MVP features must work on **free tiers with no mandatory paid service and
   no credit card required**.
 - Paid APIs/infra may be added **only as optional, opt-in drivers behind a
@@ -98,20 +102,25 @@ authorization and secrets server-side, and has low vendor lock-in.
 
 ### Chosen services & specifics
 - **Hosting:** Vercel Hobby (free). Note: Hobby is **non-commercial**. The stack
-  is fully portable (Node + Postgres + Auth.js), so moving to Vercel Pro /
+  is fully portable (Node + Postgres + Firebase Auth), so moving to Vercel Pro /
   Netlify / Cloudflare / a VPS later needs no re-architecture.
 - **Database:** Neon free tier (0.5 GB/project, no credit card), serverless
   driver. `DATABASE_URL` is server-only.
 - **ORM/migrations:** Drizzle ORM + drizzle-kit. (Prisma is an acceptable
   alternative, but Drizzle is the default — do not mix both.)
-- **Auth:** Auth.js v5, Google provider primary, database session strategy via
-  the Drizzle adapter so sessions/users join to app tables. Email magic-link or
-  Credentials may be added later.
+- **Auth:** Firebase Authentication (Google sign-in). The browser signs in with
+  Firebase; the server verifies the ID token with the Firebase Admin SDK and
+  mints an httpOnly session cookie (read by server components/actions). Firebase
+  users are mirrored into the Postgres `users` table keyed by Firebase UID.
+  Service-account credentials are server-only; `NEXT_PUBLIC_FIREBASE_*` client
+  config are identifiers, not secrets.
 - **Local dev:** local Postgres (Docker) or a Neon dev branch; secrets in
-  `.env.local`; Auth.js with Google OAuth test credentials.
+  `.env.local`; a Firebase project with Google sign-in enabled plus a service
+  account for the Admin SDK.
 
 ### Data model (Postgres) — ownership enforced via `trip_members`
-- `users` (Auth.js)
+- `users` — mirror of the Firebase auth user, keyed by Firebase UID (the FK
+  target for ownership/membership).
 - `trips` — name, main_destination, start/end dates, home_currency, budget,
   status (planning|booked|active|completed|archived), travel_style
   (budget|standard|premium), notes.

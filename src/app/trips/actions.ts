@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { auth } from "@/auth";
+import { getCurrentUser } from "@/lib/auth";
 import { tripInputSchema } from "@/lib/validation";
 import {
   AccessError,
@@ -20,9 +20,9 @@ export type FormState = {
 };
 
 async function requireUserId(): Promise<string> {
-  const session = await auth();
-  if (!session?.user) redirect("/");
-  return session.user.id;
+  const user = await getCurrentUser();
+  if (!user) redirect("/");
+  return user.id;
 }
 
 function messageFrom(e: unknown): string {

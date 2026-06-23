@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { auth } from "@/auth";
+import { getCurrentUser } from "@/lib/auth";
 import { getTripForUser, listMembers } from "@/lib/trips";
 import { countOwners, hasAtLeastRole } from "@/lib/authz";
 import {
@@ -19,13 +19,13 @@ export default async function TripPage({
   params: Promise<{ tripId: string }>;
 }) {
   const { tripId } = await params;
-  const session = await auth();
-  if (!session?.user) redirect("/");
+  const user = await getCurrentUser();
+  if (!user) redirect("/");
 
-  const trip = await getTripForUser(session.user.id, tripId);
+  const trip = await getTripForUser(user.id, tripId);
   if (!trip) notFound();
 
-  const members = await listMembers(session.user.id, tripId);
+  const members = await listMembers(user.id, tripId);
   const isOwner = trip.role === "owner";
   const canEdit = hasAtLeastRole(trip.role, "editor");
   const ownerCount = countOwners(members);

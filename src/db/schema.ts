@@ -9,65 +9,22 @@ import {
   date,
   uuid,
   jsonb,
-  primaryKey,
   unique,
 } from "drizzle-orm/pg-core";
-import type { AdapterAccountType } from "next-auth/adapters";
 
 /* ----------------------------------------------------------------------------
- * Auth.js (NextAuth v5) tables — shapes required by @auth/drizzle-adapter.
- * Column/property names follow the official Auth.js Drizzle (Postgres) schema.
+ * Users — a mirror of the Firebase auth user, keyed by Firebase UID. This is
+ * the FK target for trip ownership and membership. Authentication itself is
+ * handled by Firebase; rows are upserted here on sign-in.
  * ------------------------------------------------------------------------- */
 
 export const users = pgTable("user", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
+  id: text("id").primaryKey(), // Firebase UID
   name: text("name"),
   email: text("email").notNull(),
   emailVerified: timestamp("email_verified", { mode: "date" }),
   image: text("image"),
 });
-
-export const accounts = pgTable(
-  "account",
-  {
-    userId: text("user_id")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    type: text("type").$type<AdapterAccountType>().notNull(),
-    provider: text("provider").notNull(),
-    providerAccountId: text("provider_account_id").notNull(),
-    refresh_token: text("refresh_token"),
-    access_token: text("access_token"),
-    expires_at: integer("expires_at"),
-    token_type: text("token_type"),
-    scope: text("scope"),
-    id_token: text("id_token"),
-    session_state: text("session_state"),
-  },
-  (account) => [
-    primaryKey({ columns: [account.provider, account.providerAccountId] }),
-  ],
-);
-
-export const sessions = pgTable("session", {
-  sessionToken: text("session_token").primaryKey(),
-  userId: text("user_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  expires: timestamp("expires", { mode: "date" }).notNull(),
-});
-
-export const verificationTokens = pgTable(
-  "verification_token",
-  {
-    identifier: text("identifier").notNull(),
-    token: text("token").notNull(),
-    expires: timestamp("expires", { mode: "date" }).notNull(),
-  },
-  (vt) => [primaryKey({ columns: [vt.identifier, vt.token] })],
-);
 
 /* ----------------------------------------------------------------------------
  * Enums

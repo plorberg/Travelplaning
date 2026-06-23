@@ -1,15 +1,16 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { auth, signOut } from "@/auth";
+import { getCurrentUser } from "@/lib/auth";
 import { getTripsForUser } from "@/lib/trips";
+import { SignOutButton } from "@/app/_components/SignOutButton";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const session = await auth();
-  if (!session?.user) redirect("/");
+  const user = await getCurrentUser();
+  if (!user) redirect("/");
 
-  const trips = await getTripsForUser(session.user.id);
+  const trips = await getTripsForUser(user.id);
 
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
@@ -21,15 +22,8 @@ export default async function DashboardPage() {
           gap: "1rem",
         }}
       >
-        <span style={{ opacity: 0.8 }}>Signed in as {session.user.email}</span>
-        <form
-          action={async () => {
-            "use server";
-            await signOut({ redirectTo: "/" });
-          }}
-        >
-          <button type="submit">Sign out</button>
-        </form>
+        <span style={{ opacity: 0.8 }}>Signed in as {user.email}</span>
+        <SignOutButton />
       </header>
 
       <div

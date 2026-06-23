@@ -7,7 +7,7 @@ day-by-day itineraries, expenses, currency conversion, and collaboration.
 ## Stack
 
 - **Next.js** (App Router, TypeScript) — deploys to Vercel
-- **Auth.js** (NextAuth v5) with **Google OAuth**, database sessions
+- **Firebase Authentication** (Google sign-in), verified server-side
 - **Neon** serverless Postgres via **Drizzle ORM**
 - **Zod** for input validation
 
@@ -21,9 +21,10 @@ See [`CLAUDE.md`](./CLAUDE.md) for the full architecture decision and project ru
    ```
 2. Configure environment — copy `.env.example` to `.env.local` and fill in:
    - `DATABASE_URL` — a Neon Postgres connection string (free tier, no card).
-   - `AUTH_SECRET` — generate with `npx auth secret`.
-   - `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` — a Google OAuth client. Add the
-     redirect URI `http://localhost:3000/api/auth/callback/google`.
+   - `NEXT_PUBLIC_FIREBASE_*` — your Firebase web app config (enable Google
+     sign-in in the Firebase console).
+   - `FIREBASE_PROJECT_ID` / `FIREBASE_CLIENT_EMAIL` / `FIREBASE_PRIVATE_KEY` —
+     a Firebase service account for server-side token verification.
 3. Create the database schema:
    ```bash
    npm run db:push        # or: npm run db:generate && npm run db:migrate
