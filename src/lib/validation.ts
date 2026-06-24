@@ -151,3 +151,45 @@ export const expenseInputSchema = z
   });
 
 export type ExpenseInput = z.infer<typeof expenseInputSchema>;
+
+export const itineraryItemTypeValues = [
+  "flight",
+  "hotel",
+  "transport",
+  "activity",
+  "food",
+  "custom",
+] as const;
+
+const optionalDateTime = z.preprocess(
+  emptyToUndefined,
+  z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/, "Use the date & time picker.")
+    .optional(),
+);
+const optionalCurrency = z.preprocess(
+  (v) => (typeof v === "string" && v.trim() !== "" ? v.trim().toUpperCase() : undefined),
+  z.string().regex(/^[A-Z]{3}$/, "Use a 3-letter currency code.").optional(),
+);
+
+export const itineraryInputSchema = z
+  .object({
+    title: z.string().trim().min(1, "Title is required.").max(200),
+    type: z.enum(itineraryItemTypeValues),
+    stopId: z.preprocess(emptyToUndefined, z.string().optional()),
+    startAt: optionalDateTime,
+    endAt: optionalDateTime,
+    location: optionalText(200),
+    lat: optionalLat,
+    lng: optionalLng,
+    cost: optionalMoney,
+    currency: optionalCurrency,
+    notes: optionalText(2000),
+  })
+  .refine((d) => !d.startAt || !d.endAt || d.endAt >= d.startAt, {
+    message: "End must be after start.",
+    path: ["endAt"],
+  });
+
+export type ItineraryInput = z.infer<typeof itineraryInputSchema>;
