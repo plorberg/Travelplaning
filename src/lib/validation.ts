@@ -96,3 +96,58 @@ export const inviteInputSchema = z.object({
 });
 
 export type InviteInput = z.infer<typeof inviteInputSchema>;
+
+export const expenseCategoryValues = [
+  "flights",
+  "accommodation",
+  "food",
+  "local_transport",
+  "car_rental",
+  "fuel",
+  "activities",
+  "shopping",
+  "insurance",
+  "fees",
+  "other",
+] as const;
+export type ExpenseCategory = (typeof expenseCategoryValues)[number];
+
+const requiredDate = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "Use the date picker (YYYY-MM-DD).");
+const moneyRequired = z
+  .string()
+  .regex(/^\d+(\.\d{1,2})?$/, "Enter an amount like 42 or 42.00.");
+const currencyCode = z.preprocess(
+  (v) => (typeof v === "string" ? v.trim().toUpperCase() : v),
+  z.string().regex(/^[A-Z]{3}$/, "Use a 3-letter currency code."),
+);
+const optionalRate = z.preprocess(
+  emptyToUndefined,
+  z.string().regex(/^\d+(\.\d+)?$/, "Enter a valid rate.").optional(),
+);
+const optionalUrl = z.preprocess(
+  emptyToUndefined,
+  z.string().regex(/^https?:\/\/.+/i, "Enter a valid URL.").optional(),
+);
+
+export const expenseInputSchema = z
+  .object({
+    stopId: z.preprocess(emptyToUndefined, z.string().optional()),
+    date: requiredDate,
+    category: z.enum(expenseCategoryValues),
+    amount: moneyRequired,
+    currency: currencyCode,
+    manualRate: optionalRate,
+    paymentMethod: optionalText(100),
+    paidBy: z.preprocess(emptyToUndefined, z.string().optional()),
+    splitWith: z.array(z.string()).optional().default([]),
+    notes: optionalText(2000),
+    receiptUrl: optionalUrl,
+  })
+  .refine((d) => Number(d.amount) > 0, {
+    message: "Amount must be greater than 0.",
+    path: ["amount"],
+  });
+
+export type ExpenseInput = z.infer<typeof expenseInputSchema>;
