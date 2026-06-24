@@ -21,7 +21,12 @@ export function SignInButton() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ idToken }),
       });
-      if (!res.ok) throw new Error("Could not create a session.");
+      if (!res.ok) {
+        const data = (await res.json().catch(() => null)) as
+          | { error?: string }
+          | null;
+        throw new Error(data?.error ?? "Could not create a session.");
+      }
       router.push("/dashboard");
       router.refresh();
     } catch (e) {
