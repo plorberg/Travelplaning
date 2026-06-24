@@ -15,6 +15,13 @@
       "when": 1782218144404,
       "tag": "0001_drop_authjs_tables",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1782283391914,
+      "tag": "0002_documents_drive_fields",
+      "breakpoints": true
     }
   ]
 }

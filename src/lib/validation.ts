@@ -193,3 +193,40 @@ export const itineraryInputSchema = z
   });
 
 export type ItineraryInput = z.infer<typeof itineraryInputSchema>;
+
+export const documentTypeValues = [
+  "flight",
+  "hotel",
+  "train",
+  "car_rental",
+  "activity",
+  "restaurant",
+  "visa",
+  "insurance",
+  "other",
+] as const;
+
+export const documentInputSchema = z
+  .object({
+    type: z.enum(documentTypeValues),
+    title: z.string().trim().min(1, "Title is required.").max(200),
+    vendor: optionalText(160),
+    bookingRef: optionalText(160),
+    stopId: z.preprocess(emptyToUndefined, z.string().optional()),
+    startAt: optionalDateTime,
+    endAt: optionalDateTime,
+    location: optionalText(200),
+    price: optionalMoney,
+    currency: optionalCurrency,
+    notes: optionalText(2000),
+    externalUrl: optionalUrl,
+    // Populated by the client-side Drive upload (hidden fields).
+    driveFileId: z.preprocess(emptyToUndefined, z.string().optional()),
+    driveFileUrl: z.preprocess(emptyToUndefined, z.string().optional()),
+  })
+  .refine((d) => !d.startAt || !d.endAt || d.endAt >= d.startAt, {
+    message: "End must be after start.",
+    path: ["endAt"],
+  });
+
+export type DocumentInput = z.infer<typeof documentInputSchema>;

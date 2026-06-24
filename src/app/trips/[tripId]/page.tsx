@@ -87,8 +87,9 @@ export default async function TripPage({
         <dd style={{ margin: 0 }}>{trip.role}</dd>
       </dl>
 
-      <p style={{ display: "flex", gap: "1.25rem" }}>
+      <p style={{ display: "flex", gap: "1.25rem", flexWrap: "wrap" }}>
         <Link href={`/trips/${tripId}/itinerary`}>Itinerary →</Link>
+        <Link href={`/trips/${tripId}/documents`}>Documents →</Link>
         <Link href={`/trips/${tripId}/expenses`}>Expenses &amp; budget →</Link>
       </p>
 

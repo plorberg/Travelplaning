@@ -226,6 +226,8 @@ export const documents = pgTable("documents", {
   currency: text("currency"),
   notes: text("notes"),
   externalUrl: text("external_url"),
+  driveFileId: text("drive_file_id"),
+  driveFileUrl: text("drive_file_url"),
   createdBy: text("created_by")
     .notNull()
     .references(() => users.id),
