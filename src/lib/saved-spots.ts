@@ -46,6 +46,8 @@ export async function listSavedSpots(userId: string, tripId: string) {
       name: savedSpots.name,
       category: savedSpots.category,
       address: savedSpots.address,
+      lat: savedSpots.lat,
+      lng: savedSpots.lng,
       rating: savedSpots.rating,
       source: savedSpots.source,
       recommendedDurationMinutes: savedSpots.recommendedDurationMinutes,

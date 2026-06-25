@@ -97,6 +97,7 @@ export default async function TripPage({
 
       <p style={{ display: "flex", gap: "1.25rem", flexWrap: "wrap" }}>
         <Link href={`/trips/${tripId}/itinerary`}>Reiseplan →</Link>
+        <Link href={`/trips/${tripId}/map`}>Karte →</Link>
         <Link href={`/trips/${tripId}/flights`}>Flüge suchen →</Link>
         <Link href={`/trips/${tripId}/spots`}>Gespeicherte Orte →</Link>
         <Link href={`/trips/${tripId}/documents`}>Dokumente →</Link>
