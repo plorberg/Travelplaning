@@ -6,15 +6,22 @@ import { listStops } from "@/lib/stops";
 import { hasAtLeastRole } from "@/lib/authz";
 import { createSpotAction } from "@/app/trips/spot-actions";
 import { SpotForm } from "@/app/trips/_components/SpotForm";
+import { searchPlaces, type PlaceResult } from "@/lib/places";
+import { spotCategoryLabels } from "@/lib/labels";
 
 export const dynamic = "force-dynamic";
 
+const str = (v: string | string[] | undefined) => (typeof v === "string" ? v : "");
+
 export default async function NewSpotPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ tripId: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const { tripId } = await params;
+  const sp = await searchParams;
   const user = await getCurrentUser();
   if (!user) redirect("/");
 
@@ -25,16 +32,105 @@ export default async function NewSpotPage({
   const tripStops = await listStops(user.id, tripId);
   const action = createSpotAction.bind(null, tripId);
 
+  const query = str(sp.q).trim();
+  let results: PlaceResult[] = [];
+  let searchFailed = false;
+  if (query) {
+    try {
+      results = await searchPlaces(query, { lang: "de", limit: 8 });
+    } catch {
+      searchFailed = true;
+    }
+  }
+
+  // "Übernehmen" reloads this page with the chosen place as form defaults.
+  const useHref = (r: PlaceResult) => {
+    const p = new URLSearchParams({ q: query, name: r.name, address: r.address });
+    p.set("lat", String(r.lat));
+    p.set("lng", String(r.lng));
+    if (r.category) p.set("category", r.category);
+    p.set("source", r.source);
+    return `/trips/${tripId}/spots/new?${p.toString()}`;
+  };
+
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
       <p>
         <Link href={`/trips/${tripId}/spots`}>← Gespeicherte Orte</Link>
       </p>
       <h1>Ort hinzufügen</h1>
+
+      <section
+        style={{
+          margin: "0 0 1.5rem",
+          padding: "0.75rem 1rem",
+          border: "1px solid #ddd",
+          borderRadius: 8,
+          maxWidth: 480,
+        }}
+      >
+        <form method="get" style={{ display: "flex", gap: "0.5rem" }}>
+          <input
+            name="q"
+            defaultValue={query}
+            placeholder="Ort suchen (OpenStreetMap)…"
+            style={{ flex: 1 }}
+          />
+          <button type="submit">Suchen</button>
+        </form>
+
+        {searchFailed ? (
+          <p style={{ color: "crimson", fontSize: "0.85rem" }}>
+            Suche derzeit nicht verfügbar. Du kannst den Ort unten manuell eingeben.
+          </p>
+        ) : null}
+        {query && !searchFailed && results.length === 0 ? (
+          <p style={{ opacity: 0.8, fontSize: "0.85rem" }}>Keine Ergebnisse.</p>
+        ) : null}
+
+        {results.length > 0 ? (
+          <>
+            <ul style={{ listStyle: "none", padding: 0, margin: "0.75rem 0 0", display: "grid", gap: "0.6rem" }}>
+              {results.map((r) => (
+                <li
+                  key={r.id}
+                  style={{ display: "flex", justifyContent: "space-between", gap: "1rem" }}
+                >
+                  <div>
+                    <strong>{r.name}</strong>
+                    {r.category ? (
+                      <span style={{ opacity: 0.6, fontSize: "0.8rem" }}>
+                        {" "}
+                        · {spotCategoryLabels[r.category] ?? r.category}
+                      </span>
+                    ) : null}
+                    <div style={{ opacity: 0.8, fontSize: "0.85rem" }}>{r.address}</div>
+                  </div>
+                  <Link href={useHref(r)} style={{ whiteSpace: "nowrap" }}>
+                    Übernehmen
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <p style={{ opacity: 0.6, fontSize: "0.75rem", marginBottom: 0 }}>
+              Ergebnisse von OpenStreetMap (Nominatim) · © OpenStreetMap-Mitwirkende
+            </p>
+          </>
+        ) : null}
+      </section>
+
       <SpotForm
         action={action}
         submitLabel="Ort hinzufügen"
         stops={tripStops.map((s) => ({ id: s.id, city: s.city }))}
+        defaults={{
+          name: str(sp.name),
+          category: str(sp.category),
+          address: str(sp.address),
+          lat: str(sp.lat),
+          lng: str(sp.lng),
+          source: str(sp.source),
+        }}
       />
     </main>
   );

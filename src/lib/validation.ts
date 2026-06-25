@@ -244,6 +244,7 @@ export const spotCategoryValues = [
   "family_friendly",
   "rainy_day",
 ] as const;
+export type SpotCategory = (typeof spotCategoryValues)[number];
 
 // rating is numeric(2,1) in the DB → keep it a string for insertion.
 const optionalRating = z.preprocess(
