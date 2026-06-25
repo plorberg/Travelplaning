@@ -3,6 +3,8 @@ import { notFound, redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { getTripForUser } from "@/lib/trips";
 import { listStops } from "@/lib/stops";
+import { listSavedSpots } from "@/lib/saved-spots";
+import { listDocuments } from "@/lib/documents";
 import { hasAtLeastRole } from "@/lib/authz";
 import { createItineraryAction } from "@/app/trips/itinerary-actions";
 import { ItineraryForm } from "@/app/trips/_components/ItineraryForm";
@@ -22,7 +24,11 @@ export default async function NewItineraryItemPage({
   if (!trip) notFound();
   if (!hasAtLeastRole(trip.role, "editor")) redirect(`/trips/${tripId}/itinerary`);
 
-  const tripStops = await listStops(user.id, tripId);
+  const [tripStops, spots, docs] = await Promise.all([
+    listStops(user.id, tripId),
+    listSavedSpots(user.id, tripId),
+    listDocuments(user.id, tripId),
+  ]);
   const action = createItineraryAction.bind(null, tripId);
 
   return (
@@ -35,6 +41,8 @@ export default async function NewItineraryItemPage({
         action={action}
         submitLabel="Eintrag hinzufügen"
         stops={tripStops.map((s) => ({ id: s.id, city: s.city }))}
+        savedSpots={spots.map((s) => ({ id: s.id, name: s.name, address: s.address, lat: s.lat, lng: s.lng }))}
+        documents={docs.map((d) => ({ id: d.id, title: d.title }))}
         defaults={{ type: "activity" }}
       />
     </main>

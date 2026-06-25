@@ -1,6 +1,6 @@
 import { and, asc, eq } from "drizzle-orm";
 import { db } from "@/db";
-import { itineraryItems, stops } from "@/db/schema";
+import { itineraryItems, stops, savedSpots, documents } from "@/db/schema";
 import { hasAtLeastRole } from "@/lib/authz";
 import { AccessError, getMembership } from "@/lib/trips";
 import type { ItineraryInput } from "@/lib/validation";
@@ -23,16 +23,35 @@ function toDate(value?: string): Date | null {
   return value ? new Date(`${value}:00Z`) : null;
 }
 
-async function tripStopIds(tripId: string): Promise<Set<string>> {
-  const rows = await db.select({ id: stops.id }).from(stops).where(eq(stops.tripId, tripId));
-  return new Set(rows.map((r) => r.id));
+type TripRefs = {
+  stopIds: Set<string>;
+  spotIds: Set<string>;
+  docIds: Set<string>;
+};
+
+// Valid ids for linkable rows in this trip, so links can't point elsewhere.
+async function tripRefs(tripId: string): Promise<TripRefs> {
+  const [stopRows, spotRows, docRows] = await Promise.all([
+    db.select({ id: stops.id }).from(stops).where(eq(stops.tripId, tripId)),
+    db.select({ id: savedSpots.id }).from(savedSpots).where(eq(savedSpots.tripId, tripId)),
+    db.select({ id: documents.id }).from(documents).where(eq(documents.tripId, tripId)),
+  ]);
+  return {
+    stopIds: new Set(stopRows.map((r) => r.id)),
+    spotIds: new Set(spotRows.map((r) => r.id)),
+    docIds: new Set(docRows.map((r) => r.id)),
+  };
 }
 
-function toRow(stopIds: Set<string>, input: ItineraryInput) {
+const inSet = (set: Set<string>, id?: string) => (id && set.has(id) ? id : null);
+
+function toRow(refs: TripRefs, input: ItineraryInput) {
   return {
     title: input.title,
     type: input.type,
-    stopId: input.stopId && stopIds.has(input.stopId) ? input.stopId : null,
+    stopId: inSet(refs.stopIds, input.stopId),
+    savedSpotId: inSet(refs.spotIds, input.savedSpotId),
+    documentId: inSet(refs.docIds, input.documentId),
     startAt: toDate(input.startAt),
     endAt: toDate(input.endAt),
     location: input.location ?? null,
@@ -56,12 +75,16 @@ export async function listItinerary(userId: string, tripId: string) {
       location: itineraryItems.location,
       stopId: itineraryItems.stopId,
       stopCity: stops.city,
+      savedSpotName: savedSpots.name,
+      documentTitle: documents.title,
       cost: itineraryItems.cost,
       currency: itineraryItems.currency,
       notes: itineraryItems.notes,
     })
     .from(itineraryItems)
     .leftJoin(stops, eq(stops.id, itineraryItems.stopId))
+    .leftJoin(savedSpots, eq(savedSpots.id, itineraryItems.savedSpotId))
+    .leftJoin(documents, eq(documents.id, itineraryItems.documentId))
     .where(eq(itineraryItems.tripId, tripId))
     .orderBy(asc(itineraryItems.startAt), asc(itineraryItems.createdAt));
 }
@@ -78,8 +101,8 @@ export async function getItineraryItem(userId: string, tripId: string, itemId: s
 
 export async function createItineraryItem(userId: string, tripId: string, input: ItineraryInput) {
   await requireEditor(userId, tripId);
-  const stopIds = await tripStopIds(tripId);
-  await db.insert(itineraryItems).values({ tripId, ...toRow(stopIds, input) });
+  const refs = await tripRefs(tripId);
+  await db.insert(itineraryItems).values({ tripId, ...toRow(refs, input) });
 }
 
 export async function updateItineraryItem(
@@ -89,10 +112,10 @@ export async function updateItineraryItem(
   input: ItineraryInput,
 ) {
   await requireEditor(userId, tripId);
-  const stopIds = await tripStopIds(tripId);
+  const refs = await tripRefs(tripId);
   await db
     .update(itineraryItems)
-    .set(toRow(stopIds, input))
+    .set(toRow(refs, input))
     .where(and(eq(itineraryItems.id, itemId), eq(itineraryItems.tripId, tripId)));
 }
 

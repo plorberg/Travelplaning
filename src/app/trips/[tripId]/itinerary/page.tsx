@@ -56,6 +56,13 @@ export default async function ItineraryPage({
             {it.location ? ` · ${it.location}` : ""}
             {it.cost ? ` · ${formatMoney(it.cost, it.currency ?? "")}` : ""}
           </div>
+          {it.savedSpotName || it.documentTitle ? (
+            <div style={{ opacity: 0.7, fontSize: "0.8rem" }}>
+              {it.savedSpotName ? `📍 ${it.savedSpotName}` : ""}
+              {it.savedSpotName && it.documentTitle ? " · " : ""}
+              {it.documentTitle ? `🎫 ${it.documentTitle}` : ""}
+            </div>
+          ) : null}
           {conflicts.has(it.id) ? (
             <div style={{ color: "#b8860b", fontSize: "0.8rem" }}>
               ⚠ Überschneidet sich mit einem anderen Eintrag

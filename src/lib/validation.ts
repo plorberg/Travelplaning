@@ -178,6 +178,8 @@ export const itineraryInputSchema = z
     title: z.string().trim().min(1, "Titel ist erforderlich.").max(200),
     type: z.enum(itineraryItemTypeValues),
     stopId: z.preprocess(emptyToUndefined, z.string().optional()),
+    savedSpotId: z.preprocess(emptyToUndefined, z.string().optional()),
+    documentId: z.preprocess(emptyToUndefined, z.string().optional()),
     startAt: optionalDateTime,
     endAt: optionalDateTime,
     location: optionalText(200),
