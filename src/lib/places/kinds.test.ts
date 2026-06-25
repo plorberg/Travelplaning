@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
-  applyKindToQuery,
+  PLACE_KINDS,
   defaultCategoryForKind,
   filterResultsByKind,
   isPlaceKind,
@@ -24,14 +24,14 @@ describe("isPlaceKind", () => {
   });
 });
 
-describe("applyKindToQuery", () => {
-  it("prefixes the OSM keyword for a kind", () => {
-    expect(applyKindToQuery("Auckland", "food")).toBe("restaurant Auckland");
-    expect(applyKindToQuery("Auckland", "sights")).toBe("tourist attraction Auckland");
-  });
-  it("returns the trimmed query unchanged without a kind", () => {
-    expect(applyKindToQuery("  Auckland ", undefined)).toBe("Auckland");
-    expect(applyKindToQuery("", "food")).toBe("");
+describe("PLACE_KINDS", () => {
+  it("every kind has a label, categories and Overpass selectors", () => {
+    for (const kind of Object.values(PLACE_KINDS)) {
+      expect(kind.label.length).toBeGreaterThan(0);
+      expect(kind.categories.length).toBeGreaterThan(0);
+      expect(kind.overpass.length).toBeGreaterThan(0);
+      expect(kind.overpass.every((s) => s.includes("nwr["))).toBe(true);
+    }
   });
 });
 

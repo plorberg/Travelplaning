@@ -2,36 +2,45 @@ import type { SpotCategory } from "@/lib/validation";
 import type { PlaceKind, PlaceResult } from "./types";
 
 // Each search "kind" groups spot categories (used to filter already-categorised
-// results, e.g. from Wikivoyage) and carries an OSM keyword to bias the
-// free-text geocoder (Nominatim). Labels are the German UI text.
+// results, e.g. from Wikivoyage) and carries Overpass selectors for the OSM POI
+// search. Labels are the German UI text.
 export const PLACE_KINDS: Record<
   PlaceKind,
-  { label: string; categories: SpotCategory[]; osmKeyword: string }
+  { label: string; categories: SpotCategory[]; overpass: string[] }
 > = {
   sights: {
     label: "Sehenswürdigkeiten",
     categories: ["sightseeing", "museum"],
-    osmKeyword: "tourist attraction",
+    overpass: [
+      'nwr["tourism"~"^(attraction|museum|gallery|viewpoint|artwork|theme_park)$"]',
+      'nwr["historic"~"^(monument|memorial|castle|ruins)$"]',
+    ],
   },
   food: {
     label: "Restaurants & Cafés",
     categories: ["restaurant", "cafe"],
-    osmKeyword: "restaurant",
+    overpass: ['nwr["amenity"~"^(restaurant|cafe)$"]'],
   },
   nightlife: {
     label: "Bars & Nachtleben",
     categories: ["bar", "nightlife"],
-    osmKeyword: "bar",
+    overpass: ['nwr["amenity"~"^(bar|pub|nightclub|biergarten)$"]'],
   },
   nature: {
     label: "Natur & Parks",
     categories: ["nature"],
-    osmKeyword: "park",
+    overpass: [
+      'nwr["leisure"~"^(park|garden|nature_reserve)$"]',
+      'nwr["natural"~"^(beach|peak|wood)$"]',
+    ],
   },
   shopping: {
     label: "Einkaufen",
     categories: ["shopping"],
-    osmKeyword: "shop",
+    overpass: [
+      'nwr["shop"~"^(mall|department_store|supermarket)$"]',
+      'nwr["amenity"="marketplace"]',
+    ],
   },
 };
 
@@ -56,11 +65,4 @@ export function filterResultsByKind(
   return results.filter(
     (r) => r.category != null && categories.includes(r.category),
   );
-}
-
-/** Prefixes a free-text query with the kind's OSM keyword to bias the geocoder. */
-export function applyKindToQuery(query: string, kind?: PlaceKind): string {
-  const q = query.trim();
-  if (!kind || !q) return q;
-  return `${PLACE_KINDS[kind].osmKeyword} ${q}`;
 }

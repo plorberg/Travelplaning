@@ -53,7 +53,7 @@ export default async function NewSpotPage({
   let searchFailed = false;
   if (query) {
     try {
-      results = await searchPlaces(query, { provider, kind, lang: "de", limit: 8 });
+      results = await searchPlaces(query, { provider, kind, lang: "de", limit: 25 });
     } catch {
       searchFailed = true;
     }
@@ -172,6 +172,8 @@ export default async function NewSpotPage({
       </section>
 
       <SpotForm
+        // Remount when an applied result changes so the new defaults take effect.
+        key={`${str(sp.name)}|${str(sp.lat)}|${str(sp.source)}`}
         action={action}
         submitLabel="Empfehlung hinzufügen"
         stops={tripStops.map((s) => ({ id: s.id, city: s.city }))}

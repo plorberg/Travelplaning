@@ -1,62 +1,18 @@
-import type { SpotCategory } from "@/lib/validation";
 import type { PlaceResult, PlacesProvider } from "./types";
-import { applyKindToQuery } from "./kinds";
+import { mapOsmCategory } from "./osm-tags";
+import { searchOverpass } from "./overpass";
 
 // OpenStreetMap Nominatim — free, no API key. Usage policy requires a
 // descriptive User-Agent (and politeness: ≤1 req/s, caching). Calls run
 // server-side so the User-Agent is controlled and never reaches the browser.
+//
+// Nominatim is a geocoder (finds named places), so it's used for free-text
+// "search by name". For category discovery ("restaurants near X") a kind is
+// given: we geocode the place to a point, then hand off to the Overpass POI
+// search.
 const BASE = process.env.NOMINATIM_BASE_URL ?? "https://nominatim.openstreetmap.org";
 const CONTACT = process.env.PLACES_CONTACT_EMAIL;
 const USER_AGENT = `Travelplaning/1.0 (travel planner${CONTACT ? `; ${CONTACT}` : ""})`;
-
-// Maps an OSM `type` (and broad `category`) to our spot categories.
-const TYPE_TABLE: Record<string, SpotCategory> = {
-  museum: "museum",
-  gallery: "museum",
-  artwork: "sightseeing",
-  attraction: "sightseeing",
-  viewpoint: "sightseeing",
-  monument: "sightseeing",
-  memorial: "sightseeing",
-  castle: "sightseeing",
-  ruins: "sightseeing",
-  place_of_worship: "sightseeing",
-  restaurant: "restaurant",
-  fast_food: "restaurant",
-  food_court: "restaurant",
-  cafe: "cafe",
-  bar: "bar",
-  pub: "bar",
-  biergarten: "bar",
-  nightclub: "nightlife",
-  park: "nature",
-  nature_reserve: "nature",
-  peak: "nature",
-  beach: "nature",
-  forest: "nature",
-  water: "nature",
-  garden: "nature",
-  mall: "shopping",
-  supermarket: "shopping",
-  department_store: "shopping",
-  marketplace: "shopping",
-  zoo: "family_friendly",
-  theme_park: "family_friendly",
-  aquarium: "family_friendly",
-};
-
-export function mapOsmCategory(
-  category?: string,
-  type?: string,
-): SpotCategory | undefined {
-  const t = (type ?? "").toLowerCase();
-  if (TYPE_TABLE[t]) return TYPE_TABLE[t];
-  const c = (category ?? "").toLowerCase();
-  if (c === "tourism") return "sightseeing";
-  if (c === "natural" || c === "leisure") return "nature";
-  if (c === "shop") return "shopping";
-  return undefined;
-}
 
 type NominatimRow = {
   osm_type?: string;
@@ -94,26 +50,52 @@ export function parseNominatimResults(rows: unknown): PlaceResult[] {
   return out;
 }
 
+async function nominatimSearch(
+  query: string,
+  opts?: { limit?: number; lang?: string },
+): Promise<PlaceResult[]> {
+  const params = new URLSearchParams({
+    q: query,
+    format: "jsonv2",
+    addressdetails: "0",
+    limit: String(opts?.limit ?? 12),
+  });
+  if (opts?.lang) params.set("accept-language", opts.lang);
+
+  const res = await fetch(`${BASE}/search?${params.toString()}`, {
+    headers: { "User-Agent": USER_AGENT, Accept: "application/json" },
+    next: { revalidate: 86400 },
+  });
+  if (!res.ok) throw new Error(`Nominatim request failed (${res.status})`);
+  return parseNominatimResults(await res.json());
+}
+
+/** Geocodes a place name to its first coordinate (for the Overpass handoff). */
+export async function geocodeOne(
+  query: string,
+  lang?: string,
+): Promise<{ lat: number; lng: number } | null> {
+  const results = await nominatimSearch(query, { limit: 1, lang });
+  const first = results[0];
+  return first && first.lat != null && first.lng != null
+    ? { lat: first.lat, lng: first.lng }
+    : null;
+}
+
 export const nominatimProvider: PlacesProvider = {
   name: "nominatim",
   async search(query, opts) {
-    if (!query.trim()) return [];
-    // A chosen kind biases the geocoder via a keyword (e.g. "restaurant <query>").
-    const q = applyKindToQuery(query, opts?.kind);
-    const params = new URLSearchParams({
-      q,
-      format: "jsonv2",
-      addressdetails: "0",
-      limit: String(opts?.limit ?? 8),
-    });
-    if (opts?.lang) params.set("accept-language", opts.lang);
+    const q = query.trim();
+    if (!q) return [];
 
-    const res = await fetch(`${BASE}/search?${params.toString()}`, {
-      headers: { "User-Agent": USER_AGENT, Accept: "application/json" },
-      // Cache identical queries for a day to respect the usage policy.
-      next: { revalidate: 86400 },
-    });
-    if (!res.ok) throw new Error(`Nominatim request failed (${res.status})`);
-    return parseNominatimResults(await res.json());
+    // With a kind: geocode the destination, then POI-search via Overpass.
+    if (opts?.kind) {
+      const center = await geocodeOne(q, opts.lang);
+      if (!center) return [];
+      return searchOverpass(center, opts.kind, opts.limit ?? 25);
+    }
+
+    // Otherwise a plain geocoder "search by name".
+    return nominatimSearch(q, opts);
   },
 };

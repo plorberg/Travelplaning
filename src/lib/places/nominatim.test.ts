@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { mapOsmCategory, parseNominatimResults } from "./nominatim";
+import { parseNominatimResults } from "./nominatim";
+import { mapOsmCategory } from "./osm-tags";
 
 describe("mapOsmCategory", () => {
   it("maps specific OSM types", () => {

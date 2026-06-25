@@ -1,6 +1,7 @@
 import type { SpotCategory } from "@/lib/validation";
 import type { PlaceResult, PlacesProvider } from "./types";
 import { filterResultsByKind } from "./kinds";
+import { mapOsmCategory } from "./osm-tags";
 
 // Wikivoyage (a free wiki travel guide) via the MediaWiki API. For a given
 // destination we fetch the article wikitext and extract its listing templates
@@ -21,8 +22,20 @@ const LISTING_CATEGORY: Record<string, SpotCategory> = {
 // Generic listing templates carry the kind in a `type=` param. `vCard` is the
 // German Wikivoyage standard; `listing`/`marker` are used on en.wikivoyage.
 const GENERIC_TEMPLATES = new Set(["listing", "marker", "vcard"]);
-// Accommodation/transport aren't "spots" — skip them.
-const SKIP_TYPES = new Set(["sleep", "go"]);
+// Accommodation/transport/admin aren't "spots" — skip them.
+const SKIP_TYPES = new Set([
+  "sleep",
+  "go",
+  "hotel",
+  "motel",
+  "hostel",
+  "guest_house",
+  "apartment",
+  "airport",
+  "airline",
+  "clinic",
+  "hospital",
+]);
 
 /** Split on `sep` at top level, ignoring `{{…}}` and `[[…]]` nesting. */
 export function splitTopLevel(s: string, sep: string): string[] {
@@ -117,7 +130,9 @@ export function parseWikivoyageListings(wikitext: string, limit = 12): PlaceResu
     if (generic) {
       const type = (params.type ?? "").toLowerCase();
       if (SKIP_TYPES.has(type)) continue;
-      category = LISTING_CATEGORY[type];
+      // German vCard `type=` uses OSM-style values (museum, park, bar, …);
+      // fall back to the OSM mapping when it isn't a see/do/eat/drink/buy.
+      category = LISTING_CATEGORY[type] ?? mapOsmCategory(undefined, type);
     }
 
     const name = stripWiki(params.name ?? "");
@@ -167,8 +182,8 @@ export const wikivoyageProvider: PlacesProvider = {
       parse?: { wikitext?: string };
     };
     if (data.error) return []; // e.g. missing page
-    // Parse generously, then narrow by the chosen kind and cap to the limit.
-    const all = parseWikivoyageListings(data.parse?.wikitext ?? "", 60);
-    return filterResultsByKind(all, opts?.kind).slice(0, opts?.limit ?? 12);
+    // Parse all listings, then narrow by the chosen kind and cap to the limit.
+    const all = parseWikivoyageListings(data.parse?.wikitext ?? "", 300);
+    return filterResultsByKind(all, opts?.kind).slice(0, opts?.limit ?? 25);
   },
 };
