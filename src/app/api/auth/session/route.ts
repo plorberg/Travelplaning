@@ -20,7 +20,8 @@ export async function POST(request: Request) {
   }
 
   try {
-    const decoded = await adminAuth().verifyIdToken(idToken);
+    const auth = await adminAuth();
+    const decoded = await auth.verifyIdToken(idToken);
 
     const profile = {
       email: decoded.email ?? "",
@@ -32,7 +33,7 @@ export async function POST(request: Request) {
       .values({ id: decoded.uid, ...profile })
       .onConflictDoUpdate({ target: users.id, set: profile });
 
-    const sessionCookie = await adminAuth().createSessionCookie(idToken, {
+    const sessionCookie = await auth.createSessionCookie(idToken, {
       expiresIn: EXPIRES_IN_MS,
     });
     const store = await cookies();

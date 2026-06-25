@@ -1,14 +1,12 @@
-import {
-  cert,
-  getApps,
-  getApp,
-  initializeApp,
-  type App,
-} from "firebase-admin/app";
-import { getAuth, type Auth } from "firebase-admin/auth";
+import type { App } from "firebase-admin/app";
+import type { Auth } from "firebase-admin/auth";
 
-// Lazily initialise the Admin SDK so importing this module never requires the
-// service-account secrets at build time — they are only read on first use.
+// firebase-admin is imported dynamically, only when a session is actually
+// verified. A static top-level import pulls the heavy SDK into every serverless
+// function that touches auth — and if it fails to load in that runtime, the
+// function crashes at cold start (HTTP 500) before any handler code runs, even
+// for requests with no session. Loading it lazily keeps session-less requests
+// (e.g. the landing page) from ever touching it.
 
 // Tolerate the common ways the PEM key gets mangled in env files: surrounding
 // quotes that leaked in, and literal "\n" escapes that weren't expanded.
@@ -23,7 +21,10 @@ function normalizePrivateKey(raw: string): string {
   return key.replace(/\\n/g, "\n").trim();
 }
 
-function getAdminApp(): App {
+async function getAdminApp(): Promise<App> {
+  const { getApps, getApp, initializeApp, cert } = await import(
+    "firebase-admin/app"
+  );
   if (getApps().length) return getApp();
 
   const projectId = process.env.FIREBASE_PROJECT_ID;
@@ -44,6 +45,7 @@ function getAdminApp(): App {
   return initializeApp({ credential: cert({ projectId, clientEmail, privateKey }) });
 }
 
-export function adminAuth(): Auth {
-  return getAuth(getAdminApp());
+export async function adminAuth(): Promise<Auth> {
+  const { getAuth } = await import("firebase-admin/auth");
+  return getAuth(await getAdminApp());
 }
