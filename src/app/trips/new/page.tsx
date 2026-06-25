@@ -15,8 +15,8 @@ export default async function NewTripPage() {
       <p>
         <Link href="/dashboard">← Dashboard</Link>
       </p>
-      <h1>New trip</h1>
-      <TripForm action={createTripAction} submitLabel="Create trip" />
+      <h1>Neue Reise</h1>
+      <TripForm action={createTripAction} submitLabel="Reise erstellen" />
     </main>
   );
 }

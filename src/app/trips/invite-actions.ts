@@ -20,7 +20,7 @@ async function requireUser() {
 
 function messageFrom(e: unknown): string {
   if (e instanceof AccessError) return e.message;
-  return "Something went wrong. Please try again.";
+  return "Etwas ist schiefgelaufen. Bitte versuche es erneut.";
 }
 
 export async function inviteAction(
@@ -39,7 +39,7 @@ export async function inviteAction(
     return { error: messageFrom(e) };
   }
   revalidatePath(`/trips/${tripId}`);
-  return { success: "Invitation created." };
+  return { success: "Einladung erstellt." };
 }
 
 export async function revokeInvitationAction(

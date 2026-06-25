@@ -7,14 +7,14 @@ import type { StopInput } from "@/lib/validation";
 
 async function requireMember(userId: string, tripId: string) {
   const role = await getMembership(userId, tripId);
-  if (!role) throw new AccessError("You don't have access to this trip.");
+  if (!role) throw new AccessError("Du hast keinen Zugriff auf diese Reise.");
   return role;
 }
 
 async function requireEditor(userId: string, tripId: string): Promise<void> {
   const role = await requireMember(userId, tripId);
   if (!hasAtLeastRole(role, "editor")) {
-    throw new AccessError("Only editors or the owner can change stops.");
+    throw new AccessError("Nur Bearbeiter oder der Eigentümer können Stationen ändern.");
   }
 }
 
@@ -105,7 +105,7 @@ export async function moveStop(
     .orderBy(stops.sortOrder, stops.createdAt);
 
   const idx = rows.findIndex((r) => r.id === stopId);
-  if (idx === -1) throw new AccessError("Stop not found.");
+  if (idx === -1) throw new AccessError("Station nicht gefunden.");
   const swapIdx = direction === "up" ? idx - 1 : idx + 1;
   if (swapIdx < 0 || swapIdx >= rows.length) return; // already at the edge
 

@@ -16,7 +16,7 @@ async function requireUserId(): Promise<string> {
 
 function messageFrom(e: unknown): string {
   if (e instanceof AccessError) return e.message;
-  return "Something went wrong. Please try again.";
+  return "Etwas ist schiefgelaufen. Bitte versuche es erneut.";
 }
 
 export async function createStopAction(

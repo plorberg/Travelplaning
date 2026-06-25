@@ -18,17 +18,17 @@ export interface StopDates {
 export function stopDateWarnings(trip: DateRange, stop: StopDates): string[] {
   const warnings: string[] = [];
   if (stop.arrivalDate && trip.startDate && stop.arrivalDate < trip.startDate) {
-    warnings.push("Arrival is before the trip start date.");
+    warnings.push("Die Ankunft liegt vor dem Startdatum der Reise.");
   }
   if (stop.departureDate && trip.endDate && stop.departureDate > trip.endDate) {
-    warnings.push("Departure is after the trip end date.");
+    warnings.push("Die Abreise liegt nach dem Enddatum der Reise.");
   }
   if (
     stop.arrivalDate &&
     stop.departureDate &&
     stop.departureDate < stop.arrivalDate
   ) {
-    warnings.push("Departure is before arrival.");
+    warnings.push("Die Abreise liegt vor der Ankunft.");
   }
   return warnings;
 }

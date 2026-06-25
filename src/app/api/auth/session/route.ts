@@ -16,39 +16,46 @@ export async function POST(request: Request) {
     | null;
   const idToken = body?.idToken;
   if (typeof idToken !== "string") {
-    return NextResponse.json({ error: "Missing idToken." }, { status: 400 });
+    return NextResponse.json({ error: "idToken fehlt." }, { status: 400 });
   }
 
-  let decoded;
   try {
-    decoded = await adminAuth().verifyIdToken(idToken);
-  } catch {
-    return NextResponse.json({ error: "Invalid token." }, { status: 401 });
+    const decoded = await adminAuth().verifyIdToken(idToken);
+
+    const profile = {
+      email: decoded.email ?? "",
+      name: (decoded.name as string | undefined) ?? null,
+      image: (decoded.picture as string | undefined) ?? null,
+    };
+    await db
+      .insert(users)
+      .values({ id: decoded.uid, ...profile })
+      .onConflictDoUpdate({ target: users.id, set: profile });
+
+    const sessionCookie = await adminAuth().createSessionCookie(idToken, {
+      expiresIn: EXPIRES_IN_MS,
+    });
+    const store = await cookies();
+    store.set(SESSION_COOKIE, sessionCookie, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: EXPIRES_IN_MS / 1000,
+    });
+
+    return NextResponse.json({ ok: true });
+  } catch (e) {
+    // Log the real reason server-side — never the token or the private key.
+    console.error("[auth/session] failed:", e instanceof Error ? e.message : e);
+    return NextResponse.json(
+      {
+        error:
+          "Anmeldung am Server fehlgeschlagen. Bitte die Logs des Dev-Servers prüfen – meist das Firebase-Admin-Dienstkonto in .env.local.",
+      },
+      { status: 401 },
+    );
   }
-
-  const profile = {
-    email: decoded.email ?? "",
-    name: (decoded.name as string | undefined) ?? null,
-    image: (decoded.picture as string | undefined) ?? null,
-  };
-  await db
-    .insert(users)
-    .values({ id: decoded.uid, ...profile })
-    .onConflictDoUpdate({ target: users.id, set: profile });
-
-  const sessionCookie = await adminAuth().createSessionCookie(idToken, {
-    expiresIn: EXPIRES_IN_MS,
-  });
-  const store = await cookies();
-  store.set(SESSION_COOKIE, sessionCookie, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: EXPIRES_IN_MS / 1000,
-  });
-
-  return NextResponse.json({ ok: true });
 }
 
 export async function DELETE() {

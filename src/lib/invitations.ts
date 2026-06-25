@@ -7,7 +7,7 @@ import { canRespond, normalizeEmail, type InvitableRole } from "@/lib/invite-rul
 async function requireOwner(userId: string, tripId: string): Promise<void> {
   const role = await getMembership(userId, tripId);
   if (role !== "owner") {
-    throw new AccessError("Only the owner can manage invitations.");
+    throw new AccessError("Nur der Eigentümer kann Einladungen verwalten.");
   }
 }
 
@@ -57,7 +57,7 @@ export async function inviteToTrip(
       )
       .limit(1);
     if (member) {
-      throw new AccessError("That person is already a member of this trip.");
+      throw new AccessError("Diese Person ist bereits Mitglied dieser Reise.");
     }
   }
 
@@ -73,7 +73,7 @@ export async function inviteToTrip(
     )
     .limit(1);
   if (pending) {
-    throw new AccessError("There's already a pending invitation for that email.");
+    throw new AccessError("Für diese E-Mail-Adresse gibt es bereits eine offene Einladung.");
   }
 
   await db
@@ -130,9 +130,9 @@ export async function respondToInvitation(
     .from(tripInvitations)
     .where(eq(tripInvitations.id, invitationId))
     .limit(1);
-  if (!invite) throw new AccessError("Invitation not found.");
+  if (!invite) throw new AccessError("Einladung nicht gefunden.");
   if (!canRespond(invite, user.email)) {
-    throw new AccessError("This invitation isn't addressed to you.");
+    throw new AccessError("Diese Einladung ist nicht an dich gerichtet.");
   }
 
   if (accept) {

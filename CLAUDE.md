@@ -170,8 +170,11 @@ service. Do not hardcode the UI to a single paid provider.
 - **Places/recommendations** — MVP: manual "save spot" + optional OpenStreetMap
   (Nominatim/Overpass) and Wikivoyage/Wikipedia drivers (free, attribution
   required). No paid Google Places dependency.
-- **File/document storage** — MVP default: external URL + metadata only.
-  Optional driver: Vercel Blob (1 GB free on Hobby). **Never** store large
-  Base64 blobs in Postgres.
+- **File/document storage** — Google Drive driver (per-user, `drive.file`
+  scope, link-shared) for ticket/booking files: the browser uploads to the
+  signed-in user's own Drive on demand (incremental consent; the Drive access
+  token is used client-side and never touches the server), and we store the
+  Drive file id + shareable link. External URL + metadata remain supported.
+  **Never** store large Base64 blobs in Postgres.
 - **Email/invitations** — MVP: in-app invite flow (no outbound email). Optional
   driver: a free-tier transactional email provider later.

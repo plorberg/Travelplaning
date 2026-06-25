@@ -103,9 +103,9 @@ export async function updateTrip(
   input: TripInput,
 ): Promise<void> {
   const role = await getMembership(userId, tripId);
-  if (!role) throw new AccessError("You don't have access to this trip.");
+  if (!role) throw new AccessError("Du hast keinen Zugriff auf diese Reise.");
   if (!hasAtLeastRole(role, "editor")) {
-    throw new AccessError("Only editors or the owner can edit this trip.");
+    throw new AccessError("Nur Bearbeiter oder der Eigentümer können diese Reise bearbeiten.");
   }
   await db
     .update(trips)
@@ -116,7 +116,7 @@ export async function updateTrip(
 export async function deleteTrip(userId: string, tripId: string): Promise<void> {
   const role = await getMembership(userId, tripId);
   if (role !== "owner") {
-    throw new AccessError("Only the owner can delete a trip.");
+    throw new AccessError("Nur der Eigentümer kann eine Reise löschen.");
   }
   // Members, stops, documents, etc. cascade via FK on delete.
   await db.delete(trips).where(eq(trips.id, tripId));
@@ -124,7 +124,7 @@ export async function deleteTrip(userId: string, tripId: string): Promise<void> 
 
 export async function listMembers(userId: string, tripId: string) {
   const role = await getMembership(userId, tripId);
-  if (!role) throw new AccessError("You don't have access to this trip.");
+  if (!role) throw new AccessError("Du hast keinen Zugriff auf diese Reise.");
   return db
     .select({
       userId: tripMembers.userId,
@@ -153,7 +153,7 @@ export async function changeMemberRole(
 ): Promise<void> {
   const role = await getMembership(userId, tripId);
   if (role !== "owner") {
-    throw new AccessError("Only the owner can change roles.");
+    throw new AccessError("Nur der Eigentümer kann Rollen ändern.");
   }
   const problem = checkRoleChange(await membersForGuard(tripId), targetUserId, newRole);
   if (problem) throw new AccessError(problem);
@@ -170,7 +170,7 @@ export async function removeMember(
 ): Promise<void> {
   const role = await getMembership(userId, tripId);
   if (role !== "owner") {
-    throw new AccessError("Only the owner can remove members.");
+    throw new AccessError("Nur der Eigentümer kann Mitglieder entfernen.");
   }
   const problem = checkRemoveMember(await membersForGuard(tripId), targetUserId);
   if (problem) throw new AccessError(problem);

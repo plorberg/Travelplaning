@@ -13,19 +13,19 @@ describe("stopDateWarnings", () => {
   it("warns when arrival precedes the trip start", () => {
     expect(
       stopDateWarnings(trip, { arrivalDate: "2026-06-30", departureDate: "2026-07-05" }),
-    ).toContain("Arrival is before the trip start date.");
+    ).toContain("Die Ankunft liegt vor dem Startdatum der Reise.");
   });
 
   it("warns when departure exceeds the trip end", () => {
     expect(
       stopDateWarnings(trip, { arrivalDate: "2026-07-02", departureDate: "2026-07-20" }),
-    ).toContain("Departure is after the trip end date.");
+    ).toContain("Die Abreise liegt nach dem Enddatum der Reise.");
   });
 
   it("warns when departure precedes arrival", () => {
     expect(
       stopDateWarnings(trip, { arrivalDate: "2026-07-05", departureDate: "2026-07-02" }),
-    ).toContain("Departure is before arrival.");
+    ).toContain("Die Abreise liegt vor der Ankunft.");
   });
 
   it("ignores missing dates", () => {

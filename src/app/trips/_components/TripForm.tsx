@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import type { FormState } from "@/app/trips/actions";
 import { tripStatusValues, travelStyleValues } from "@/lib/validation";
+import { tripStatusLabels, travelStyleLabels } from "@/lib/labels";
 
 type Defaults = {
   name?: string;
@@ -56,25 +57,25 @@ export function TripForm({
       action={formAction}
       style={{ display: "grid", gap: "0.75rem", maxWidth: 480 }}
     >
-      <Field label="Trip name" error={fe.name}>
+      <Field label="Reisename" error={fe.name}>
         <input name="name" defaultValue={defaults.name ?? ""} required />
       </Field>
-      <Field label="Main destination" error={fe.mainDestination}>
+      <Field label="Hauptziel" error={fe.mainDestination}>
         <input
           name="mainDestination"
           defaultValue={defaults.mainDestination ?? ""}
         />
       </Field>
       <div style={{ display: "flex", gap: "0.75rem" }}>
-        <Field label="Start date" error={fe.startDate}>
+        <Field label="Startdatum" error={fe.startDate}>
           <input type="date" name="startDate" defaultValue={defaults.startDate ?? ""} />
         </Field>
-        <Field label="End date" error={fe.endDate}>
+        <Field label="Enddatum" error={fe.endDate}>
           <input type="date" name="endDate" defaultValue={defaults.endDate ?? ""} />
         </Field>
       </div>
       <div style={{ display: "flex", gap: "0.75rem" }}>
-        <Field label="Home currency" error={fe.homeCurrency}>
+        <Field label="Heimatwährung" error={fe.homeCurrency}>
           <input
             name="homeCurrency"
             defaultValue={defaults.homeCurrency ?? "EUR"}
@@ -91,29 +92,29 @@ export function TripForm({
           <select name="status" defaultValue={defaults.status ?? "planning"}>
             {tripStatusValues.map((s) => (
               <option key={s} value={s}>
-                {s}
+                {tripStatusLabels[s] ?? s}
               </option>
             ))}
           </select>
         </Field>
-        <Field label="Travel style" error={fe.travelStyle}>
+        <Field label="Reisestil" error={fe.travelStyle}>
           <select name="travelStyle" defaultValue={defaults.travelStyle ?? ""}>
             <option value="">—</option>
             {travelStyleValues.map((s) => (
               <option key={s} value={s}>
-                {s}
+                {travelStyleLabels[s] ?? s}
               </option>
             ))}
           </select>
         </Field>
       </div>
-      <Field label="Notes" error={fe.notes}>
+      <Field label="Notizen" error={fe.notes}>
         <textarea name="notes" rows={4} defaultValue={defaults.notes ?? ""} />
       </Field>
 
       {state.error ? <p style={{ color: "crimson" }}>{state.error}</p> : null}
-      <button type="submit" disabled={pending} style={{ padding: "0.5rem 1rem" }}>
-        {pending ? "Saving…" : submitLabel}
+      <button type="submit" className="btn-primary" disabled={pending} style={{ padding: "0.5rem 1rem" }}>
+        {pending ? "Wird gespeichert…" : submitLabel}
       </button>
     </form>
   );
