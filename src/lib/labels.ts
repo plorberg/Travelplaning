@@ -77,6 +77,13 @@ export const expenseCategoryLabels: Record<string, string> = {
   other: "Sonstiges",
 };
 
+export const cabinClassLabels: Record<string, string> = {
+  economy: "Economy",
+  "premium-economy": "Premium Economy",
+  business: "Business",
+  first: "First",
+};
+
 /** Look up a German label, falling back to the raw value. */
 export function labelFor(
   map: Record<string, string>,
