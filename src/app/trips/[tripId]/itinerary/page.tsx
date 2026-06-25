@@ -104,7 +104,7 @@ export default async function ItineraryPage({
       </p>
 
       {items.length === 0 ? (
-        <p style={{ opacity: 0.8 }}>Noch keine Einträge im Reiseplan.</p>
+        <p className="empty">Noch keine Einträge im Reiseplan.</p>
       ) : view === "timeline" ? (
         <ul style={{ listStyle: "none", padding: 0, display: "grid", gap: "0.6rem" }}>
           {items.map((it) => renderItem(it, true))}

@@ -34,7 +34,7 @@ export default async function TripMapPage({
       </p>
       <h1>Karte</h1>
       {points.length === 0 ? (
-        <p style={{ opacity: 0.8 }}>
+        <p className="empty">
           Noch keine Stationen oder Orte mit Koordinaten. Füge Koordinaten zu
           einer <Link href={`/trips/${tripId}/stops/new`}>Station</Link> oder
           einem <Link href={`/trips/${tripId}/spots/new`}>Ort</Link> hinzu.

@@ -36,7 +36,7 @@ export default async function DocumentsPage({
       </header>
 
       {docs.length === 0 ? (
-        <p style={{ opacity: 0.8 }}>Noch keine Dokumente.</p>
+        <p className="empty">Noch keine Dokumente.</p>
       ) : (
         <ul style={{ listStyle: "none", padding: 0, display: "grid", gap: "0.75rem", marginTop: "1rem" }}>
           {docs.map((d) => {

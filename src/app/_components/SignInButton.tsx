@@ -40,6 +40,7 @@ export function SignInButton() {
       <button
         onClick={signIn}
         disabled={pending}
+        className="btn-primary"
         style={{ padding: "0.6rem 1rem", fontSize: "1rem" }}
       >
         {pending ? "Anmeldung läuft…" : "Mit Google anmelden"}

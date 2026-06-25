@@ -174,7 +174,7 @@ export function DocumentForm({
       </Field>
 
       {state.error ? <p style={{ color: "crimson" }}>{state.error}</p> : null}
-      <button type="submit" disabled={pending || uploading} style={{ padding: "0.5rem 1rem" }}>
+      <button type="submit" className="btn-primary" disabled={pending || uploading} style={{ padding: "0.5rem 1rem" }}>
         {pending ? "Wird gespeichert…" : submitLabel}
       </button>
     </form>

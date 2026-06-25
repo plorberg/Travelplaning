@@ -78,7 +78,7 @@ export default async function DashboardPage() {
         <Link href="/trips/new">+ Neue Reise</Link>
       </div>
       {trips.length === 0 ? (
-        <p style={{ opacity: 0.8 }}>
+        <p className="empty">
           Noch keine Reisen.{" "}
           <Link href="/trips/new">Erstelle deine erste Reise</Link>.
         </p>

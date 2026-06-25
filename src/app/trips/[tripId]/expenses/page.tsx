@@ -146,7 +146,7 @@ export default async function ExpensesPage({
       </form>
 
       {list.length === 0 ? (
-        <p style={{ opacity: 0.8 }}>
+        <p className="empty">
           {filtered ? "Keine Ausgaben entsprechen dem Filter." : "Noch keine Ausgaben."}
         </p>
       ) : (

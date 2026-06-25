@@ -126,7 +126,7 @@ export default async function TripPage({
           ) : null}
         </div>
         {stops.length === 0 ? (
-          <p style={{ opacity: 0.8 }}>Noch keine Stationen.</p>
+          <p className="empty">Noch keine Stationen.</p>
         ) : (
           <ol style={{ display: "grid", gap: "0.75rem", paddingLeft: "1.25rem" }}>
             {stops.map((stop, i) => {

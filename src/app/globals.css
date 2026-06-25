@@ -1,5 +1,19 @@
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
+
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --fg: #1b1d21;
+  --muted: #6b7280;
+  --border: #e3e4e8;
+  --border-strong: #cdced4;
+  --primary: #1d4ed8;
+  --primary-hover: #1b44c0;
+  --primary-fg: #ffffff;
+  --danger: #c0392b;
+  --radius: 8px;
+  --ring: rgba(29, 78, 216, 0.3);
+  --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 1px 3px rgba(16, 24, 40, 0.08);
 }
 
 * {
@@ -14,13 +28,154 @@ body {
 
 body {
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  line-height: 1.5;
+  line-height: 1.6;
+  color: var(--fg);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  font-weight: 650;
+}
+h1 {
+  font-size: 1.6rem;
+}
+h2 {
+  font-size: 1.25rem;
+}
+h3 {
+  font-size: 1.05rem;
 }
 
 a {
-  color: inherit;
+  color: var(--primary);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
 }
 
+/* Form controls -------------------------------------------------------- */
+input:not([type="radio"]):not([type="checkbox"]),
+select,
+textarea {
+  width: 100%;
+  font: inherit;
+  color: inherit;
+  padding: 0.5rem 0.6rem;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--ring);
+}
+textarea {
+  resize: vertical;
+}
+input[type="radio"],
+input[type="checkbox"] {
+  accent-color: var(--primary);
+}
+
+/* Buttons -------------------------------------------------------------- */
 button {
+  font: inherit;
   cursor: pointer;
+  padding: 0.45rem 0.85rem;
+  color: var(--fg);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+button:hover:not(:disabled) {
+  background: #f0f1f4;
+  border-color: var(--border-strong);
+}
+button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--ring);
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn-primary {
+  color: var(--primary-fg);
+  background: var(--primary);
+  border-color: var(--primary);
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+/* Layout & utilities --------------------------------------------------- */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.85);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: saturate(180%) blur(8px);
+}
+.topbar-inner {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 0.7rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.brand {
+  font-weight: 700;
+  color: var(--fg);
+  letter-spacing: -0.01em;
+}
+.brand:hover {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.empty {
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  text-align: center;
+}
+
+/* Loading skeleton ----------------------------------------------------- */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+.skeleton {
+  background: var(--border);
+  border-radius: 6px;
+  animation: pulse 1.2s ease-in-out infinite;
 }

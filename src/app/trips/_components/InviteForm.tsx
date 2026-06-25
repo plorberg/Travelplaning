@@ -29,7 +29,7 @@ export function InviteForm({
         <option value="editor">Bearbeiter</option>
         <option value="viewer">Betrachter</option>
       </select>
-      <button type="submit" disabled={pending}>
+      <button type="submit" className="btn-primary" disabled={pending}>
         {pending ? "Wird eingeladen…" : "Einladen"}
       </button>
       {state.error ? <span style={{ color: "crimson" }}>{state.error}</span> : null}

@@ -35,7 +35,7 @@ export default async function SpotsPage({
       </header>
 
       {spots.length === 0 ? (
-        <p style={{ opacity: 0.8 }}>Noch keine Orte.</p>
+        <p className="empty">Noch keine Orte.</p>
       ) : (
         <ul style={{ listStyle: "none", padding: 0, display: "grid", gap: "0.75rem", marginTop: "1rem" }}>
           {spots.map((s) => (

@@ -91,7 +91,7 @@ export function StopForm({
       </Field>
 
       {state.error ? <p style={{ color: "crimson" }}>{state.error}</p> : null}
-      <button type="submit" disabled={pending} style={{ padding: "0.5rem 1rem" }}>
+      <button type="submit" className="btn-primary" disabled={pending} style={{ padding: "0.5rem 1rem" }}>
         {pending ? "Wird gespeichert…" : submitLabel}
       </button>
     </form>
