@@ -7,6 +7,9 @@
 next-env.d.ts
 .next-dev.lock
 
+# typescript incremental build cache
+*.tsbuildinfo
+
 # production
 /build
 
