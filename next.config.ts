@@ -38,6 +38,10 @@ const devOrigins =
 const allowedOrigins = [...new Set([...devOrigins, ...envOrigins])];
 
 const nextConfig: NextConfig = {
+  // firebase-admin has dynamic requires that Vercel's serverless bundler can
+  // miss, which crashes the function at cold start (HTTP 500 on every route
+  // that verifies the session). Load it from node_modules at runtime instead.
+  serverExternalPackages: ["firebase-admin"],
   ...(allowedOrigins.length
     ? { experimental: { serverActions: { allowedOrigins } } }
     : {}),
