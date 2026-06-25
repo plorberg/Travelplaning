@@ -13,6 +13,11 @@ export const dynamic = "force-dynamic";
 
 const str = (v: string | string[] | undefined) => (typeof v === "string" ? v : "");
 
+const ATTRIBUTION: Record<string, string> = {
+  nominatim: "Ergebnisse von OpenStreetMap (Nominatim) · © OpenStreetMap-Mitwirkende",
+  wikivoyage: "Ergebnisse von Wikivoyage · Inhalte unter CC BY-SA",
+};
+
 export default async function NewSpotPage({
   params,
   searchParams,
@@ -33,11 +38,12 @@ export default async function NewSpotPage({
   const action = createSpotAction.bind(null, tripId);
 
   const query = str(sp.q).trim();
+  const provider = str(sp.src) === "wikivoyage" ? "wikivoyage" : "nominatim";
   let results: PlaceResult[] = [];
   let searchFailed = false;
   if (query) {
     try {
-      results = await searchPlaces(query, { lang: "de", limit: 8 });
+      results = await searchPlaces(query, { provider, lang: "de", limit: 8 });
     } catch {
       searchFailed = true;
     }
@@ -45,10 +51,12 @@ export default async function NewSpotPage({
 
   // "Übernehmen" reloads this page with the chosen place as form defaults.
   const useHref = (r: PlaceResult) => {
-    const p = new URLSearchParams({ q: query, name: r.name, address: r.address });
-    p.set("lat", String(r.lat));
-    p.set("lng", String(r.lng));
+    const p = new URLSearchParams({ q: query, src: provider, name: r.name });
+    if (r.address) p.set("address", r.address);
+    if (r.lat != null) p.set("lat", String(r.lat));
+    if (r.lng != null) p.set("lng", String(r.lng));
     if (r.category) p.set("category", r.category);
+    if (r.note) p.set("notes", r.note);
     p.set("source", r.source);
     return `/trips/${tripId}/spots/new?${p.toString()}`;
   };
@@ -69,14 +77,30 @@ export default async function NewSpotPage({
           maxWidth: 480,
         }}
       >
-        <form method="get" style={{ display: "flex", gap: "0.5rem" }}>
-          <input
-            name="q"
-            defaultValue={query}
-            placeholder="Ort suchen (OpenStreetMap)…"
-            style={{ flex: 1 }}
-          />
-          <button type="submit">Suchen</button>
+        <form method="get" style={{ display: "grid", gap: "0.5rem" }}>
+          <div style={{ display: "flex", gap: "0.5rem" }}>
+            <input
+              name="q"
+              defaultValue={query || trip.mainDestination || ""}
+              placeholder={
+                provider === "wikivoyage"
+                  ? "Reiseziel, z. B. Auckland"
+                  : "Ort suchen, z. B. Sky Tower"
+              }
+              style={{ flex: 1 }}
+            />
+            <button type="submit">Suchen</button>
+          </div>
+          <div style={{ display: "flex", gap: "1.25rem", fontSize: "0.85rem", opacity: 0.9 }}>
+            <label style={{ display: "flex", gap: "0.35rem", alignItems: "center" }}>
+              <input type="radio" name="src" value="nominatim" defaultChecked={provider !== "wikivoyage"} />
+              OpenStreetMap (Ort)
+            </label>
+            <label style={{ display: "flex", gap: "0.35rem", alignItems: "center" }}>
+              <input type="radio" name="src" value="wikivoyage" defaultChecked={provider === "wikivoyage"} />
+              Wikivoyage (Reiseziel)
+            </label>
+          </div>
         </form>
 
         {searchFailed ? (
@@ -104,7 +128,11 @@ export default async function NewSpotPage({
                         · {spotCategoryLabels[r.category] ?? r.category}
                       </span>
                     ) : null}
-                    <div style={{ opacity: 0.8, fontSize: "0.85rem" }}>{r.address}</div>
+                    {r.address || r.note ? (
+                      <div style={{ opacity: 0.8, fontSize: "0.85rem" }}>
+                        {r.address || r.note}
+                      </div>
+                    ) : null}
                   </div>
                   <Link href={useHref(r)} style={{ whiteSpace: "nowrap" }}>
                     Übernehmen
@@ -113,7 +141,7 @@ export default async function NewSpotPage({
               ))}
             </ul>
             <p style={{ opacity: 0.6, fontSize: "0.75rem", marginBottom: 0 }}>
-              Ergebnisse von OpenStreetMap (Nominatim) · © OpenStreetMap-Mitwirkende
+              {ATTRIBUTION[provider]}
             </p>
           </>
         ) : null}
@@ -130,6 +158,7 @@ export default async function NewSpotPage({
           lat: str(sp.lat),
           lng: str(sp.lng),
           source: str(sp.source),
+          notes: str(sp.notes),
         }}
       />
     </main>

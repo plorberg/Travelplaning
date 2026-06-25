@@ -1,17 +1,27 @@
 import type { PlaceResult, PlacesProvider } from "./types";
 import { nominatimProvider } from "./nominatim";
+import { wikivoyageProvider } from "./wikivoyage";
 import { mockProvider } from "./mock";
 
 export type { PlaceResult } from "./types";
 
-// Default to the free, no-key OpenStreetMap driver; opt into the mock via env.
-export function getPlacesProvider(): PlacesProvider {
-  return process.env.PLACES_PROVIDER === "mock" ? mockProvider : nominatimProvider;
+const providers: Record<string, PlacesProvider> = {
+  nominatim: nominatimProvider,
+  wikivoyage: wikivoyageProvider,
+  mock: mockProvider,
+};
+
+// Pick a named provider; otherwise honour PLACES_PROVIDER; default Nominatim.
+export function getPlacesProvider(name?: string): PlacesProvider {
+  if (name && providers[name]) return providers[name];
+  const env = process.env.PLACES_PROVIDER;
+  if (env && providers[env]) return providers[env];
+  return nominatimProvider;
 }
 
 export function searchPlaces(
   query: string,
-  opts?: { limit?: number; lang?: string },
+  opts?: { provider?: string; limit?: number; lang?: string },
 ): Promise<PlaceResult[]> {
-  return getPlacesProvider().search(query, opts);
+  return getPlacesProvider(opts?.provider).search(query, opts);
 }

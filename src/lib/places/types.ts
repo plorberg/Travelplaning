@@ -5,11 +5,14 @@ export type PlaceResult = {
   id: string;
   name: string;
   address: string;
-  lat: number;
-  lng: number;
+  /** Coordinates may be absent (e.g. some Wikivoyage listings). */
+  lat?: number;
+  lng?: number;
   /** Best-effort mapping to our spot categories; undefined if unknown. */
   category?: SpotCategory;
-  /** Attribution source, e.g. "OpenStreetMap". */
+  /** Short description, used to prefill notes (e.g. Wikivoyage content). */
+  note?: string;
+  /** Attribution source, e.g. "OpenStreetMap" or "Wikivoyage". */
   source: string;
 };
 
