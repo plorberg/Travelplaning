@@ -1,9 +1,14 @@
-import type { PlaceResult, PlacesProvider } from "./types";
+import type { PlaceKind, PlaceResult, PlacesProvider } from "./types";
 import { nominatimProvider } from "./nominatim";
 import { wikivoyageProvider } from "./wikivoyage";
 import { mockProvider } from "./mock";
 
-export type { PlaceResult } from "./types";
+export type { PlaceResult, PlaceKind } from "./types";
+export {
+  PLACE_KINDS,
+  isPlaceKind,
+  defaultCategoryForKind,
+} from "./kinds";
 
 const providers: Record<string, PlacesProvider> = {
   nominatim: nominatimProvider,
@@ -21,7 +26,7 @@ export function getPlacesProvider(name?: string): PlacesProvider {
 
 export function searchPlaces(
   query: string,
-  opts?: { provider?: string; limit?: number; lang?: string },
+  opts?: { provider?: string; limit?: number; lang?: string; kind?: PlaceKind },
 ): Promise<PlaceResult[]> {
   return getPlacesProvider(opts?.provider).search(query, opts);
 }

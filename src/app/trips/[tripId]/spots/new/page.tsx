@@ -6,7 +6,14 @@ import { listStops } from "@/lib/stops";
 import { hasAtLeastRole } from "@/lib/authz";
 import { createSpotAction } from "@/app/trips/spot-actions";
 import { SpotForm } from "@/app/trips/_components/SpotForm";
-import { searchPlaces, type PlaceResult } from "@/lib/places";
+import {
+  searchPlaces,
+  isPlaceKind,
+  defaultCategoryForKind,
+  PLACE_KINDS,
+  type PlaceResult,
+  type PlaceKind,
+} from "@/lib/places";
 import { spotCategoryLabels } from "@/lib/labels";
 
 export const dynamic = "force-dynamic";
@@ -39,11 +46,14 @@ export default async function NewSpotPage({
 
   const query = str(sp.q).trim();
   const provider = str(sp.src) === "wikivoyage" ? "wikivoyage" : "nominatim";
+  const kindParam = str(sp.kind);
+  const kind: PlaceKind | undefined = isPlaceKind(kindParam) ? kindParam : undefined;
+
   let results: PlaceResult[] = [];
   let searchFailed = false;
   if (query) {
     try {
-      results = await searchPlaces(query, { provider, lang: "de", limit: 8 });
+      results = await searchPlaces(query, { provider, kind, lang: "de", limit: 8 });
     } catch {
       searchFailed = true;
     }
@@ -52,10 +62,13 @@ export default async function NewSpotPage({
   // "Übernehmen" reloads this page with the chosen place as form defaults.
   const useHref = (r: PlaceResult) => {
     const p = new URLSearchParams({ q: query, src: provider, name: r.name });
+    if (kind) p.set("kind", kind);
     if (r.address) p.set("address", r.address);
     if (r.lat != null) p.set("lat", String(r.lat));
     if (r.lng != null) p.set("lng", String(r.lng));
-    if (r.category) p.set("category", r.category);
+    // Fall back to the chosen kind's category when the result has none.
+    const category = r.category ?? defaultCategoryForKind(kind);
+    if (category) p.set("category", category);
     if (r.note) p.set("notes", r.note);
     p.set("source", r.source);
     return `/trips/${tripId}/spots/new?${p.toString()}`;
@@ -64,9 +77,9 @@ export default async function NewSpotPage({
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
       <p>
-        <Link href={`/trips/${tripId}/spots`}>← Gespeicherte Orte</Link>
+        <Link href={`/trips/${tripId}/spots`}>← Empfehlungen</Link>
       </p>
-      <h1>Ort hinzufügen</h1>
+      <h1>Empfehlung hinzufügen</h1>
 
       <section
         style={{
@@ -85,12 +98,23 @@ export default async function NewSpotPage({
               placeholder={
                 provider === "wikivoyage"
                   ? "Reiseziel, z. B. Auckland"
-                  : "Ort suchen, z. B. Sky Tower"
+                  : "Suche, z. B. Sky Tower oder Auckland"
               }
               style={{ flex: 1 }}
             />
             <button type="submit">Suchen</button>
           </div>
+          <label style={{ display: "flex", gap: "0.4rem", alignItems: "center", fontSize: "0.85rem" }}>
+            Art:
+            <select name="kind" defaultValue={kind ?? ""} style={{ width: "auto", flex: 1 }}>
+              <option value="">Alle</option>
+              {(Object.keys(PLACE_KINDS) as PlaceKind[]).map((k) => (
+                <option key={k} value={k}>
+                  {PLACE_KINDS[k].label}
+                </option>
+              ))}
+            </select>
+          </label>
           <div style={{ display: "flex", gap: "1.25rem", fontSize: "0.85rem", opacity: 0.9 }}>
             <label style={{ display: "flex", gap: "0.35rem", alignItems: "center" }}>
               <input type="radio" name="src" value="nominatim" defaultChecked={provider !== "wikivoyage"} />
@@ -105,7 +129,7 @@ export default async function NewSpotPage({
 
         {searchFailed ? (
           <p style={{ color: "crimson", fontSize: "0.85rem" }}>
-            Suche derzeit nicht verfügbar. Du kannst den Ort unten manuell eingeben.
+            Suche derzeit nicht verfügbar. Du kannst die Empfehlung unten manuell eingeben.
           </p>
         ) : null}
         {query && !searchFailed && results.length === 0 ? (
@@ -149,7 +173,7 @@ export default async function NewSpotPage({
 
       <SpotForm
         action={action}
-        submitLabel="Ort hinzufügen"
+        submitLabel="Empfehlung hinzufügen"
         stops={tripStops.map((s) => ({ id: s.id, city: s.city }))}
         defaults={{
           name: str(sp.name),

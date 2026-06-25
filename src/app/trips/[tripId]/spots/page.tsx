@@ -30,12 +30,12 @@ export default async function SpotsPage({
         <Link href={`/trips/${tripId}`}>← {trip.name}</Link>
       </p>
       <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
-        <h1 style={{ margin: 0 }}>Gespeicherte Orte</h1>
-        {canEdit ? <Link href={`/trips/${tripId}/spots/new`}>+ Ort hinzufügen</Link> : null}
+        <h1 style={{ margin: 0 }}>Empfehlungen</h1>
+        {canEdit ? <Link href={`/trips/${tripId}/spots/new`}>+ Empfehlung hinzufügen</Link> : null}
       </header>
 
       {spots.length === 0 ? (
-        <p className="empty">Noch keine Orte.</p>
+        <p className="empty">Noch keine Empfehlungen.</p>
       ) : (
         <ul style={{ listStyle: "none", padding: 0, display: "grid", gap: "0.75rem", marginTop: "1rem" }}>
           {spots.map((s) => (

@@ -34,12 +34,12 @@ export default async function EditSpotPage({
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
       <p>
-        <Link href={`/trips/${tripId}/spots`}>← Gespeicherte Orte</Link>
+        <Link href={`/trips/${tripId}/spots`}>← Empfehlungen</Link>
       </p>
-      <h1>Ort bearbeiten</h1>
+      <h1>Empfehlung bearbeiten</h1>
       <SpotForm
         action={action}
-        submitLabel="Ort speichern"
+        submitLabel="Empfehlung speichern"
         stops={tripStops.map((s) => ({ id: s.id, city: s.city }))}
         defaults={{
           name: spot.name,

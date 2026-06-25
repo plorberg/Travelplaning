@@ -14,7 +14,7 @@ async function requireMember(userId: string, tripId: string) {
 async function requireEditor(userId: string, tripId: string): Promise<void> {
   const role = await requireMember(userId, tripId);
   if (!hasAtLeastRole(role, "editor")) {
-    throw new AccessError("Nur Bearbeiter oder der Eigentümer können Orte ändern.");
+    throw new AccessError("Nur Bearbeiter oder der Eigentümer können Empfehlungen ändern.");
   }
 }
 

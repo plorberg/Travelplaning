@@ -99,7 +99,7 @@ export default async function TripPage({
         <Link href={`/trips/${tripId}/itinerary`}>Reiseplan →</Link>
         <Link href={`/trips/${tripId}/map`}>Karte →</Link>
         <Link href={`/trips/${tripId}/flights`}>Flüge suchen →</Link>
-        <Link href={`/trips/${tripId}/spots`}>Gespeicherte Orte →</Link>
+        <Link href={`/trips/${tripId}/spots`}>Empfehlungen →</Link>
         <Link href={`/trips/${tripId}/documents`}>Dokumente →</Link>
         <Link href={`/trips/${tripId}/expenses`}>Ausgaben &amp; Budget →</Link>
       </p>

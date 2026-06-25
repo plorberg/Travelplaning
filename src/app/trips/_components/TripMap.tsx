@@ -73,7 +73,7 @@ export function TripMap({ points }: { points: MapPoint[] }) {
           <span style={{ color: STOP_COLOR }}>●</span> Stationen
         </span>
         <span>
-          <span style={{ color: SPOT_COLOR }}>●</span> Gespeicherte Orte
+          <span style={{ color: SPOT_COLOR }}>●</span> Empfehlungen
         </span>
       </div>
     </div>

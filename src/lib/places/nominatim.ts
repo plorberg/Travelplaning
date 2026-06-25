@@ -1,5 +1,6 @@
 import type { SpotCategory } from "@/lib/validation";
 import type { PlaceResult, PlacesProvider } from "./types";
+import { applyKindToQuery } from "./kinds";
 
 // OpenStreetMap Nominatim — free, no API key. Usage policy requires a
 // descriptive User-Agent (and politeness: ≤1 req/s, caching). Calls run
@@ -96,8 +97,9 @@ export function parseNominatimResults(rows: unknown): PlaceResult[] {
 export const nominatimProvider: PlacesProvider = {
   name: "nominatim",
   async search(query, opts) {
-    const q = query.trim();
-    if (!q) return [];
+    if (!query.trim()) return [];
+    // A chosen kind biases the geocoder via a keyword (e.g. "restaurant <query>").
+    const q = applyKindToQuery(query, opts?.kind);
     const params = new URLSearchParams({
       q,
       format: "jsonv2",

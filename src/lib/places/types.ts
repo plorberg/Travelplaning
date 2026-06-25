@@ -1,5 +1,13 @@
 import type { SpotCategory } from "@/lib/validation";
 
+// What the user is looking for — narrows a place search to a group of categories.
+export type PlaceKind =
+  | "sights"
+  | "food"
+  | "nightlife"
+  | "nature"
+  | "shopping";
+
 export type PlaceResult = {
   /** Stable id for React keys (e.g. "node/123"). */
   id: string;
@@ -20,6 +28,6 @@ export interface PlacesProvider {
   readonly name: string;
   search(
     query: string,
-    opts?: { limit?: number; lang?: string },
+    opts?: { limit?: number; lang?: string; kind?: PlaceKind },
   ): Promise<PlaceResult[]>;
 }

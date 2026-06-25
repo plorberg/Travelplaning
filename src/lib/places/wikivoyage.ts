@@ -1,5 +1,6 @@
 import type { SpotCategory } from "@/lib/validation";
 import type { PlaceResult, PlacesProvider } from "./types";
+import { filterResultsByKind } from "./kinds";
 
 // Wikivoyage (a free wiki travel guide) via the MediaWiki API. For a given
 // destination we fetch the article wikitext and extract its listing templates
@@ -166,6 +167,8 @@ export const wikivoyageProvider: PlacesProvider = {
       parse?: { wikitext?: string };
     };
     if (data.error) return []; // e.g. missing page
-    return parseWikivoyageListings(data.parse?.wikitext ?? "", opts?.limit ?? 12);
+    // Parse generously, then narrow by the chosen kind and cap to the limit.
+    const all = parseWikivoyageListings(data.parse?.wikitext ?? "", 60);
+    return filterResultsByKind(all, opts?.kind).slice(0, opts?.limit ?? 12);
   },
 };
