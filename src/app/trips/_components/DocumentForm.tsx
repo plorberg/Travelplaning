@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import type { FormState } from "@/app/trips/actions";
 import { documentTypeValues } from "@/lib/validation";
+import { documentTypeLabels } from "@/lib/labels";
 import { uploadToTripDrive, type DriveUpload } from "@/lib/drive/client";
 
 type Defaults = {
@@ -63,7 +64,7 @@ export function DocumentForm({
   );
   const [drive, setDrive] = useState<DriveUpload | null>(
     defaults.driveFileId && defaults.driveFileUrl
-      ? { id: defaults.driveFileId, url: defaults.driveFileUrl, name: "attached file" }
+      ? { id: defaults.driveFileId, url: defaults.driveFileUrl, name: "angehängte Datei" }
       : null,
   );
   const [uploading, setUploading] = useState(false);
@@ -78,7 +79,7 @@ export function DocumentForm({
     try {
       setDrive(await uploadToTripDrive({ tripId, tripName, file }));
     } catch (err) {
-      setUploadError(err instanceof Error ? err.message : "Upload failed.");
+      setUploadError(err instanceof Error ? err.message : "Upload fehlgeschlagen.");
     } finally {
       setUploading(false);
     }
@@ -87,16 +88,16 @@ export function DocumentForm({
   return (
     <form action={formAction} style={{ display: "grid", gap: "0.75rem", maxWidth: 480 }}>
       <div style={{ display: "flex", gap: "0.75rem" }}>
-        <Field label="Type" error={fe.type}>
+        <Field label="Typ" error={fe.type}>
           <select name="type" defaultValue={defaults.type ?? "flight"}>
             {documentTypeValues.map((t) => (
               <option key={t} value={t}>
-                {t}
+                {documentTypeLabels[t] ?? t}
               </option>
             ))}
           </select>
         </Field>
-        <Field label="Title" error={fe.title}>
+        <Field label="Titel" error={fe.title}>
           <input name="title" defaultValue={defaults.title ?? ""} required />
         </Field>
       </div>
@@ -110,12 +111,12 @@ export function DocumentForm({
           borderRadius: 6,
         }}
       >
-        <span style={{ fontSize: "0.85rem", opacity: 0.8 }}>File (Google Drive)</span>
+        <span style={{ fontSize: "0.85rem", opacity: 0.8 }}>Datei (Google Drive)</span>
         <input type="file" onChange={onFile} disabled={uploading} />
-        {uploading ? <span style={{ fontSize: "0.8rem" }}>Uploading to Drive…</span> : null}
+        {uploading ? <span style={{ fontSize: "0.8rem" }}>Wird zu Drive hochgeladen…</span> : null}
         {drive ? (
           <span style={{ color: "green", fontSize: "0.85rem" }}>
-            Attached:{" "}
+            Angehängt:{" "}
             <a href={drive.url} target="_blank" rel="noreferrer">
               {drive.name} ↗
             </a>
@@ -129,16 +130,16 @@ export function DocumentForm({
       </div>
 
       <div style={{ display: "flex", gap: "0.75rem" }}>
-        <Field label="Vendor / provider" error={fe.vendor}>
+        <Field label="Anbieter" error={fe.vendor}>
           <input name="vendor" defaultValue={defaults.vendor ?? ""} />
         </Field>
-        <Field label="Booking reference" error={fe.bookingRef}>
+        <Field label="Buchungsnummer" error={fe.bookingRef}>
           <input name="bookingRef" defaultValue={defaults.bookingRef ?? ""} />
         </Field>
       </div>
-      <Field label="Stop" error={fe.stopId}>
+      <Field label="Station" error={fe.stopId}>
         <select name="stopId" defaultValue={defaults.stopId ?? ""}>
-          <option value="">— none —</option>
+          <option value="">— keine —</option>
           {stops.map((s) => (
             <option key={s.id} value={s.id}>
               {s.city}
@@ -147,34 +148,34 @@ export function DocumentForm({
         </select>
       </Field>
       <div style={{ display: "flex", gap: "0.75rem" }}>
-        <Field label="Start" error={fe.startAt}>
+        <Field label="Beginn" error={fe.startAt}>
           <input type="datetime-local" name="startAt" defaultValue={defaults.startAt ?? ""} />
         </Field>
-        <Field label="End" error={fe.endAt}>
+        <Field label="Ende" error={fe.endAt}>
           <input type="datetime-local" name="endAt" defaultValue={defaults.endAt ?? ""} />
         </Field>
       </div>
-      <Field label="Location" error={fe.location}>
+      <Field label="Ort" error={fe.location}>
         <input name="location" defaultValue={defaults.location ?? ""} />
       </Field>
       <div style={{ display: "flex", gap: "0.75rem" }}>
-        <Field label="Price" error={fe.price}>
+        <Field label="Preis" error={fe.price}>
           <input name="price" inputMode="decimal" defaultValue={defaults.price ?? ""} />
         </Field>
-        <Field label="Currency" error={fe.currency}>
+        <Field label="Währung" error={fe.currency}>
           <input name="currency" maxLength={3} defaultValue={defaults.currency ?? ""} style={{ width: 80 }} />
         </Field>
       </div>
-      <Field label="External link (optional)" error={fe.externalUrl}>
+      <Field label="Externer Link (optional)" error={fe.externalUrl}>
         <input name="externalUrl" inputMode="url" defaultValue={defaults.externalUrl ?? ""} />
       </Field>
-      <Field label="Notes" error={fe.notes}>
+      <Field label="Notizen" error={fe.notes}>
         <textarea name="notes" rows={3} defaultValue={defaults.notes ?? ""} />
       </Field>
 
       {state.error ? <p style={{ color: "crimson" }}>{state.error}</p> : null}
       <button type="submit" disabled={pending || uploading} style={{ padding: "0.5rem 1rem" }}>
-        {pending ? "Saving…" : submitLabel}
+        {pending ? "Wird gespeichert…" : submitLabel}
       </button>
     </form>
   );

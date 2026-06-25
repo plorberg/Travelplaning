@@ -18,5 +18,5 @@ export function SignOutButton() {
     router.refresh();
   }
 
-  return <button onClick={doSignOut}>Sign out</button>;
+  return <button onClick={doSignOut}>Abmelden</button>;
 }

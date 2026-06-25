@@ -8,6 +8,7 @@ import {
   declineInvitationAction,
 } from "@/app/trips/invite-actions";
 import { SignOutButton } from "@/app/_components/SignOutButton";
+import { tripStatusLabels, memberRoleLabels } from "@/lib/labels";
 
 export const dynamic = "force-dynamic";
 
@@ -30,7 +31,7 @@ export default async function DashboardPage() {
           gap: "1rem",
         }}
       >
-        <span style={{ opacity: 0.8 }}>Signed in as {user.email}</span>
+        <span style={{ opacity: 0.8 }}>Angemeldet als {user.email}</span>
         <SignOutButton />
       </header>
 
@@ -43,7 +44,7 @@ export default async function DashboardPage() {
             borderRadius: 8,
           }}
         >
-          <h2 style={{ marginTop: 0 }}>Pending invitations</h2>
+          <h2 style={{ marginTop: 0 }}>Offene Einladungen</h2>
           <ul style={{ listStyle: "none", padding: 0, display: "grid", gap: "0.5rem" }}>
             {invitations.map((inv) => (
               <li
@@ -51,13 +52,13 @@ export default async function DashboardPage() {
                 style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}
               >
                 <span style={{ minWidth: 260 }}>
-                  <strong>{inv.tripName}</strong> · invited as {inv.role}
+                  <strong>{inv.tripName}</strong> · eingeladen als {inv.role}
                 </span>
                 <form action={acceptInvitationAction.bind(null, inv.id)}>
-                  <button type="submit">Accept</button>
+                  <button type="submit">Annehmen</button>
                 </form>
                 <form action={declineInvitationAction.bind(null, inv.id)}>
-                  <button type="submit">Decline</button>
+                  <button type="submit">Ablehnen</button>
                 </form>
               </li>
             ))}
@@ -73,12 +74,13 @@ export default async function DashboardPage() {
           gap: "1rem",
         }}
       >
-        <h1>Your trips</h1>
-        <Link href="/trips/new">+ New trip</Link>
+        <h1>Deine Reisen</h1>
+        <Link href="/trips/new">+ Neue Reise</Link>
       </div>
       {trips.length === 0 ? (
         <p style={{ opacity: 0.8 }}>
-          No trips yet. <Link href="/trips/new">Create your first trip</Link>.
+          Noch keine Reisen.{" "}
+          <Link href="/trips/new">Erstelle deine erste Reise</Link>.
         </p>
       ) : (
         <ul style={{ listStyle: "none", padding: 0, display: "grid", gap: "0.5rem" }}>
@@ -88,7 +90,8 @@ export default async function DashboardPage() {
                 <strong>{trip.name}</strong>
               </Link>
               {trip.mainDestination ? ` — ${trip.mainDestination}` : ""} ·{" "}
-              {trip.status} · your role: {trip.role}
+              {tripStatusLabels[trip.status] ?? trip.status} · deine Rolle:{" "}
+              {memberRoleLabels[trip.role] ?? trip.role}
             </li>
           ))}
         </ul>

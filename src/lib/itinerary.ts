@@ -7,14 +7,14 @@ import type { ItineraryInput } from "@/lib/validation";
 
 async function requireMember(userId: string, tripId: string) {
   const role = await getMembership(userId, tripId);
-  if (!role) throw new AccessError("You don't have access to this trip.");
+  if (!role) throw new AccessError("Du hast keinen Zugriff auf diese Reise.");
   return role;
 }
 
 async function requireEditor(userId: string, tripId: string): Promise<void> {
   const role = await requireMember(userId, tripId);
   if (!hasAtLeastRole(role, "editor")) {
-    throw new AccessError("Only editors or the owner can change the itinerary.");
+    throw new AccessError("Nur Bearbeiter oder der Eigentümer können den Reiseplan ändern.");
   }
 }
 

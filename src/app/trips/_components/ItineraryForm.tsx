@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import type { FormState } from "@/app/trips/actions";
 import { itineraryItemTypeValues } from "@/lib/validation";
+import { itineraryItemTypeLabels } from "@/lib/labels";
 
 type Defaults = {
   title?: string;
@@ -60,29 +61,29 @@ export function ItineraryForm({
       action={formAction}
       style={{ display: "grid", gap: "0.75rem", maxWidth: 480 }}
     >
-      <Field label="Title" error={fe.title}>
+      <Field label="Titel" error={fe.title}>
         <input name="title" defaultValue={defaults.title ?? ""} required />
       </Field>
-      <Field label="Type" error={fe.type}>
+      <Field label="Typ" error={fe.type}>
         <select name="type" defaultValue={defaults.type ?? "activity"}>
           {itineraryItemTypeValues.map((t) => (
             <option key={t} value={t}>
-              {t}
+              {itineraryItemTypeLabels[t] ?? t}
             </option>
           ))}
         </select>
       </Field>
       <div style={{ display: "flex", gap: "0.75rem" }}>
-        <Field label="Start" error={fe.startAt}>
+        <Field label="Beginn" error={fe.startAt}>
           <input type="datetime-local" name="startAt" defaultValue={defaults.startAt ?? ""} />
         </Field>
-        <Field label="End" error={fe.endAt}>
+        <Field label="Ende" error={fe.endAt}>
           <input type="datetime-local" name="endAt" defaultValue={defaults.endAt ?? ""} />
         </Field>
       </div>
-      <Field label="Stop" error={fe.stopId}>
+      <Field label="Station" error={fe.stopId}>
         <select name="stopId" defaultValue={defaults.stopId ?? ""}>
-          <option value="">— none —</option>
+          <option value="">— keine —</option>
           {stops.map((s) => (
             <option key={s.id} value={s.id}>
               {s.city}
@@ -90,32 +91,32 @@ export function ItineraryForm({
           ))}
         </select>
       </Field>
-      <Field label="Location" error={fe.location}>
+      <Field label="Ort" error={fe.location}>
         <input name="location" defaultValue={defaults.location ?? ""} />
       </Field>
       <div style={{ display: "flex", gap: "0.75rem" }}>
-        <Field label="Latitude" error={fe.lat}>
+        <Field label="Breitengrad" error={fe.lat}>
           <input name="lat" inputMode="decimal" defaultValue={defaults.lat ?? ""} />
         </Field>
-        <Field label="Longitude" error={fe.lng}>
+        <Field label="Längengrad" error={fe.lng}>
           <input name="lng" inputMode="decimal" defaultValue={defaults.lng ?? ""} />
         </Field>
       </div>
       <div style={{ display: "flex", gap: "0.75rem" }}>
-        <Field label="Cost" error={fe.cost}>
+        <Field label="Kosten" error={fe.cost}>
           <input name="cost" inputMode="decimal" defaultValue={defaults.cost ?? ""} />
         </Field>
-        <Field label="Currency" error={fe.currency}>
+        <Field label="Währung" error={fe.currency}>
           <input name="currency" maxLength={3} defaultValue={defaults.currency ?? ""} style={{ width: 80 }} />
         </Field>
       </div>
-      <Field label="Notes" error={fe.notes}>
+      <Field label="Notizen" error={fe.notes}>
         <textarea name="notes" rows={3} defaultValue={defaults.notes ?? ""} />
       </Field>
 
       {state.error ? <p style={{ color: "crimson" }}>{state.error}</p> : null}
       <button type="submit" disabled={pending} style={{ padding: "0.5rem 1rem" }}>
-        {pending ? "Saving…" : submitLabel}
+        {pending ? "Wird gespeichert…" : submitLabel}
       </button>
     </form>
   );

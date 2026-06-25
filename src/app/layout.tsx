@@ -3,14 +3,15 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Travelplaning",
-  description: "Plan, organize, and manage trips — solo or with a small group.",
+  description:
+    "Reisen planen, organisieren und verwalten – allein oder mit einer kleinen Gruppe.",
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="de">
       <body>{children}</body>
     </html>
   );

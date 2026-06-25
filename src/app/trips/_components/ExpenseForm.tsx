@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import type { FormState } from "@/app/trips/actions";
 import { expenseCategoryValues } from "@/lib/validation";
+import { expenseCategoryLabels } from "@/lib/labels";
 
 type Defaults = {
   stopId?: string;
@@ -66,24 +67,24 @@ export function ExpenseForm({
       style={{ display: "grid", gap: "0.75rem", maxWidth: 480 }}
     >
       <div style={{ display: "flex", gap: "0.75rem" }}>
-        <Field label="Date" error={fe.date}>
+        <Field label="Datum" error={fe.date}>
           <input type="date" name="date" defaultValue={defaults.date ?? ""} required />
         </Field>
-        <Field label="Category" error={fe.category}>
+        <Field label="Kategorie" error={fe.category}>
           <select name="category" defaultValue={defaults.category ?? "food"}>
             {expenseCategoryValues.map((c) => (
               <option key={c} value={c}>
-                {c}
+                {expenseCategoryLabels[c] ?? c}
               </option>
             ))}
           </select>
         </Field>
       </div>
       <div style={{ display: "flex", gap: "0.75rem" }}>
-        <Field label="Amount" error={fe.amount}>
+        <Field label="Betrag" error={fe.amount}>
           <input name="amount" inputMode="decimal" defaultValue={defaults.amount ?? ""} required />
         </Field>
-        <Field label="Currency" error={fe.currency}>
+        <Field label="Währung" error={fe.currency}>
           <input
             name="currency"
             maxLength={3}
@@ -93,14 +94,14 @@ export function ExpenseForm({
         </Field>
       </div>
       <Field
-        label={`Manual rate (1 unit → ${homeCurrency}; blank = auto-convert)`}
+        label={`Manueller Kurs (1 Einheit → ${homeCurrency}; leer = automatisch umrechnen)`}
         error={fe.manualRate}
       >
         <input name="manualRate" inputMode="decimal" defaultValue={defaults.manualRate ?? ""} />
       </Field>
-      <Field label="Stop" error={fe.stopId}>
+      <Field label="Station" error={fe.stopId}>
         <select name="stopId" defaultValue={defaults.stopId ?? ""}>
-          <option value="">— none —</option>
+          <option value="">— keine —</option>
           {stops.map((s) => (
             <option key={s.id} value={s.id}>
               {s.city}
@@ -109,12 +110,12 @@ export function ExpenseForm({
         </select>
       </Field>
       <div style={{ display: "flex", gap: "0.75rem" }}>
-        <Field label="Payment method" error={fe.paymentMethod}>
+        <Field label="Zahlungsmethode" error={fe.paymentMethod}>
           <input name="paymentMethod" defaultValue={defaults.paymentMethod ?? ""} />
         </Field>
-        <Field label="Paid by" error={fe.paidBy}>
+        <Field label="Bezahlt von" error={fe.paidBy}>
           <select name="paidBy" defaultValue={defaults.paidBy ?? ""}>
-            <option value="">— none —</option>
+            <option value="">— niemand —</option>
             {members.map((m) => (
               <option key={m.id} value={m.id}>
                 {m.label}
@@ -125,7 +126,7 @@ export function ExpenseForm({
       </div>
       {members.length > 0 ? (
         <fieldset style={{ border: "1px solid #ddd", borderRadius: 6, display: "grid", gap: "0.25rem" }}>
-          <legend style={{ fontSize: "0.8rem", opacity: 0.8 }}>Split with</legend>
+          <legend style={{ fontSize: "0.8rem", opacity: 0.8 }}>Aufteilen mit</legend>
           {members.map((m) => (
             <label key={m.id} style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
               <input
@@ -139,16 +140,16 @@ export function ExpenseForm({
           ))}
         </fieldset>
       ) : null}
-      <Field label="Receipt URL" error={fe.receiptUrl}>
+      <Field label="Beleg-URL" error={fe.receiptUrl}>
         <input name="receiptUrl" inputMode="url" defaultValue={defaults.receiptUrl ?? ""} />
       </Field>
-      <Field label="Notes" error={fe.notes}>
+      <Field label="Notizen" error={fe.notes}>
         <textarea name="notes" rows={3} defaultValue={defaults.notes ?? ""} />
       </Field>
 
       {state.error ? <p style={{ color: "crimson" }}>{state.error}</p> : null}
       <button type="submit" disabled={pending} style={{ padding: "0.5rem 1rem" }}>
-        {pending ? "Saving…" : submitLabel}
+        {pending ? "Wird gespeichert…" : submitLabel}
       </button>
     </form>
   );

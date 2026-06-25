@@ -26,12 +26,12 @@ export default async function EditTripPage({
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
       <p>
-        <Link href={`/trips/${tripId}`}>← Back to trip</Link>
+        <Link href={`/trips/${tripId}`}>← Zurück zur Reise</Link>
       </p>
-      <h1>Edit trip</h1>
+      <h1>Reise bearbeiten</h1>
       <TripForm
         action={action}
-        submitLabel="Save changes"
+        submitLabel="Änderungen speichern"
         defaults={{
           name: trip.name,
           mainDestination: trip.mainDestination ?? "",

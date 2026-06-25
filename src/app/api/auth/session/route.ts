@@ -16,7 +16,7 @@ export async function POST(request: Request) {
     | null;
   const idToken = body?.idToken;
   if (typeof idToken !== "string") {
-    return NextResponse.json({ error: "Missing idToken." }, { status: 400 });
+    return NextResponse.json({ error: "idToken fehlt." }, { status: 400 });
   }
 
   try {
@@ -51,7 +51,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error:
-          "Sign-in failed on the server. Check the dev server logs — usually the Firebase Admin service account in .env.local.",
+          "Anmeldung am Server fehlgeschlagen. Bitte die Logs des Dev-Servers prüfen – meist das Firebase-Admin-Dienstkonto in .env.local.",
       },
       { status: 401 },
     );

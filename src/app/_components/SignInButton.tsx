@@ -25,12 +25,12 @@ export function SignInButton() {
         const data = (await res.json().catch(() => null)) as
           | { error?: string }
           | null;
-        throw new Error(data?.error ?? "Could not create a session.");
+        throw new Error(data?.error ?? "Sitzung konnte nicht erstellt werden.");
       }
       router.push("/dashboard");
       router.refresh();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Sign-in failed.");
+      setError(e instanceof Error ? e.message : "Anmeldung fehlgeschlagen.");
       setPending(false);
     }
   }
@@ -42,7 +42,7 @@ export function SignInButton() {
         disabled={pending}
         style={{ padding: "0.6rem 1rem", fontSize: "1rem" }}
       >
-        {pending ? "Signing in…" : "Sign in with Google"}
+        {pending ? "Anmeldung läuft…" : "Mit Google anmelden"}
       </button>
       {error ? <p style={{ color: "crimson" }}>{error}</p> : null}
     </div>

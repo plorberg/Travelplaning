@@ -7,6 +7,8 @@ import { getExpenseSummary, listExpenses } from "@/lib/expenses";
 import { hasAtLeastRole } from "@/lib/authz";
 import { expenseCategoryValues, type ExpenseCategory } from "@/lib/validation";
 import { deleteExpenseAction } from "@/app/trips/expense-actions";
+import { expenseCategoryLabels } from "@/lib/labels";
+import { formatDate, formatMoney } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
@@ -43,7 +45,7 @@ export default async function ExpensesPage({
 
   const budget = trip.budget ? Number(trip.budget) : null;
   const remaining = budget != null ? budget - summary.total : null;
-  const fmt = (n: number) => `${n.toFixed(2)} ${trip.homeCurrency}`;
+  const fmt = (n: number) => formatMoney(n, trip.homeCurrency);
   const filtered = Boolean(category || stopId);
 
   return (
@@ -60,8 +62,8 @@ export default async function ExpensesPage({
           gap: "1rem",
         }}
       >
-        <h1 style={{ margin: 0 }}>Expenses</h1>
-        {canEdit ? <Link href={`/trips/${tripId}/expenses/new`}>+ Add expense</Link> : null}
+        <h1 style={{ margin: 0 }}>Ausgaben</h1>
+        {canEdit ? <Link href={`/trips/${tripId}/expenses/new`}>+ Ausgabe hinzufügen</Link> : null}
       </header>
 
       <section
@@ -76,7 +78,7 @@ export default async function ExpensesPage({
         }}
       >
         <div>
-          <div style={{ opacity: 0.7, fontSize: "0.8rem" }}>Total spent</div>
+          <div style={{ opacity: 0.7, fontSize: "0.8rem" }}>Gesamtausgaben</div>
           <strong>{fmt(summary.total)}</strong>
         </div>
         <div>
@@ -84,7 +86,7 @@ export default async function ExpensesPage({
           <strong>{budget != null ? fmt(budget) : "—"}</strong>
         </div>
         <div>
-          <div style={{ opacity: 0.7, fontSize: "0.8rem" }}>Remaining</div>
+          <div style={{ opacity: 0.7, fontSize: "0.8rem" }}>Verbleibend</div>
           <strong style={{ color: remaining != null && remaining < 0 ? "crimson" : undefined }}>
             {remaining != null ? fmt(remaining) : "—"}
           </strong>
@@ -93,21 +95,21 @@ export default async function ExpensesPage({
 
       <div style={{ display: "flex", gap: "2rem", flexWrap: "wrap" }}>
         <div>
-          <h3 style={{ marginBottom: "0.25rem" }}>By category</h3>
+          <h3 style={{ marginBottom: "0.25rem" }}>Nach Kategorie</h3>
           {summary.byCategory.length === 0 ? (
             <p style={{ opacity: 0.7 }}>—</p>
           ) : (
             <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
               {summary.byCategory.map((c) => (
                 <li key={c.category}>
-                  {c.category}: {fmt(c.total)}
+                  {expenseCategoryLabels[c.category] ?? c.category}: {fmt(c.total)}
                 </li>
               ))}
             </ul>
           )}
         </div>
         <div>
-          <h3 style={{ marginBottom: "0.25rem" }}>By stop</h3>
+          <h3 style={{ marginBottom: "0.25rem" }}>Nach Station</h3>
           {summary.byStop.length === 0 ? (
             <p style={{ opacity: 0.7 }}>—</p>
           ) : (
@@ -124,28 +126,28 @@ export default async function ExpensesPage({
 
       <form method="get" style={{ display: "flex", gap: "0.5rem", margin: "1.5rem 0 1rem", flexWrap: "wrap" }}>
         <select name="category" defaultValue={category ?? ""}>
-          <option value="">All categories</option>
+          <option value="">Alle Kategorien</option>
           {expenseCategoryValues.map((c) => (
             <option key={c} value={c}>
-              {c}
+              {expenseCategoryLabels[c] ?? c}
             </option>
           ))}
         </select>
         <select name="stopId" defaultValue={stopId ?? ""}>
-          <option value="">All stops</option>
+          <option value="">Alle Stationen</option>
           {tripStops.map((s) => (
             <option key={s.id} value={s.id}>
               {s.city}
             </option>
           ))}
         </select>
-        <button type="submit">Filter</button>
-        {filtered ? <Link href={`/trips/${tripId}/expenses`}>Clear</Link> : null}
+        <button type="submit">Filtern</button>
+        {filtered ? <Link href={`/trips/${tripId}/expenses`}>Zurücksetzen</Link> : null}
       </form>
 
       {list.length === 0 ? (
         <p style={{ opacity: 0.8 }}>
-          No expenses{filtered ? " match the filter" : " yet"}.
+          {filtered ? "Keine Ausgaben entsprechen dem Filter." : "Noch keine Ausgaben."}
         </p>
       ) : (
         <ul style={{ listStyle: "none", padding: 0, display: "grid", gap: "0.6rem" }}>
@@ -155,31 +157,29 @@ export default async function ExpensesPage({
               style={{ display: "flex", justifyContent: "space-between", gap: "1rem" }}
             >
               <div>
-                <strong>
-                  {e.amount} {e.currency}
-                </strong>{" "}
+                <strong>{formatMoney(e.amount, e.currency)}</strong>{" "}
                 {e.currency !== trip.homeCurrency ? (
                   <span style={{ opacity: 0.7 }}>
-                    ≈ {e.convertedAmount} {trip.homeCurrency}
+                    ≈ {formatMoney(e.convertedAmount, trip.homeCurrency)}
                   </span>
                 ) : null}
                 <div style={{ opacity: 0.8, fontSize: "0.85rem" }}>
-                  {e.date} · {e.category}
+                  {formatDate(e.date)} · {expenseCategoryLabels[e.category] ?? e.category}
                   {e.stopCity ? ` · ${e.stopCity}` : ""}
                   {e.paymentMethod ? ` · ${e.paymentMethod}` : ""}
                 </div>
                 {e.notes ? <div style={{ fontSize: "0.85rem" }}>{e.notes}</div> : null}
                 {e.receiptUrl ? (
                   <a href={e.receiptUrl} target="_blank" rel="noreferrer" style={{ fontSize: "0.85rem" }}>
-                    receipt ↗
+                    Beleg ↗
                   </a>
                 ) : null}
               </div>
               {canEdit ? (
                 <div style={{ display: "flex", gap: "0.5rem", alignItems: "flex-start" }}>
-                  <Link href={`/trips/${tripId}/expenses/${e.id}/edit`}>Edit</Link>
+                  <Link href={`/trips/${tripId}/expenses/${e.id}/edit`}>Bearbeiten</Link>
                   <form action={deleteExpenseAction.bind(null, tripId, e.id)}>
-                    <button type="submit">Delete</button>
+                    <button type="submit">Löschen</button>
                   </form>
                 </div>
               ) : null}

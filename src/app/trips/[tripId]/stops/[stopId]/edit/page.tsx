@@ -30,12 +30,12 @@ export default async function EditStopPage({
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
       <p>
-        <Link href={`/trips/${tripId}`}>← Back to trip</Link>
+        <Link href={`/trips/${tripId}`}>← Zurück zur Reise</Link>
       </p>
-      <h1>Edit stop</h1>
+      <h1>Station bearbeiten</h1>
       <StopForm
         action={action}
-        submitLabel="Save stop"
+        submitLabel="Station speichern"
         defaults={{
           city: stop.city,
           country: stop.country ?? "",

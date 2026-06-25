@@ -36,12 +36,12 @@ export default async function EditDocumentPage({
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
       <p>
-        <Link href={`/trips/${tripId}/documents`}>← Documents</Link>
+        <Link href={`/trips/${tripId}/documents`}>← Dokumente</Link>
       </p>
-      <h1>Edit document</h1>
+      <h1>Dokument bearbeiten</h1>
       <DocumentForm
         action={action}
-        submitLabel="Save document"
+        submitLabel="Dokument speichern"
         stops={tripStops.map((s) => ({ id: s.id, city: s.city }))}
         tripId={tripId}
         tripName={trip.name}

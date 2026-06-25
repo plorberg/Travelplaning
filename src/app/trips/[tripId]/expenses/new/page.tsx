@@ -33,12 +33,12 @@ export default async function NewExpensePage({
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
       <p>
-        <Link href={`/trips/${tripId}/expenses`}>← Expenses</Link>
+        <Link href={`/trips/${tripId}/expenses`}>← Ausgaben</Link>
       </p>
-      <h1>Add expense</h1>
+      <h1>Ausgabe hinzufügen</h1>
       <ExpenseForm
         action={action}
-        submitLabel="Add expense"
+        submitLabel="Ausgabe hinzufügen"
         stops={tripStops.map((s) => ({ id: s.id, city: s.city }))}
         members={members.map((m) => ({ id: m.userId, label: m.name ?? m.email }))}
         homeCurrency={trip.homeCurrency}

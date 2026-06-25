@@ -11,12 +11,12 @@ export default async function Home() {
     <main style={{ maxWidth: 640, margin: "0 auto", padding: "4rem 1.5rem" }}>
       <h1 style={{ marginBottom: "0.5rem" }}>Travelplaning</h1>
       <p style={{ marginTop: 0, opacity: 0.8 }}>
-        Plan, organize, and manage your trips — solo or with others.
+        Plane, organisiere und verwalte deine Reisen – allein oder mit anderen.
       </p>
 
       {user ? (
         <p>
-          <Link href="/dashboard">Go to your dashboard →</Link>
+          <Link href="/dashboard">Zu deinem Dashboard →</Link>
         </p>
       ) : (
         <SignInButton />

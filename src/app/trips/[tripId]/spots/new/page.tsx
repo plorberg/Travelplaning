@@ -4,12 +4,12 @@ import { getCurrentUser } from "@/lib/auth";
 import { getTripForUser } from "@/lib/trips";
 import { listStops } from "@/lib/stops";
 import { hasAtLeastRole } from "@/lib/authz";
-import { createItineraryAction } from "@/app/trips/itinerary-actions";
-import { ItineraryForm } from "@/app/trips/_components/ItineraryForm";
+import { createSpotAction } from "@/app/trips/spot-actions";
+import { SpotForm } from "@/app/trips/_components/SpotForm";
 
 export const dynamic = "force-dynamic";
 
-export default async function NewItineraryItemPage({
+export default async function NewSpotPage({
   params,
 }: {
   params: Promise<{ tripId: string }>;
@@ -20,22 +20,21 @@ export default async function NewItineraryItemPage({
 
   const trip = await getTripForUser(user.id, tripId);
   if (!trip) notFound();
-  if (!hasAtLeastRole(trip.role, "editor")) redirect(`/trips/${tripId}/itinerary`);
+  if (!hasAtLeastRole(trip.role, "editor")) redirect(`/trips/${tripId}/spots`);
 
   const tripStops = await listStops(user.id, tripId);
-  const action = createItineraryAction.bind(null, tripId);
+  const action = createSpotAction.bind(null, tripId);
 
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
       <p>
-        <Link href={`/trips/${tripId}/itinerary`}>← Reiseplan</Link>
+        <Link href={`/trips/${tripId}/spots`}>← Gespeicherte Orte</Link>
       </p>
-      <h1>Eintrag hinzufügen</h1>
-      <ItineraryForm
+      <h1>Ort hinzufügen</h1>
+      <SpotForm
         action={action}
-        submitLabel="Eintrag hinzufügen"
+        submitLabel="Ort hinzufügen"
         stops={tripStops.map((s) => ({ id: s.id, city: s.city }))}
-        defaults={{ type: "activity" }}
       />
     </main>
   );

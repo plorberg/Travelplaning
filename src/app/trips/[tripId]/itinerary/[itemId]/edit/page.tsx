@@ -36,12 +36,12 @@ export default async function EditItineraryItemPage({
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
       <p>
-        <Link href={`/trips/${tripId}/itinerary`}>← Itinerary</Link>
+        <Link href={`/trips/${tripId}/itinerary`}>← Reiseplan</Link>
       </p>
-      <h1>Edit itinerary item</h1>
+      <h1>Eintrag bearbeiten</h1>
       <ItineraryForm
         action={action}
-        submitLabel="Save item"
+        submitLabel="Eintrag speichern"
         stops={tripStops.map((s) => ({ id: s.id, city: s.city }))}
         defaults={{
           title: item.title,
