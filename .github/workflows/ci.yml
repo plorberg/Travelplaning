@@ -16,7 +16,9 @@ jobs:
           node-version: "22"
           cache: npm
 
-      - run: npm ci
+      # `npm install` (lenient, like Vercel) rather than `npm ci`: the lockfile
+      # resolves esbuild differently across npm 10/11, which made `npm ci` fail.
+      - run: npm install
 
       - run: npm run typecheck
 
