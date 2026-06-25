@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { signOut } from "firebase/auth";
-import { firebaseAuth } from "@/lib/firebase/client";
+import { getFirebaseAuth } from "@/lib/firebase/client";
 
 export function SignOutButton() {
   const router = useRouter();
@@ -10,7 +10,7 @@ export function SignOutButton() {
   async function doSignOut() {
     await fetch("/api/auth/session", { method: "DELETE" });
     try {
-      await signOut(firebaseAuth);
+      await signOut(getFirebaseAuth());
     } catch {
       // ignore client sign-out errors; the server session is already cleared
     }

@@ -5,7 +5,7 @@ import {
   reauthenticateWithPopup,
   signInWithPopup,
 } from "firebase/auth";
-import { firebaseAuth } from "@/lib/firebase/client";
+import { getFirebaseAuth } from "@/lib/firebase/client";
 
 const DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.file";
 const FOLDER_MIME = "application/vnd.google-apps.folder";
@@ -22,10 +22,11 @@ export interface DriveUpload {
 async function getDriveToken(): Promise<string> {
   const provider = new GoogleAuthProvider();
   provider.addScope(DRIVE_SCOPE);
-  const user = firebaseAuth.currentUser;
+  const auth = getFirebaseAuth();
+  const user = auth.currentUser;
   const result = user
     ? await reauthenticateWithPopup(user, provider)
-    : await signInWithPopup(firebaseAuth, provider);
+    : await signInWithPopup(auth, provider);
   const token = GoogleAuthProvider.credentialFromResult(result)?.accessToken;
   if (!token) {
     throw new Error("Google Drive permission was not granted.");

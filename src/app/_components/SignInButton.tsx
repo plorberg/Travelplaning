@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signInWithPopup } from "firebase/auth";
-import { firebaseAuth, googleProvider } from "@/lib/firebase/client";
+import { getFirebaseAuth, googleProvider } from "@/lib/firebase/client";
 
 export function SignInButton() {
   const router = useRouter();
@@ -14,7 +14,7 @@ export function SignInButton() {
     setPending(true);
     setError(null);
     try {
-      const cred = await signInWithPopup(firebaseAuth, googleProvider);
+      const cred = await signInWithPopup(getFirebaseAuth(), googleProvider);
       const idToken = await cred.user.getIdToken();
       const res = await fetch("/api/auth/session", {
         method: "POST",

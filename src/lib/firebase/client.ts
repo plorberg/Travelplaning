@@ -16,9 +16,19 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-export const firebaseApp: FirebaseApp = getApps().length
-  ? getApp()
-  : initializeApp(firebaseConfig);
+// Initialise lazily so server-rendering the sign-in/out buttons never calls
+// getAuth() at import time. Doing that eagerly crashes the whole page (HTTP
+// 500) when the NEXT_PUBLIC_FIREBASE_* config is missing/not yet inlined.
+// Auth is only needed in the browser, when the user actually signs in/out.
+let cachedAuth: Auth | null = null;
 
-export const firebaseAuth: Auth = getAuth(firebaseApp);
+export function getFirebaseAuth(): Auth {
+  if (cachedAuth) return cachedAuth;
+  const app: FirebaseApp = getApps().length
+    ? getApp()
+    : initializeApp(firebaseConfig);
+  cachedAuth = getAuth(app);
+  return cachedAuth;
+}
+
 export const googleProvider = new GoogleAuthProvider();
