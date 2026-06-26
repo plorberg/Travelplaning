@@ -4,7 +4,12 @@ import {
   getApp,
   type FirebaseApp,
 } from "firebase/app";
-import { getAuth, GoogleAuthProvider, type Auth } from "firebase/auth";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  OAuthProvider,
+  type Auth,
+} from "firebase/auth";
 
 // Client Firebase config. These values are identifiers, not secrets — they are
 // meant to ship to the browser (access is controlled by Firebase auth settings,
@@ -32,3 +37,7 @@ export function getFirebaseAuth(): Auth {
 }
 
 export const googleProvider = new GoogleAuthProvider();
+
+export const appleProvider = new OAuthProvider("apple.com");
+appleProvider.addScope("email");
+appleProvider.addScope("name");
