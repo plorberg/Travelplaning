@@ -25,6 +25,7 @@
     "firebase-admin": "^13.10.0",
     "leaflet": "^1.9.4",
     "next": "^16.2.9",
+    "pdfjs-dist": "^6.0.227",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "zod": "^4.4.3"
