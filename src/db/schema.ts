@@ -309,3 +309,17 @@ export const exchangeRates = pgTable(
     ),
   ],
 );
+
+/* ----------------------------------------------------------------------------
+ * Airports — reference data (IATA codes) for the flight-search autocomplete,
+ * so the deep link can hand off real airport codes. Seeded from OurAirports.
+ * ------------------------------------------------------------------------- */
+
+export const airports = pgTable("airports", {
+  code: text("code").primaryKey(), // IATA, uppercase
+  name: text("name").notNull(),
+  city: text("city"),
+  country: text("country"), // ISO 3166-1 alpha-2
+  lat: doublePrecision("lat"),
+  lng: doublePrecision("lng"),
+});

@@ -31,7 +31,6 @@ export default async function FlightsPage({
       <FlightSearch
         documentsHref={`/trips/${tripId}/documents/new`}
         defaults={{
-          destination: trip.mainDestination ?? "",
           departDate: trip.startDate ?? "",
           returnDate: trip.endDate ?? "",
           currency: trip.homeCurrency,

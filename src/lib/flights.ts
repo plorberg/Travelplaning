@@ -52,3 +52,33 @@ export function buildGoogleFlightsUrl(c: FlightSearchCriteria): string | null {
   if (c.currency) params.set("curr", c.currency);
   return `https://www.google.com/travel/flights?${params.toString()}`;
 }
+
+// Skyscanner's structured URL reliably carries passengers, cabin and dates
+// (unlike the Google Flights `q` text). origin/destination must be IATA codes.
+const skyscannerCabin: Record<CabinClass, string> = {
+  economy: "economy",
+  "premium-economy": "premiumeconomy",
+  business: "business",
+  first: "first",
+};
+
+/** "2026-11-08" → "261108" (Skyscanner's date format). */
+function yymmdd(date: string): string {
+  const [y, m, d] = date.split("-");
+  return `${y.slice(2)}${m}${d}`;
+}
+
+export function buildSkyscannerUrl(c: FlightSearchCriteria): string | null {
+  const origin = c.origin.trim().toLowerCase();
+  const destination = c.destination.trim().toLowerCase();
+  if (!origin || !destination) return null;
+
+  let path = `https://www.skyscanner.de/transport/fluge/${origin}/${destination}/`;
+  if (c.departDate) path += `${yymmdd(c.departDate)}/`;
+  if (c.departDate && c.returnDate) path += `${yymmdd(c.returnDate)}/`;
+
+  const params = new URLSearchParams({ adults: String(c.passengers ?? 1) });
+  if (c.cabin) params.set("cabinclass", skyscannerCabin[c.cabin]);
+  if (c.currency) params.set("currency", c.currency);
+  return `${path}?${params.toString()}`;
+}
