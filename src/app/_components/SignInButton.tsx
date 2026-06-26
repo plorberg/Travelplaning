@@ -6,10 +6,9 @@ import {
   signInWithPopup,
   signInWithRedirect,
   getRedirectResult,
-  type AuthProvider,
   type User,
 } from "firebase/auth";
-import { getFirebaseAuth, googleProvider, appleProvider } from "@/lib/firebase/client";
+import { getFirebaseAuth, googleProvider } from "@/lib/firebase/client";
 
 // When the popup can't be used (blocked by the browser, or unsupported), fall
 // back to a full-page redirect, which is never popup-blocked.
@@ -19,11 +18,9 @@ const REDIRECT_FALLBACK = new Set([
   "auth/operation-not-supported-in-this-environment",
 ]);
 
-type ProviderId = "google" | "apple";
-
 export function SignInButton() {
   const router = useRouter();
-  const [busy, setBusy] = useState<ProviderId | "redirect" | null>(null);
+  const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Exchange the signed-in Firebase user for our httpOnly session cookie.
@@ -44,19 +41,19 @@ export function SignInButton() {
     router.refresh();
   }
 
-  // Complete a redirect-based sign-in (Google or Apple) when the user returns.
+  // Complete a redirect-based sign-in when the user returns from Google.
   useEffect(() => {
     let active = true;
     getRedirectResult(getFirebaseAuth())
       .then((result) => {
         if (active && result?.user) {
-          setBusy("redirect");
+          setPending(true);
           return createSession(result.user);
         }
       })
       .catch((e) => {
         if (active) {
-          setBusy(null);
+          setPending(false);
           setError(e instanceof Error ? e.message : "Anmeldung fehlgeschlagen.");
         }
       });
@@ -66,22 +63,22 @@ export function SignInButton() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function signIn(id: ProviderId, provider: AuthProvider) {
-    setBusy(id);
+  async function signIn() {
+    setPending(true);
     setError(null);
     const auth = getFirebaseAuth();
     try {
-      const cred = await signInWithPopup(auth, provider);
+      const cred = await signInWithPopup(auth, googleProvider);
       await createSession(cred.user);
     } catch (e) {
       const code = (e as { code?: string })?.code ?? "";
       if (REDIRECT_FALLBACK.has(code)) {
         try {
-          await signInWithRedirect(auth, provider); // navigates away
+          await signInWithRedirect(auth, googleProvider); // navigates away
           return;
         } catch (e2) {
           setError(e2 instanceof Error ? e2.message : "Anmeldung fehlgeschlagen.");
-          setBusy(null);
+          setPending(false);
           return;
         }
       }
@@ -90,34 +87,19 @@ export function SignInButton() {
       } else {
         setError(e instanceof Error ? e.message : "Anmeldung fehlgeschlagen.");
       }
-      setBusy(null);
+      setPending(false);
     }
   }
 
-  const disabled = busy !== null;
-
   return (
-    <div style={{ display: "grid", gap: "0.5rem", maxWidth: 280 }}>
+    <div>
       <button
-        onClick={() => signIn("google", googleProvider)}
-        disabled={disabled}
+        onClick={signIn}
+        disabled={pending}
         className="btn-primary"
         style={{ padding: "0.6rem 1rem", fontSize: "1rem" }}
       >
-        {busy === "google" ? "Anmeldung läuft…" : "Mit Google anmelden"}
-      </button>
-      <button
-        onClick={() => signIn("apple", appleProvider)}
-        disabled={disabled}
-        style={{
-          padding: "0.6rem 1rem",
-          fontSize: "1rem",
-          background: "#000",
-          color: "#fff",
-          border: "1px solid #000",
-        }}
-      >
-        {busy === "apple" ? "Anmeldung läuft…" : "Mit Apple anmelden"}
+        {pending ? "Anmeldung läuft…" : "Mit Google anmelden"}
       </button>
       {error ? <p style={{ color: "crimson" }}>{error}</p> : null}
     </div>
