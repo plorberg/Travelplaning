@@ -29,7 +29,7 @@ export default async function SpotsPage({
       <p>
         <Link href={`/trips/${tripId}`}>← {trip.name}</Link>
       </p>
-      <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
+      <header className="list-row" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
         <h1 style={{ margin: 0 }}>Empfehlungen</h1>
         {canEdit ? <Link href={`/trips/${tripId}/spots/new`}>+ Empfehlung hinzufügen</Link> : null}
       </header>
@@ -39,7 +39,7 @@ export default async function SpotsPage({
       ) : (
         <ul style={{ listStyle: "none", padding: 0, display: "grid", gap: "0.75rem", marginTop: "1rem" }}>
           {spots.map((s) => (
-            <li key={s.id} style={{ display: "flex", justifyContent: "space-between", gap: "1rem" }}>
+            <li key={s.id} className="list-row" style={{ display: "flex", justifyContent: "space-between", gap: "1rem" }}>
               <div>
                 <strong>{s.name}</strong>
                 {s.category ? (

@@ -66,7 +66,7 @@ export function ExpenseForm({
       action={formAction}
       style={{ display: "grid", gap: "0.75rem", maxWidth: 480 }}
     >
-      <div style={{ display: "flex", gap: "0.75rem" }}>
+      <div className="field-row" style={{ display: "flex", gap: "0.75rem" }}>
         <Field label="Datum" error={fe.date}>
           <input type="date" name="date" defaultValue={defaults.date ?? ""} required />
         </Field>
@@ -80,7 +80,7 @@ export function ExpenseForm({
           </select>
         </Field>
       </div>
-      <div style={{ display: "flex", gap: "0.75rem" }}>
+      <div className="field-row" style={{ display: "flex", gap: "0.75rem" }}>
         <Field label="Betrag" error={fe.amount}>
           <input name="amount" inputMode="decimal" defaultValue={defaults.amount ?? ""} required />
         </Field>
@@ -109,7 +109,7 @@ export function ExpenseForm({
           ))}
         </select>
       </Field>
-      <div style={{ display: "flex", gap: "0.75rem" }}>
+      <div className="field-row" style={{ display: "flex", gap: "0.75rem" }}>
         <Field label="Zahlungsmethode" error={fe.paymentMethod}>
           <input name="paymentMethod" defaultValue={defaults.paymentMethod ?? ""} />
         </Field>

@@ -33,6 +33,7 @@ body {
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  overflow-wrap: break-word; /* keep long refs/URLs from overflowing on mobile */
 }
 
 h1,
@@ -178,4 +179,23 @@ button:disabled {
   background: var(--border);
   border-radius: 6px;
   animation: pulse 1.2s ease-in-out infinite;
+}
+
+/* Responsive ----------------------------------------------------------- */
+/* Rows of side-by-side form fields stack on narrow screens; list/header
+   rows (content + actions) wrap instead of overflowing. */
+.list-row {
+  flex-wrap: wrap;
+}
+@media (max-width: 560px) {
+  .field-row {
+    flex-direction: column;
+  }
+  main {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+  h1 {
+    font-size: 1.4rem;
+  }
 }

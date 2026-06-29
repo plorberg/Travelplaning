@@ -42,7 +42,7 @@ export default async function ItineraryPage({
 
   function renderItem(it: Item, showDate: boolean) {
     return (
-      <li key={it.id} style={{ display: "flex", justifyContent: "space-between", gap: "1rem" }}>
+      <li key={it.id} className="list-row" style={{ display: "flex", justifyContent: "space-between", gap: "1rem" }}>
         <div>
           <strong>{it.title}</strong>{" "}
           <span style={{ opacity: 0.6, fontSize: "0.8rem" }}>
@@ -96,7 +96,7 @@ export default async function ItineraryPage({
       <p>
         <Link href={`/trips/${tripId}`}>← {trip.name}</Link>
       </p>
-      <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
+      <header className="list-row" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
         <h1 style={{ margin: 0 }}>Reiseplan</h1>
         {canEdit ? <Link href={`/trips/${tripId}/itinerary/new`}>+ Eintrag hinzufügen</Link> : null}
       </header>

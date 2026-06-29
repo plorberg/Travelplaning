@@ -154,7 +154,7 @@ export default async function ExpensesPage({
           {list.map((e) => (
             <li
               key={e.id}
-              style={{ display: "flex", justifyContent: "space-between", gap: "1rem" }}
+              className="list-row" style={{ display: "flex", justifyContent: "space-between", gap: "1rem" }}
             >
               <div>
                 <strong>{formatMoney(e.amount, e.currency)}</strong>{" "}

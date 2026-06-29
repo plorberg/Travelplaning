@@ -66,7 +66,7 @@ export function TripForm({
           defaultValue={defaults.mainDestination ?? ""}
         />
       </Field>
-      <div style={{ display: "flex", gap: "0.75rem" }}>
+      <div className="field-row" style={{ display: "flex", gap: "0.75rem" }}>
         <Field label="Startdatum" error={fe.startDate}>
           <input type="date" name="startDate" defaultValue={defaults.startDate ?? ""} />
         </Field>
@@ -74,7 +74,7 @@ export function TripForm({
           <input type="date" name="endDate" defaultValue={defaults.endDate ?? ""} />
         </Field>
       </div>
-      <div style={{ display: "flex", gap: "0.75rem" }}>
+      <div className="field-row" style={{ display: "flex", gap: "0.75rem" }}>
         <Field label="Heimatwährung" error={fe.homeCurrency}>
           <input
             name="homeCurrency"
@@ -87,7 +87,7 @@ export function TripForm({
           <input name="budget" inputMode="decimal" defaultValue={defaults.budget ?? ""} />
         </Field>
       </div>
-      <div style={{ display: "flex", gap: "0.75rem" }}>
+      <div className="field-row" style={{ display: "flex", gap: "0.75rem" }}>
         <Field label="Status" error={fe.status}>
           <select name="status" defaultValue={defaults.status ?? "planning"}>
             {tripStatusValues.map((s) => (

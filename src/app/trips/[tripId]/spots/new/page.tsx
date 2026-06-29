@@ -142,7 +142,7 @@ export default async function NewSpotPage({
               {results.map((r) => (
                 <li
                   key={r.id}
-                  style={{ display: "flex", justifyContent: "space-between", gap: "1rem" }}
+                  className="list-row" style={{ display: "flex", justifyContent: "space-between", gap: "1rem" }}
                 >
                   <div>
                     <strong>{r.name}</strong>

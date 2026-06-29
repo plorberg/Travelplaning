@@ -61,7 +61,7 @@ export function StopForm({
       <Field label="Land" error={fe.country}>
         <input name="country" defaultValue={defaults.country ?? ""} />
       </Field>
-      <div style={{ display: "flex", gap: "0.75rem" }}>
+      <div className="field-row" style={{ display: "flex", gap: "0.75rem" }}>
         <Field label="Ankunftsdatum" error={fe.arrivalDate}>
           <input type="date" name="arrivalDate" defaultValue={defaults.arrivalDate ?? ""} />
         </Field>
@@ -78,7 +78,7 @@ export function StopForm({
           defaultValue={defaults.accommodationAddress ?? ""}
         />
       </Field>
-      <div style={{ display: "flex", gap: "0.75rem" }}>
+      <div className="field-row" style={{ display: "flex", gap: "0.75rem" }}>
         <Field label="Breitengrad" error={fe.lat}>
           <input name="lat" inputMode="decimal" defaultValue={defaults.lat ?? ""} />
         </Field>

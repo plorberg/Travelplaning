@@ -100,7 +100,7 @@ export function ItineraryForm({
           ))}
         </select>
       </Field>
-      <div style={{ display: "flex", gap: "0.75rem" }}>
+      <div className="field-row" style={{ display: "flex", gap: "0.75rem" }}>
         <Field label="Beginn" error={fe.startAt}>
           <input type="datetime-local" name="startAt" defaultValue={defaults.startAt ?? ""} />
         </Field>
@@ -145,7 +145,7 @@ export function ItineraryForm({
       <Field label="Ort" error={fe.location}>
         <input name="location" value={location} onChange={(e) => setLocation(e.target.value)} />
       </Field>
-      <div style={{ display: "flex", gap: "0.75rem" }}>
+      <div className="field-row" style={{ display: "flex", gap: "0.75rem" }}>
         <Field label="Breitengrad" error={fe.lat}>
           <input name="lat" inputMode="decimal" value={lat} onChange={(e) => setLat(e.target.value)} />
         </Field>
@@ -153,7 +153,7 @@ export function ItineraryForm({
           <input name="lng" inputMode="decimal" value={lng} onChange={(e) => setLng(e.target.value)} />
         </Field>
       </div>
-      <div style={{ display: "flex", gap: "0.75rem" }}>
+      <div className="field-row" style={{ display: "flex", gap: "0.75rem" }}>
         <Field label="Kosten" error={fe.cost}>
           <input name="cost" inputMode="decimal" defaultValue={defaults.cost ?? ""} />
         </Field>

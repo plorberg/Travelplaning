@@ -72,7 +72,7 @@ export function FlightSearch({
           placeholder="Stadt oder Code, z. B. Auckland / AKL"
           onSelect={setDestination}
         />
-        <div style={{ display: "flex", gap: "0.75rem" }}>
+        <div className="field-row" style={{ display: "flex", gap: "0.75rem" }}>
           <Field label="Hinflug">
             <input type="date" value={departDate} onChange={(e) => setDepartDate(e.target.value)} />
           </Field>
@@ -80,7 +80,7 @@ export function FlightSearch({
             <input type="date" value={returnDate} onChange={(e) => setReturnDate(e.target.value)} />
           </Field>
         </div>
-        <div style={{ display: "flex", gap: "0.75rem" }}>
+        <div className="field-row" style={{ display: "flex", gap: "0.75rem" }}>
           <Field label="Reisende">
             <input
               type="number"

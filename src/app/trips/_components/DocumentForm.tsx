@@ -147,7 +147,7 @@ export function DocumentForm({
 
   return (
     <form action={formAction} style={{ display: "grid", gap: "0.75rem", maxWidth: 480 }}>
-      <div style={{ display: "flex", gap: "0.75rem" }}>
+      <div className="field-row" style={{ display: "flex", gap: "0.75rem" }}>
         <Field label="Typ" error={fe.type}>
           <select name="type" defaultValue={defaults.type ?? "flight"}>
             {documentTypeValues.map((t) => (
@@ -197,7 +197,7 @@ export function DocumentForm({
         <input type="hidden" name="driveFileUrl" value={drive?.url ?? ""} />
       </div>
 
-      <div style={{ display: "flex", gap: "0.75rem" }}>
+      <div className="field-row" style={{ display: "flex", gap: "0.75rem" }}>
         <Field label="Anbieter" error={fe.vendor}>
           <input name="vendor" defaultValue={defaults.vendor ?? ""} />
         </Field>
@@ -215,7 +215,7 @@ export function DocumentForm({
           ))}
         </select>
       </Field>
-      <div style={{ display: "flex", gap: "0.75rem" }}>
+      <div className="field-row" style={{ display: "flex", gap: "0.75rem" }}>
         <Field label="Beginn" error={fe.startAt}>
           <input type="datetime-local" name="startAt" value={startAt} onChange={(e) => setStartAt(e.target.value)} />
         </Field>
@@ -226,7 +226,7 @@ export function DocumentForm({
       <Field label="Ort" error={fe.location}>
         <input name="location" defaultValue={defaults.location ?? ""} />
       </Field>
-      <div style={{ display: "flex", gap: "0.75rem" }}>
+      <div className="field-row" style={{ display: "flex", gap: "0.75rem" }}>
         <Field label="Preis" error={fe.price}>
           <input name="price" inputMode="decimal" value={price} onChange={(e) => setPrice(e.target.value)} />
         </Field>

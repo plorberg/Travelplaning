@@ -63,7 +63,7 @@ export function SpotForm({
       <Field label="Name" error={fe.name}>
         <input name="name" defaultValue={defaults.name ?? ""} required />
       </Field>
-      <div style={{ display: "flex", gap: "0.75rem" }}>
+      <div className="field-row" style={{ display: "flex", gap: "0.75rem" }}>
         <Field label="Kategorie" error={fe.category}>
           <select name="category" defaultValue={defaults.category ?? ""}>
             <option value="">—</option>
@@ -88,7 +88,7 @@ export function SpotForm({
       <Field label="Adresse" error={fe.address}>
         <input name="address" defaultValue={defaults.address ?? ""} />
       </Field>
-      <div style={{ display: "flex", gap: "0.75rem" }}>
+      <div className="field-row" style={{ display: "flex", gap: "0.75rem" }}>
         <Field label="Bewertung (0–5)" error={fe.rating}>
           <input name="rating" inputMode="decimal" defaultValue={defaults.rating ?? ""} style={{ width: 100 }} />
         </Field>
@@ -101,7 +101,7 @@ export function SpotForm({
           />
         </Field>
       </div>
-      <div style={{ display: "flex", gap: "0.75rem" }}>
+      <div className="field-row" style={{ display: "flex", gap: "0.75rem" }}>
         <Field label="Breitengrad" error={fe.lat}>
           <input name="lat" inputMode="decimal" defaultValue={defaults.lat ?? ""} />
         </Field>

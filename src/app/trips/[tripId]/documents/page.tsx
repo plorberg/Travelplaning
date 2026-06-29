@@ -30,7 +30,7 @@ export default async function DocumentsPage({
       <p>
         <Link href={`/trips/${tripId}`}>← {trip.name}</Link>
       </p>
-      <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
+      <header className="list-row" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
         <h1 style={{ margin: 0 }}>Dokumente &amp; Tickets</h1>
         {canEdit ? <Link href={`/trips/${tripId}/documents/new`}>+ Dokument hinzufügen</Link> : null}
       </header>
@@ -42,7 +42,7 @@ export default async function DocumentsPage({
           {docs.map((d) => {
             const fileUrl = d.driveFileUrl ?? d.externalUrl;
             return (
-              <li key={d.id} style={{ display: "flex", justifyContent: "space-between", gap: "1rem" }}>
+              <li key={d.id} className="list-row" style={{ display: "flex", justifyContent: "space-between", gap: "1rem" }}>
                 <div>
                   <strong>{d.title}</strong>{" "}
                   <span style={{ opacity: 0.6, fontSize: "0.8rem" }}>
