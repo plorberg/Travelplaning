@@ -98,7 +98,7 @@ export default async function ItineraryPage({
       </p>
       <header className="list-row" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
         <h1 style={{ margin: 0 }}>Reiseplan</h1>
-        {canEdit ? <Link href={`/trips/${tripId}/itinerary/new`}>+ Eintrag hinzufügen</Link> : null}
+        {canEdit ? <Link href={`/trips/${tripId}/itinerary/new`} className="btn btn-primary">+ Eintrag hinzufügen</Link> : null}
       </header>
 
       <p style={{ display: "flex", gap: "1rem", margin: "0.5rem 0 1rem" }}>

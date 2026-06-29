@@ -199,3 +199,117 @@ button:disabled {
     font-size: 1.4rem;
   }
 }
+
+/* Modern UI utilities -------------------------------------------------- */
+/* Button-styled links/actions (use `btn` on <a>; add `btn-primary` for CTAs) */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--fg);
+  font: inherit;
+  font-weight: 500;
+  line-height: 1.2;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+.btn:hover {
+  background: #f0f1f4;
+  text-decoration: none;
+}
+.btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--ring);
+}
+.btn-ghost {
+  border-color: transparent;
+  background: transparent;
+}
+.btn-ghost:hover {
+  background: #eceef1;
+}
+
+/* Pill badge for status / role / category */
+.badge {
+  display: inline-block;
+  padding: 0.12rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: var(--border);
+  color: #374151;
+  vertical-align: middle;
+}
+
+/* Card grid for section navigation */
+.nav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.75rem;
+}
+.nav-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  color: var(--fg);
+  text-decoration: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.nav-card:hover {
+  text-decoration: none;
+  border-color: var(--border-strong);
+  box-shadow: 0 4px 14px rgba(16, 24, 40, 0.1);
+}
+.nav-card .nav-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+.nav-card .nav-label {
+  font-weight: 600;
+}
+
+/* Clickable card (e.g. dashboard trips) */
+.card-link {
+  display: block;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  color: var(--fg);
+  text-decoration: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.card-link:hover {
+  text-decoration: none;
+  border-color: var(--border-strong);
+  box-shadow: 0 4px 14px rgba(16, 24, 40, 0.1);
+}
+
+/* Topbar navigation / user area */
+.topbar-nav {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  font-size: 0.9rem;
+}
+.topbar-email {
+  color: var(--muted);
+}
+@media (max-width: 560px) {
+  .topbar-email {
+    display: none;
+  }
+}

@@ -63,7 +63,7 @@ export default async function ExpensesPage({
         }}
       >
         <h1 style={{ margin: 0 }}>Ausgaben</h1>
-        {canEdit ? <Link href={`/trips/${tripId}/expenses/new`}>+ Ausgabe hinzufügen</Link> : null}
+        {canEdit ? <Link href={`/trips/${tripId}/expenses/new`} className="btn btn-primary">+ Ausgabe hinzufügen</Link> : null}
       </header>
 
       <section

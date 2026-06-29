@@ -7,8 +7,8 @@ import {
   acceptInvitationAction,
   declineInvitationAction,
 } from "@/app/trips/invite-actions";
-import { SignOutButton } from "@/app/_components/SignOutButton";
 import { tripStatusLabels, memberRoleLabels } from "@/lib/labels";
+import { formatDate } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
@@ -22,43 +22,28 @@ export default async function DashboardPage() {
   ]);
 
   return (
-    <main style={{ maxWidth: 720, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
-      <header
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: "1rem",
-        }}
-      >
-        <span style={{ opacity: 0.8 }}>Angemeldet als {user.email}</span>
-        <SignOutButton />
-      </header>
-
+    <main style={{ maxWidth: 760, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
       {invitations.length > 0 ? (
-        <section
-          style={{
-            margin: "1rem 0",
-            padding: "0.75rem 1rem",
-            border: "1px solid #ddd",
-            borderRadius: 8,
-          }}
-        >
-          <h2 style={{ marginTop: 0 }}>Offene Einladungen</h2>
-          <ul style={{ listStyle: "none", padding: 0, display: "grid", gap: "0.5rem" }}>
+        <section className="card" style={{ margin: "0 0 1.5rem", padding: "0.85rem 1.1rem" }}>
+          <h2 style={{ marginTop: 0, fontSize: "1.05rem" }}>Offene Einladungen</h2>
+          <ul style={{ listStyle: "none", padding: 0, display: "grid", gap: "0.6rem" }}>
             {invitations.map((inv) => (
               <li
                 key={inv.id}
-                style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}
+                className="list-row"
+                style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}
               >
-                <span style={{ minWidth: 260 }}>
-                  <strong>{inv.tripName}</strong> · eingeladen als {inv.role}
+                <span style={{ flex: 1 }}>
+                  <strong>{inv.tripName}</strong>{" "}
+                  <span className="badge">{memberRoleLabels[inv.role] ?? inv.role}</span>
                 </span>
                 <form action={acceptInvitationAction.bind(null, inv.id)}>
-                  <button type="submit">Annehmen</button>
+                  <button type="submit" className="btn-primary" style={{ padding: "0.35rem 0.75rem" }}>
+                    Annehmen
+                  </button>
                 </form>
                 <form action={declineInvitationAction.bind(null, inv.id)}>
-                  <button type="submit">Ablehnen</button>
+                  <button type="submit" style={{ padding: "0.35rem 0.75rem" }}>Ablehnen</button>
                 </form>
               </li>
             ))}
@@ -67,34 +52,38 @@ export default async function DashboardPage() {
       ) : null}
 
       <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: "1rem",
-        }}
+        className="list-row"
+        style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", marginBottom: "1rem" }}
       >
-        <h1>Deine Reisen</h1>
-        <Link href="/trips/new">+ Neue Reise</Link>
+        <h1 style={{ margin: 0 }}>Deine Reisen</h1>
+        <Link href="/trips/new" className="btn btn-primary">
+          + Neue Reise
+        </Link>
       </div>
+
       {trips.length === 0 ? (
         <p className="empty">
           Noch keine Reisen.{" "}
           <Link href="/trips/new">Erstelle deine erste Reise</Link>.
         </p>
       ) : (
-        <ul style={{ listStyle: "none", padding: 0, display: "grid", gap: "0.5rem" }}>
+        <div style={{ display: "grid", gap: "0.6rem" }}>
           {trips.map((trip) => (
-            <li key={trip.id}>
-              <Link href={`/trips/${trip.id}`}>
-                <strong>{trip.name}</strong>
-              </Link>
-              {trip.mainDestination ? ` — ${trip.mainDestination}` : ""} ·{" "}
-              {tripStatusLabels[trip.status] ?? trip.status} · deine Rolle:{" "}
-              {memberRoleLabels[trip.role] ?? trip.role}
-            </li>
+            <Link key={trip.id} href={`/trips/${trip.id}`} className="card-link">
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: "0.75rem", flexWrap: "wrap" }}>
+                <strong style={{ fontSize: "1.05rem" }}>{trip.name}</strong>
+                <span className="badge">{tripStatusLabels[trip.status] ?? trip.status}</span>
+              </div>
+              <div style={{ color: "var(--muted)", fontSize: "0.9rem", marginTop: "0.2rem" }}>
+                {trip.mainDestination || "—"}
+                {trip.startDate
+                  ? ` · ${formatDate(trip.startDate)}${trip.endDate ? `–${formatDate(trip.endDate)}` : ""}`
+                  : ""}
+                {` · ${memberRoleLabels[trip.role] ?? trip.role}`}
+              </div>
+            </Link>
           ))}
-        </ul>
+        </div>
       )}
     </main>
   );

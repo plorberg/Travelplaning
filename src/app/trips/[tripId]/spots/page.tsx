@@ -31,7 +31,7 @@ export default async function SpotsPage({
       </p>
       <header className="list-row" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
         <h1 style={{ margin: 0 }}>Empfehlungen</h1>
-        {canEdit ? <Link href={`/trips/${tripId}/spots/new`}>+ Empfehlung hinzufügen</Link> : null}
+        {canEdit ? <Link href={`/trips/${tripId}/spots/new`} className="btn btn-primary">+ Empfehlung hinzufügen</Link> : null}
       </header>
 
       {spots.length === 0 ? (

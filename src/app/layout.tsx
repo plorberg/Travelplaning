@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import "./globals.css";
+import { getCurrentUser } from "@/lib/auth";
+import { SignOutButton } from "@/app/_components/SignOutButton";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -13,9 +15,10 @@ export const metadata: Metadata = {
     "Reisen planen, organisieren und verwalten – allein oder mit einer kleinen Gruppe.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const user = await getCurrentUser();
   return (
     <html lang="de">
       <body>
@@ -24,6 +27,13 @@ export default function RootLayout({
             <Link href="/" className="brand">
               ✈ Travelplaning
             </Link>
+            {user ? (
+              <nav className="topbar-nav">
+                <Link href="/dashboard">Dashboard</Link>
+                <span className="topbar-email">{user.email}</span>
+                <SignOutButton />
+              </nav>
+            ) : null}
           </div>
         </header>
         {children}

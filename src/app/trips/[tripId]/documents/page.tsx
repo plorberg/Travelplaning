@@ -32,7 +32,7 @@ export default async function DocumentsPage({
       </p>
       <header className="list-row" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
         <h1 style={{ margin: 0 }}>Dokumente &amp; Tickets</h1>
-        {canEdit ? <Link href={`/trips/${tripId}/documents/new`}>+ Dokument hinzufügen</Link> : null}
+        {canEdit ? <Link href={`/trips/${tripId}/documents/new`} className="btn btn-primary">+ Dokument hinzufügen</Link> : null}
       </header>
 
       {docs.length === 0 ? (

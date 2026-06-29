@@ -56,6 +56,7 @@ export default async function TripPage({
       </p>
 
       <header
+        className="list-row"
         style={{
           display: "flex",
           alignItems: "center",
@@ -64,8 +65,12 @@ export default async function TripPage({
         }}
       >
         <h1 style={{ margin: 0 }}>{trip.name}</h1>
-        <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
-          {canEdit ? <Link href={`/trips/${tripId}/edit`}>Bearbeiten</Link> : null}
+        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+          {canEdit ? (
+            <Link href={`/trips/${tripId}/edit`} className="btn">
+              Bearbeiten
+            </Link>
+          ) : null}
           {isOwner ? (
             <form action={deleteTripAction.bind(null, tripId)}>
               <button type="submit">Reise löschen</button>
@@ -84,7 +89,9 @@ export default async function TripPage({
         <dt style={{ opacity: 0.7 }}>Budget</dt>
         <dd style={{ margin: 0 }}>{formatMoney(trip.budget, trip.homeCurrency)}</dd>
         <dt style={{ opacity: 0.7 }}>Status</dt>
-        <dd style={{ margin: 0 }}>{tripStatusLabels[trip.status] ?? trip.status}</dd>
+        <dd style={{ margin: 0 }}>
+          <span className="badge">{tripStatusLabels[trip.status] ?? trip.status}</span>
+        </dd>
         <dt style={{ opacity: 0.7 }}>Reisestil</dt>
         <dd style={{ margin: 0 }}>
           {trip.travelStyle
@@ -95,14 +102,32 @@ export default async function TripPage({
         <dd style={{ margin: 0 }}>{memberRoleLabels[trip.role] ?? trip.role}</dd>
       </dl>
 
-      <p style={{ display: "flex", gap: "1.25rem", flexWrap: "wrap" }}>
-        <Link href={`/trips/${tripId}/itinerary`}>Reiseplan →</Link>
-        <Link href={`/trips/${tripId}/map`}>Karte →</Link>
-        <Link href={`/trips/${tripId}/flights`}>Flüge suchen →</Link>
-        <Link href={`/trips/${tripId}/spots`}>Empfehlungen →</Link>
-        <Link href={`/trips/${tripId}/documents`}>Dokumente →</Link>
-        <Link href={`/trips/${tripId}/expenses`}>Ausgaben &amp; Budget →</Link>
-      </p>
+      <nav className="nav-grid" style={{ margin: "1.5rem 0" }}>
+        <Link href={`/trips/${tripId}/itinerary`} className="nav-card">
+          <span className="nav-icon">🗓️</span>
+          <span className="nav-label">Reiseplan</span>
+        </Link>
+        <Link href={`/trips/${tripId}/map`} className="nav-card">
+          <span className="nav-icon">🗺️</span>
+          <span className="nav-label">Karte</span>
+        </Link>
+        <Link href={`/trips/${tripId}/flights`} className="nav-card">
+          <span className="nav-icon">✈️</span>
+          <span className="nav-label">Flüge</span>
+        </Link>
+        <Link href={`/trips/${tripId}/spots`} className="nav-card">
+          <span className="nav-icon">⭐</span>
+          <span className="nav-label">Empfehlungen</span>
+        </Link>
+        <Link href={`/trips/${tripId}/documents`} className="nav-card">
+          <span className="nav-icon">📄</span>
+          <span className="nav-label">Dokumente</span>
+        </Link>
+        <Link href={`/trips/${tripId}/expenses`} className="nav-card">
+          <span className="nav-icon">💶</span>
+          <span className="nav-label">Ausgaben &amp; Budget</span>
+        </Link>
+      </nav>
 
       {trip.notes ? (
         <>
@@ -122,7 +147,7 @@ export default async function TripPage({
         >
           <h2>Stationen</h2>
           {canEdit ? (
-            <Link href={`/trips/${tripId}/stops/new`}>+ Station hinzufügen</Link>
+            <Link href={`/trips/${tripId}/stops/new`} className="btn btn-primary">+ Station hinzufügen</Link>
           ) : null}
         </div>
         {stops.length === 0 ? (
