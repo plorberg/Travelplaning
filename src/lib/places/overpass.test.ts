@@ -49,4 +49,21 @@ describe("parseOverpassElements", () => {
     expect(parseOverpassElements(null)).toEqual([]);
     expect(parseOverpassElements({})).toEqual([]);
   });
+
+  it("prefers a German/Latin name over the local name tag", () => {
+    const localized = {
+      elements: [
+        { type: "node", id: 10, lat: 35.6, lon: 139.7, tags: { name: "東京タワー", "name:de": "Tokyoturm", "name:en": "Tokyo Tower", tourism: "attraction" } },
+        { type: "node", id: 11, lat: 35.6, lon: 139.7, tags: { name: "浅草寺", "name:en": "Sensoji", tourism: "attraction" } },
+        { type: "node", id: 12, lat: 35.6, lon: 139.7, tags: { name: "明治神宮", int_name: "Meiji Jingu", tourism: "attraction" } },
+        { type: "node", id: 13, lat: 35.6, lon: 139.7, tags: { name: "ローカル", tourism: "attraction" } },
+      ],
+    };
+    expect(parseOverpassElements(localized).map((r) => r.name)).toEqual([
+      "Tokyoturm",
+      "Sensoji",
+      "Meiji Jingu",
+      "ローカル",
+    ]);
+  });
 });

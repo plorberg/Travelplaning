@@ -35,13 +35,25 @@ type OverpassElement = {
 // The first present tag (in priority order) decides the category.
 const TAG_KEYS = ["tourism", "historic", "amenity", "leisure", "natural", "shop"];
 
+// Prefer a German/Latin display name over the local `name` tag (which is e.g.
+// Japanese for places in Japan); fall back to `name` so POIs that only carry a
+// local-language name still appear.
+const NAME_KEYS = ["name:de", "name:en", "int_name", "name"];
+function pickName(tags: Record<string, string>): string {
+  for (const key of NAME_KEYS) {
+    const value = tags[key]?.trim();
+    if (value) return value;
+  }
+  return "";
+}
+
 /** Pure parser for an Overpass JSON response (separated so it's testable). */
 export function parseOverpassElements(json: unknown, limit = 25): PlaceResult[] {
   const elements = (json as { elements?: OverpassElement[] })?.elements ?? [];
   const out: PlaceResult[] = [];
   for (const el of elements) {
     const tags = el.tags ?? {};
-    const name = (tags.name ?? "").trim();
+    const name = pickName(tags);
     if (!name) continue;
     const lat = el.lat ?? el.center?.lat;
     const lng = el.lon ?? el.center?.lon;
