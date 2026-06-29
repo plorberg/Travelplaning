@@ -34,7 +34,7 @@ export default async function EditSpotPage({
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
       <p>
-        <Link href={`/trips/${tripId}/spots`}>← Empfehlungen</Link>
+        <Link href={`/trips/${tripId}/spots`} className="btn btn-ghost">← Empfehlungen</Link>
       </p>
       <h1>Empfehlung bearbeiten</h1>
       <SpotForm

@@ -28,7 +28,7 @@ export default async function NewDocumentPage({
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
       <p>
-        <Link href={`/trips/${tripId}/documents`}>← Dokumente</Link>
+        <Link href={`/trips/${tripId}/documents`} className="btn btn-ghost">← Dokumente</Link>
       </p>
       <h1>Dokument hinzufügen</h1>
       <DocumentForm

@@ -35,7 +35,7 @@ export default async function EditExpensePage({
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
       <p>
-        <Link href={`/trips/${tripId}/expenses`}>← Ausgaben</Link>
+        <Link href={`/trips/${tripId}/expenses`} className="btn btn-ghost">← Ausgaben</Link>
       </p>
       <h1>Ausgabe bearbeiten</h1>
       <ExpenseForm

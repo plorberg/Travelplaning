@@ -26,7 +26,7 @@ export default async function EditTripPage({
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
       <p>
-        <Link href={`/trips/${tripId}`}>← Zurück zur Reise</Link>
+        <Link href={`/trips/${tripId}`} className="btn btn-ghost">← Zurück zur Reise</Link>
       </p>
       <h1>Reise bearbeiten</h1>
       <TripForm

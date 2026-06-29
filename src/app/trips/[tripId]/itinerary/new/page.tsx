@@ -34,7 +34,7 @@ export default async function NewItineraryItemPage({
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
       <p>
-        <Link href={`/trips/${tripId}/itinerary`}>← Reiseplan</Link>
+        <Link href={`/trips/${tripId}/itinerary`} className="btn btn-ghost">← Reiseplan</Link>
       </p>
       <h1>Eintrag hinzufügen</h1>
       <ItineraryForm

@@ -52,7 +52,7 @@ export default async function TripPage({
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
       <p>
-        <Link href="/dashboard">← Dashboard</Link>
+        <Link href="/dashboard" className="btn btn-ghost">← Dashboard</Link>
       </p>
 
       <header

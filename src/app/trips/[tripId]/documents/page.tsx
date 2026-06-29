@@ -28,7 +28,7 @@ export default async function DocumentsPage({
   return (
     <main style={{ maxWidth: 760, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
       <p>
-        <Link href={`/trips/${tripId}`}>← {trip.name}</Link>
+        <Link href={`/trips/${tripId}`} className="btn btn-ghost">← {trip.name}</Link>
       </p>
       <header className="list-row" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
         <h1 style={{ margin: 0 }}>Dokumente &amp; Tickets</h1>

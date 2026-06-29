@@ -21,7 +21,7 @@ export default async function FlightsPage({
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
       <p>
-        <Link href={`/trips/${tripId}`}>← {trip.name}</Link>
+        <Link href={`/trips/${tripId}`} className="btn btn-ghost">← {trip.name}</Link>
       </p>
       <h1>Flüge suchen</h1>
       <p style={{ opacity: 0.8 }}>

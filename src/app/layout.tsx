@@ -29,7 +29,7 @@ export default async function RootLayout({
             </Link>
             {user ? (
               <nav className="topbar-nav">
-                <Link href="/dashboard">Dashboard</Link>
+                <Link href="/dashboard" className="btn btn-ghost">Dashboard</Link>
                 <span className="topbar-email">{user.email}</span>
                 <SignOutButton />
               </nav>

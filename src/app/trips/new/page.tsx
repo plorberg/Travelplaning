@@ -13,7 +13,7 @@ export default async function NewTripPage() {
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
       <p>
-        <Link href="/dashboard">← Dashboard</Link>
+        <Link href="/dashboard" className="btn btn-ghost">← Dashboard</Link>
       </p>
       <h1>Neue Reise</h1>
       <TripForm action={createTripAction} submitLabel="Reise erstellen" />

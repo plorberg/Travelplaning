@@ -30,7 +30,7 @@ export default async function TripMapPage({
   return (
     <main style={{ maxWidth: 920, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
       <p>
-        <Link href={`/trips/${tripId}`}>← {trip.name}</Link>
+        <Link href={`/trips/${tripId}`} className="btn btn-ghost">← {trip.name}</Link>
       </p>
       <h1>Karte</h1>
       {points.length === 0 ? (
