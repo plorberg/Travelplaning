@@ -164,6 +164,7 @@ export default async function TripPage({
                       justifyContent: "space-between",
                       gap: "1rem",
                       alignItems: "flex-start",
+                      flexWrap: "wrap",
                     }}
                   >
                     <div>
@@ -222,9 +223,9 @@ export default async function TripPage({
             return (
               <li
                 key={m.userId}
-                style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}
+                style={{ display: "flex", gap: "0.75rem", alignItems: "center", flexWrap: "wrap" }}
               >
-                <span style={{ minWidth: 220 }}>
+                <span style={{ flex: "1 1 180px", minWidth: 0 }}>
                   {m.name ?? m.email}
                   {m.userId === trip.createdBy ? " · Ersteller" : ""}
                 </span>
@@ -263,9 +264,9 @@ export default async function TripPage({
                 {invitations.map((inv) => (
                   <li
                     key={inv.id}
-                    style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}
+                    style={{ display: "flex", gap: "0.75rem", alignItems: "center", flexWrap: "wrap" }}
                   >
-                    <span style={{ minWidth: 220 }}>
+                    <span style={{ flex: "1 1 180px", minWidth: 0 }}>
                       {inv.email} · {memberRoleLabels[inv.role] ?? inv.role} ·
                       ausstehend
                     </span>
