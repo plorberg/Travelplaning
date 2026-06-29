@@ -3,6 +3,8 @@ import { notFound, redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { getTripForUser, listMembers } from "@/lib/trips";
 import { listStops } from "@/lib/stops";
+import { getExpenseSummary } from "@/lib/expenses";
+import { BudgetBar } from "@/app/trips/_components/BudgetBar";
 import { countOwners, hasAtLeastRole } from "@/lib/authz";
 import { stopDateWarnings } from "@/lib/dates";
 import {
@@ -40,9 +42,10 @@ export default async function TripPage({
   const trip = await getTripForUser(user.id, tripId);
   if (!trip) notFound();
 
-  const [members, stops] = await Promise.all([
+  const [members, stops, summary] = await Promise.all([
     listMembers(user.id, tripId),
     listStops(user.id, tripId),
+    getExpenseSummary(user.id, tripId),
   ]);
   const isOwner = trip.role === "owner";
   const canEdit = hasAtLeastRole(trip.role, "editor");
@@ -101,6 +104,16 @@ export default async function TripPage({
         <dt style={{ opacity: 0.7 }}>Deine Rolle</dt>
         <dd style={{ margin: 0 }}>{memberRoleLabels[trip.role] ?? trip.role}</dd>
       </dl>
+
+      {trip.budget || summary.total > 0 ? (
+        <div style={{ margin: "0.25rem 0 0" }}>
+          <BudgetBar
+            spent={summary.total}
+            budget={trip.budget ? Number(trip.budget) : null}
+            currency={trip.homeCurrency}
+          />
+        </div>
+      ) : null}
 
       <nav className="nav-grid" style={{ margin: "1.5rem 0" }}>
         <Link href={`/trips/${tripId}/itinerary`} className="nav-card">

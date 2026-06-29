@@ -128,6 +128,17 @@ export async function deleteExpense(userId: string, tripId: string, expenseId: s
     .where(and(eq(expenses.id, expenseId), eq(expenses.tripId, tripId)));
 }
 
+/** Spent total (trip home currency) per trip the user is a member of. */
+export async function getTripSpendTotals(userId: string): Promise<Map<string, number>> {
+  const rows = await db
+    .select({ tripId: expenses.tripId, total: sum(expenses.convertedAmount) })
+    .from(expenses)
+    .innerJoin(tripMembers, eq(tripMembers.tripId, expenses.tripId))
+    .where(eq(tripMembers.userId, userId))
+    .groupBy(expenses.tripId);
+  return new Map(rows.map((r) => [r.tripId, Number(r.total ?? 0)]));
+}
+
 /** Totals in the trip home currency: overall, by category, and by stop. */
 export async function getExpenseSummary(userId: string, tripId: string) {
   await requireMember(userId, tripId);

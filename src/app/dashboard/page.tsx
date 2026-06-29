@@ -7,8 +7,10 @@ import {
   acceptInvitationAction,
   declineInvitationAction,
 } from "@/app/trips/invite-actions";
+import { getTripSpendTotals } from "@/lib/expenses";
 import { tripStatusLabels, memberRoleLabels } from "@/lib/labels";
 import { formatDate } from "@/lib/format";
+import { BudgetBar } from "@/app/trips/_components/BudgetBar";
 
 export const dynamic = "force-dynamic";
 
@@ -16,9 +18,10 @@ export default async function DashboardPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/");
 
-  const [trips, invitations] = await Promise.all([
+  const [trips, invitations, spend] = await Promise.all([
     getTripsForUser(user.id),
     listMyInvitations(user.email),
+    getTripSpendTotals(user.id),
   ]);
 
   return (
@@ -81,6 +84,16 @@ export default async function DashboardPage() {
                   : ""}
                 {` · ${memberRoleLabels[trip.role] ?? trip.role}`}
               </div>
+              {trip.budget ? (
+                <div style={{ marginTop: "0.5rem" }}>
+                  <BudgetBar
+                    spent={spend.get(trip.id) ?? 0}
+                    budget={Number(trip.budget)}
+                    currency={trip.homeCurrency}
+                    compact
+                  />
+                </div>
+              ) : null}
             </Link>
           ))}
         </div>

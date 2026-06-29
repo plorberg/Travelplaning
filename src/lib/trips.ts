@@ -38,6 +38,8 @@ export async function getTripsForUser(userId: string) {
       startDate: trips.startDate,
       endDate: trips.endDate,
       status: trips.status,
+      budget: trips.budget,
+      homeCurrency: trips.homeCurrency,
       role: tripMembers.role,
     })
     .from(trips)
