@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { SignInButton } from "@/app/_components/SignInButton";
 
@@ -6,6 +6,7 @@ export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const user = await getCurrentUser();
+  if (user) redirect("/dashboard");
 
   return (
     <main style={{ maxWidth: 640, margin: "0 auto", padding: "4rem 1.5rem" }}>
@@ -14,13 +15,7 @@ export default async function Home() {
         Plane, organisiere und verwalte deine Reisen – allein oder mit anderen.
       </p>
 
-      {user ? (
-        <p>
-          <Link href="/dashboard">Zu deinem Dashboard →</Link>
-        </p>
-      ) : (
-        <SignInButton />
-      )}
+      <SignInButton />
     </main>
   );
 }
