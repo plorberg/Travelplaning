@@ -83,7 +83,11 @@ export function StopForm({
       <GeocodeFields
         defaultLat={defaults.lat}
         defaultLng={defaults.lng}
-        queryFields={["accommodationAddress", "city", "country"]}
+        candidateFieldSets={[
+          ["accommodationAddress"],
+          ["accommodationAddress", "city", "country"],
+          ["city", "country"],
+        ]}
         latError={fe.lat}
         lngError={fe.lng}
       />

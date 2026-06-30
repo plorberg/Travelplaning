@@ -241,7 +241,7 @@ export default async function TripPage({
                             ↓
                           </button>
                         </form>
-                        <Link href={`/trips/${tripId}/stops/${stop.id}/edit`}>
+                        <Link href={`/trips/${tripId}/stops/${stop.id}/edit`} className="btn">
                           Bearbeiten
                         </Link>
                         <form action={deleteStopAction.bind(null, tripId, stop.id)}>

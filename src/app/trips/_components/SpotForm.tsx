@@ -105,7 +105,7 @@ export function SpotForm({
       <GeocodeFields
         defaultLat={defaults.lat}
         defaultLng={defaults.lng}
-        queryFields={["name", "address"]}
+        candidateFieldSets={[["address"], ["address", "name"], ["name"]]}
         latError={fe.lat}
         lngError={fe.lng}
       />

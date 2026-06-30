@@ -11,13 +11,15 @@ import { geocodeAddressAction } from "@/app/trips/geocode-actions";
 export function GeocodeFields({
   defaultLat,
   defaultLng,
-  queryFields,
+  candidateFieldSets,
   latError,
   lngError,
 }: {
   defaultLat?: string;
   defaultLng?: string;
-  queryFields: string[];
+  // Ordered groups of input names; each group is joined into one geocoding
+  // candidate and tried in order (most specific first).
+  candidateFieldSets: string[][];
   latError?: string[];
   lngError?: string[];
 }) {
@@ -30,18 +32,21 @@ export function GeocodeFields({
   async function geocode() {
     const form = btn.current?.form;
     if (!form) return;
-    const query = queryFields
-      .map((n) => (form.elements.namedItem(n) as HTMLInputElement | null)?.value?.trim())
-      .filter(Boolean)
-      .join(", ");
-    if (!query) {
+    const read = (n: string) =>
+      (form.elements.namedItem(n) as HTMLInputElement | null)?.value?.trim() || "";
+    const clean = (q: string) =>
+      q.replace(/\s*,\s*/g, ", ").replace(/(?:,\s*){2,}/g, ", ").replace(/^[,\s]+|[,\s]+$/g, "");
+    const queries = candidateFieldSets
+      .map((set) => clean(set.map(read).filter(Boolean).join(", ")))
+      .filter(Boolean);
+    if (queries.length === 0) {
       setMsg("Bitte zuerst Adresse/Ort eingeben.");
       return;
     }
     setLoading(true);
     setMsg(null);
     try {
-      const result = await geocodeAddressAction(query);
+      const result = await geocodeAddressAction(queries);
       if (result) {
         setLat(String(result.lat));
         setLng(String(result.lng));
