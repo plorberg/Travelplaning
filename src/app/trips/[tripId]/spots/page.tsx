@@ -31,7 +31,12 @@ export default async function SpotsPage({
       </p>
       <header className="list-row" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
         <h1 style={{ margin: 0 }}>Empfehlungen</h1>
-        {canEdit ? <Link href={`/trips/${tripId}/spots/new`} className="btn btn-primary">+ Empfehlung hinzufügen</Link> : null}
+        {canEdit ? (
+          <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+            <Link href={`/trips/${tripId}/spots/import`} className="btn">KML importieren</Link>
+            <Link href={`/trips/${tripId}/spots/new`} className="btn btn-primary">+ Empfehlung hinzufügen</Link>
+          </div>
+        ) : null}
       </header>
 
       {spots.length === 0 ? (

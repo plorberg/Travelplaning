@@ -1,5 +1,6 @@
 "use server";
 
+import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
@@ -9,8 +10,11 @@ import {
   createSavedSpot,
   deleteSavedSpot,
   updateSavedSpot,
+  importSavedSpots,
 } from "@/lib/saved-spots";
 import type { FormState } from "@/app/trips/actions";
+
+const spotImportSchema = z.array(spotInputSchema).min(1).max(2000);
 
 async function requireUserId(): Promise<string> {
   const user = await getCurrentUser();
@@ -70,4 +74,22 @@ export async function deleteSpotAction(
   const userId = await requireUserId();
   await deleteSavedSpot(userId, tripId, spotId);
   revalidatePath(`/trips/${tripId}/spots`);
+}
+
+export async function importSpotsAction(
+  tripId: string,
+  spots: unknown,
+): Promise<{ imported?: number; error?: string }> {
+  const userId = await requireUserId();
+  const parsed = spotImportSchema.safeParse(spots);
+  if (!parsed.success) {
+    return { error: "Die KML-Datei enthält keine gültigen Orte." };
+  }
+  try {
+    const imported = await importSavedSpots(userId, tripId, parsed.data);
+    revalidatePath(`/trips/${tripId}/spots`);
+    return { imported };
+  } catch (e) {
+    return { error: messageFrom(e) };
+  }
 }

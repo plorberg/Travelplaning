@@ -77,6 +77,24 @@ export async function createSavedSpot(userId: string, tripId: string, input: Spo
   await db.insert(savedSpots).values({ tripId, ...toRow(stopIds, input), createdBy: userId });
 }
 
+/** Bulk-inserts spots (e.g. from a KML import); returns the number created. */
+export async function importSavedSpots(
+  userId: string,
+  tripId: string,
+  inputs: SpotInput[],
+): Promise<number> {
+  await requireEditor(userId, tripId);
+  if (inputs.length === 0) return 0;
+  const stopIds = await tripStopIds(tripId);
+  const rows = inputs.map((input) => ({
+    tripId,
+    ...toRow(stopIds, input),
+    createdBy: userId,
+  }));
+  await db.insert(savedSpots).values(rows);
+  return rows.length;
+}
+
 export async function updateSavedSpot(
   userId: string,
   tripId: string,
