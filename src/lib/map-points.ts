@@ -6,6 +6,7 @@ export type MapPoint = {
   lat: number;
   lng: number;
   kind: "stop" | "spot";
+  category?: string; // saved-spot category key, for colouring
   sub?: string;
 };
 
@@ -45,6 +46,7 @@ export function toMapPoints(stops: StopRow[], spots: SpotRow[]): MapPoint[] {
     lat: s.lat as number,
     lng: s.lng as number,
     kind: "spot",
+    category: s.category ?? undefined,
     sub: s.category ? (spotCategoryLabels[s.category] ?? s.category) : undefined,
   }));
 

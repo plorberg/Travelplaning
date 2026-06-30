@@ -3,9 +3,8 @@
 import { useEffect, useRef } from "react";
 import "leaflet/dist/leaflet.css";
 import type { MapPoint } from "@/lib/map-points";
-
-const STOP_COLOR = "#1d4ed8";
-const SPOT_COLOR = "#b45309";
+import { STOP_COLOR, spotColor } from "@/lib/spot-colors";
+import { spotCategoryLabels } from "@/lib/labels";
 
 function escapeHtml(s: string): string {
   return s
@@ -35,13 +34,16 @@ export function TripMap({ points }: { points: MapPoint[] }) {
 
       const latlngs: [number, number][] = [];
       for (const p of points) {
-        const color = p.kind === "stop" ? STOP_COLOR : SPOT_COLOR;
+        const isStop = p.kind === "stop";
+        const color = isStop ? STOP_COLOR : spotColor(p.category);
         const marker = L.circleMarker([p.lat, p.lng], {
-          radius: 7,
-          color,
+          // Stops are larger with a white ring so they stand out from the
+          // category-coloured spot dots.
+          radius: isStop ? 9 : 6,
+          color: isStop ? "#ffffff" : color,
           fillColor: color,
-          fillOpacity: 0.85,
-          weight: 2,
+          fillOpacity: 0.9,
+          weight: isStop ? 3 : 2,
         }).addTo(map);
         marker.bindPopup(
           `<strong>${escapeHtml(p.name)}</strong>${
@@ -62,19 +64,29 @@ export function TripMap({ points }: { points: MapPoint[] }) {
     };
   }, [points]);
 
+  // Distinct spot categories present, for the legend (insertion order).
+  const spotCategories = Array.from(
+    new Set(points.filter((p) => p.kind === "spot").map((p) => p.category ?? "")),
+  );
+
   return (
     <div style={{ display: "grid", gap: "0.5rem" }}>
       <div
         ref={ref}
         style={{ height: 480, width: "100%", borderRadius: 8, overflow: "hidden" }}
       />
-      <div style={{ display: "flex", gap: "1.25rem", fontSize: "0.85rem", opacity: 0.85 }}>
-        <span>
-          <span style={{ color: STOP_COLOR }}>●</span> Stationen
-        </span>
-        <span>
-          <span style={{ color: SPOT_COLOR }}>●</span> Empfehlungen
-        </span>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem 1rem", fontSize: "0.85rem", opacity: 0.85 }}>
+        {points.some((p) => p.kind === "stop") ? (
+          <span>
+            <span style={{ color: STOP_COLOR }}>●</span> Stationen
+          </span>
+        ) : null}
+        {spotCategories.map((c) => (
+          <span key={c || "spot"}>
+            <span style={{ color: spotColor(c) }}>●</span>{" "}
+            {c ? spotCategoryLabels[c] ?? c : "Empfehlung"}
+          </span>
+        ))}
       </div>
     </div>
   );
