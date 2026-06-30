@@ -15,10 +15,25 @@ const timeFmt = new Intl.DateTimeFormat("de-DE", {
   minute: "2-digit",
 });
 
+const weekdayDateFmt = new Intl.DateTimeFormat("de-DE", {
+  timeZone: "UTC",
+  weekday: "short",
+  day: "2-digit",
+  month: "2-digit",
+  year: "numeric",
+});
+
 function toDate(value: string | Date): Date {
   if (value instanceof Date) return value;
   // Treat a bare "YYYY-MM-DD" as UTC midnight.
   return new Date(value.length <= 10 ? `${value}T00:00:00Z` : value);
+}
+
+/** "Mi, 05.11.2026" — weekday + date, for timeline day headings. */
+export function formatDayHeading(value: string | Date | null | undefined): string {
+  if (!value) return "—";
+  const d = toDate(value);
+  return Number.isNaN(d.getTime()) ? String(value) : weekdayDateFmt.format(d);
 }
 
 /** "05.11.2026" — falls back to "—" for empty values. */

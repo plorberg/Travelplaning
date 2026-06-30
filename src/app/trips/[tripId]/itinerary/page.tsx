@@ -7,9 +7,21 @@ import { hasAtLeastRole } from "@/lib/authz";
 import { detectConflicts } from "@/lib/conflicts";
 import { deleteItineraryAction } from "@/app/trips/itinerary-actions";
 import { itineraryItemTypeLabels } from "@/lib/labels";
-import { formatDate, formatTime, formatMoney } from "@/lib/format";
+import { formatDate, formatDayHeading, formatTime, formatMoney } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
+
+const MS_PER_DAY = 86_400_000;
+
+// 1-based day index of an ISO day within a trip starting on `startDate`.
+function dayNumber(startDate: string | null | undefined, isoDay: string): number | null {
+  if (!startDate) return null;
+  const start = Date.parse(`${startDate}T00:00:00Z`);
+  const day = Date.parse(`${isoDay}T00:00:00Z`);
+  if (Number.isNaN(start) || Number.isNaN(day)) return null;
+  const n = Math.floor((day - start) / MS_PER_DAY) + 1;
+  return n >= 1 ? n : null;
+}
 
 const UNSCHEDULED = "Nicht geplant";
 
@@ -82,6 +94,66 @@ export default async function ItineraryPage({
     );
   }
 
+  // Timeline row for the day view: a dot on the rail, time-led, with links.
+  function renderTimelineRow(it: Item) {
+    const conflicted = conflicts.has(it.id);
+    const meta = [it.stopCity, it.location, it.cost ? formatMoney(it.cost, it.currency ?? "") : ""]
+      .filter(Boolean)
+      .join(" · ");
+    return (
+      <li key={it.id} style={{ position: "relative", padding: "0 0 1.1rem 1.1rem" }}>
+        <span
+          aria-hidden
+          style={{
+            position: "absolute",
+            left: -6,
+            top: 5,
+            width: 10,
+            height: 10,
+            borderRadius: "50%",
+            background: conflicted ? "#b8860b" : "var(--primary)",
+            border: "2px solid var(--surface)",
+          }}
+        />
+        <div style={{ display: "flex", justifyContent: "space-between", gap: "1rem" }}>
+          <div>
+            <div style={{ fontVariantNumeric: "tabular-nums", fontSize: "0.85rem", opacity: 0.75 }}>
+              {it.startAt
+                ? `${formatTime(it.startAt)}${it.endAt ? `–${formatTime(it.endAt)}` : ""}`
+                : UNSCHEDULED}
+            </div>
+            <strong>{it.title}</strong>{" "}
+            <span style={{ opacity: 0.6, fontSize: "0.8rem" }}>
+              · {itineraryItemTypeLabels[it.type] ?? it.type}
+            </span>
+            {meta ? <div style={{ opacity: 0.8, fontSize: "0.85rem" }}>{meta}</div> : null}
+            {it.savedSpotName || it.documentTitle ? (
+              <div style={{ opacity: 0.7, fontSize: "0.8rem" }}>
+                {it.savedSpotName ? `📍 ${it.savedSpotName}` : ""}
+                {it.savedSpotName && it.documentTitle ? " · " : ""}
+                {it.documentTitle ? `🎫 ${it.documentTitle}` : ""}
+              </div>
+            ) : null}
+            {conflicted ? (
+              <div style={{ color: "#b8860b", fontSize: "0.8rem" }}>
+                ⚠ Überschneidet sich mit einem anderen Eintrag
+              </div>
+            ) : null}
+            {it.notes ? <div style={{ fontSize: "0.85rem" }}>{it.notes}</div> : null}
+          </div>
+          {canEdit ? (
+            <div style={{ display: "flex", gap: "0.5rem", alignItems: "flex-start" }}>
+              <Link href={`/trips/${tripId}/itinerary/${it.id}/edit`}>Bearbeiten</Link>
+              <form action={deleteItineraryAction.bind(null, tripId, it.id)}>
+                <button type="submit">Löschen</button>
+              </form>
+            </div>
+          ) : null}
+        </div>
+      </li>
+    );
+  }
+
   // Group consecutive items by day (already sorted; nulls/unscheduled last).
   const groups: { day: string; items: Item[] }[] = [];
   for (const it of items) {
@@ -117,17 +189,36 @@ export default async function ItineraryPage({
           {items.map((it) => renderItem(it, true))}
         </ul>
       ) : (
-        <div style={{ display: "grid", gap: "1.25rem" }}>
-          {groups.map((g) => (
-            <section key={g.day}>
-              <h3 style={{ margin: "0 0 0.4rem" }}>
-                {g.day === UNSCHEDULED ? UNSCHEDULED : formatDate(g.day)}
-              </h3>
-              <ul style={{ listStyle: "none", padding: 0, display: "grid", gap: "0.5rem" }}>
-                {g.items.map((it) => renderItem(it, false))}
-              </ul>
-            </section>
-          ))}
+        <div style={{ display: "grid", gap: "1.5rem" }}>
+          {groups.map((g) => {
+            const n = g.day === UNSCHEDULED ? null : dayNumber(trip.startDate, g.day);
+            return (
+              <section key={g.day}>
+                <h3
+                  style={{
+                    margin: "0 0 0.6rem",
+                    display: "flex",
+                    alignItems: "baseline",
+                    gap: "0.5rem",
+                    flexWrap: "wrap",
+                  }}
+                >
+                  {n ? <span className="badge">Tag {n}</span> : null}
+                  <span>{g.day === UNSCHEDULED ? UNSCHEDULED : formatDayHeading(g.day)}</span>
+                </h3>
+                <ul
+                  style={{
+                    listStyle: "none",
+                    margin: "0 0 0 0.4rem",
+                    padding: 0,
+                    borderLeft: "2px solid var(--border)",
+                  }}
+                >
+                  {g.items.map((it) => renderTimelineRow(it))}
+                </ul>
+              </section>
+            );
+          })}
         </div>
       )}
     </main>
