@@ -146,11 +146,6 @@ export default async function TripPage({
           <span className="nav-icon">🗺️</span>
           <span className="nav-label">Karte</span>
         </Link>
-        <Link href={`/trips/${tripId}/roadtrip`} className="nav-card">
-          <span className="nav-icon">🚗</span>
-          <span className="nav-label">Roadtrip</span>
-          <span className="nav-count">{plural(stops.length, "Station", "Stationen")}</span>
-        </Link>
         <Link href={`/trips/${tripId}/flights`} className="nav-card">
           <span className="nav-icon">✈️</span>
           <span className="nav-label">Flüge</span>
@@ -189,9 +184,14 @@ export default async function TripPage({
           }}
         >
           <h2>Stationen</h2>
-          {canEdit ? (
-            <Link href={`/trips/${tripId}/stops/new`} className="btn btn-primary">+ Station hinzufügen</Link>
-          ) : null}
+          <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
+            {stops.length >= 2 ? (
+              <Link href={`/trips/${tripId}/roadtrip`} className="btn">🚗 Route &amp; Etappen</Link>
+            ) : null}
+            {canEdit ? (
+              <Link href={`/trips/${tripId}/stops/new`} className="btn btn-primary">+ Station hinzufügen</Link>
+            ) : null}
+          </div>
         </div>
         {stops.length === 0 ? (
           <p className="empty">Noch keine Stationen.</p>

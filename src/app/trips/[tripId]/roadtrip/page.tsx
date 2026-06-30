@@ -52,7 +52,7 @@ export default async function RoadtripPage({
         className="list-row"
         style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}
       >
-        <h1 style={{ margin: 0 }}>Roadtrip</h1>
+        <h1 style={{ margin: 0 }}>Route &amp; Etappen</h1>
         {canEdit && hasCoordPairs ? (
           <form action={recomputeLegsAction.bind(null, tripId)}>
             <button type="submit" className="btn">Strecken berechnen</button>
