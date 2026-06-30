@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import type { FormState } from "@/app/trips/actions";
 import { spotCategoryValues } from "@/lib/validation";
 import { spotCategoryLabels } from "@/lib/labels";
+import { GeocodeFields } from "@/app/trips/_components/GeocodeFields";
 
 type Defaults = {
   name?: string;
@@ -101,14 +102,13 @@ export function SpotForm({
           />
         </Field>
       </div>
-      <div className="field-row" style={{ display: "flex", gap: "0.75rem" }}>
-        <Field label="Breitengrad" error={fe.lat}>
-          <input name="lat" inputMode="decimal" defaultValue={defaults.lat ?? ""} />
-        </Field>
-        <Field label="Längengrad" error={fe.lng}>
-          <input name="lng" inputMode="decimal" defaultValue={defaults.lng ?? ""} />
-        </Field>
-      </div>
+      <GeocodeFields
+        defaultLat={defaults.lat}
+        defaultLng={defaults.lng}
+        queryFields={["name", "address"]}
+        latError={fe.lat}
+        lngError={fe.lng}
+      />
       <Field label="Quelle (z. B. Wikivoyage, Empfehlung)" error={fe.source}>
         <input name="source" defaultValue={defaults.source ?? ""} />
       </Field>

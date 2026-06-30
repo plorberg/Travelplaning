@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import type { FormState } from "@/app/trips/actions";
+import { GeocodeFields } from "@/app/trips/_components/GeocodeFields";
 
 type Defaults = {
   city?: string;
@@ -79,14 +80,13 @@ export function StopForm({
           defaultValue={defaults.accommodationAddress ?? ""}
         />
       </Field>
-      <div className="field-row" style={{ display: "flex", gap: "0.75rem" }}>
-        <Field label="Breitengrad" error={fe.lat}>
-          <input name="lat" inputMode="decimal" defaultValue={defaults.lat ?? ""} />
-        </Field>
-        <Field label="Längengrad" error={fe.lng}>
-          <input name="lng" inputMode="decimal" defaultValue={defaults.lng ?? ""} />
-        </Field>
-      </div>
+      <GeocodeFields
+        defaultLat={defaults.lat}
+        defaultLng={defaults.lng}
+        queryFields={["accommodationAddress", "city", "country"]}
+        latError={fe.lat}
+        lngError={fe.lng}
+      />
       <Field label="Schwerpunkte / Highlights (für die Roadtrip-Tabelle)" error={fe.highlights}>
         <textarea name="highlights" rows={2} defaultValue={defaults.highlights ?? ""} />
       </Field>
