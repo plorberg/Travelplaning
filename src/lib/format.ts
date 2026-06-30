@@ -49,6 +49,14 @@ export function formatTime(value: Date | null | undefined): string {
   return Number.isNaN(value.getTime()) ? "" : timeFmt.format(value);
 }
 
+/** Minutes → "2:30 h" (drive time). Empty for null. */
+export function formatDuration(minutes: number | null | undefined): string {
+  if (minutes == null) return "";
+  const h = Math.floor(minutes / 60);
+  const m = Math.round(minutes % 60);
+  return `${h}:${String(m).padStart(2, "0")} h`;
+}
+
 /**
  * "1.500,00 €" / "5.000,00 NZ$". Falls back to a plain number + code for
  * invalid/unknown currency codes so it never throws on user input.

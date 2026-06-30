@@ -146,6 +146,11 @@ export default async function TripPage({
           <span className="nav-icon">🗺️</span>
           <span className="nav-label">Karte</span>
         </Link>
+        <Link href={`/trips/${tripId}/roadtrip`} className="nav-card">
+          <span className="nav-icon">🚗</span>
+          <span className="nav-label">Roadtrip</span>
+          <span className="nav-count">{plural(stops.length, "Station", "Stationen")}</span>
+        </Link>
         <Link href={`/trips/${tripId}/flights`} className="nav-card">
           <span className="nav-icon">✈️</span>
           <span className="nav-label">Flüge</span>

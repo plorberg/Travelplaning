@@ -82,6 +82,7 @@ export const stopInputSchema = z
     lat: optionalLat,
     lng: optionalLng,
     notes: optionalText(5000),
+    highlights: optionalText(2000),
   })
   .refine(
     (d) => !d.arrivalDate || !d.departureDate || d.departureDate >= d.arrivalDate,

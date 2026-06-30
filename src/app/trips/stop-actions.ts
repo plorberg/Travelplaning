@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { stopInputSchema } from "@/lib/validation";
 import { AccessError } from "@/lib/trips";
-import { createStop, deleteStop, moveStop, updateStop } from "@/lib/stops";
+import { createStop, deleteStop, moveStop, recomputeLegs, updateStop } from "@/lib/stops";
 import type { FormState } from "@/app/trips/actions";
 
 async function requireUserId(): Promise<string> {
@@ -77,4 +77,13 @@ export async function moveStopAction(
   const userId = await requireUserId();
   await moveStop(userId, tripId, stopId, direction);
   revalidatePath(`/trips/${tripId}`);
+}
+
+export async function recomputeLegsAction(
+  tripId: string,
+  _formData?: FormData,
+): Promise<void> {
+  const userId = await requireUserId();
+  await recomputeLegs(userId, tripId);
+  revalidatePath(`/trips/${tripId}/roadtrip`);
 }

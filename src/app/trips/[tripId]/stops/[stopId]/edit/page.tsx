@@ -46,6 +46,7 @@ export default async function EditStopPage({
           lat: stop.lat != null ? String(stop.lat) : "",
           lng: stop.lng != null ? String(stop.lng) : "",
           notes: stop.notes ?? "",
+          highlights: stop.highlights ?? "",
         }}
       />
     </main>

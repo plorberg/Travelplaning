@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { stops } from "@/db/schema";
 import { hasAtLeastRole } from "@/lib/authz";
 import { AccessError, getMembership } from "@/lib/trips";
+import { routeLeg } from "@/lib/routing";
 import type { StopInput } from "@/lib/validation";
 
 async function requireMember(userId: string, tripId: string) {
@@ -29,6 +30,7 @@ function toStopRow(input: StopInput) {
     lat: input.lat ?? null,
     lng: input.lng ?? null,
     notes: input.notes ?? null,
+    highlights: input.highlights ?? null,
   };
 }
 
@@ -115,4 +117,38 @@ export async function moveStop(
     db.update(stops).set({ sortOrder: b.sortOrder }).where(eq(stops.id, a.id)),
     db.update(stops).set({ sortOrder: a.sortOrder }).where(eq(stops.id, b.id)),
   ]);
+}
+
+/**
+ * Recomputes the driving leg (distance + time) from each stop to the next via
+ * the routing provider and caches it on the destination stop. Legs without
+ * coordinates on both ends (and the first stop) are cleared to null.
+ */
+export async function recomputeLegs(userId: string, tripId: string): Promise<number> {
+  await requireEditor(userId, tripId);
+  const ordered = await db
+    .select()
+    .from(stops)
+    .where(eq(stops.tripId, tripId))
+    .orderBy(stops.sortOrder, stops.createdAt);
+
+  for (let i = 0; i < ordered.length; i++) {
+    const cur = ordered[i];
+    const prev = i > 0 ? ordered[i - 1] : null;
+    let distance: string | null = null;
+    let minutes: number | null = null;
+    if (prev?.lat != null && prev.lng != null && cur.lat != null && cur.lng != null) {
+      const r = await routeLeg(
+        { lat: prev.lat, lng: prev.lng },
+        { lat: cur.lat, lng: cur.lng },
+      );
+      distance = r.distanceKm.toFixed(1);
+      minutes = r.durationMinutes;
+    }
+    await db
+      .update(stops)
+      .set({ legDistanceKm: distance, legDriveMinutes: minutes })
+      .where(eq(stops.id, cur.id));
+  }
+  return ordered.length;
 }

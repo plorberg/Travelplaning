@@ -181,6 +181,10 @@ export const stops = pgTable("stops", {
   lat: doublePrecision("lat"),
   lng: doublePrecision("lng"),
   notes: text("notes"),
+  highlights: text("highlights"),
+  // Driving leg from the previous stop to this one (cached from routing).
+  legDistanceKm: numeric("leg_distance_km", { precision: 8, scale: 1 }),
+  legDriveMinutes: integer("leg_drive_minutes"),
   sortOrder: integer("sort_order").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()

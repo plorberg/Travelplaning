@@ -13,6 +13,7 @@ type Defaults = {
   lat?: string;
   lng?: string;
   notes?: string;
+  highlights?: string;
 };
 
 function Field({
@@ -86,6 +87,9 @@ export function StopForm({
           <input name="lng" inputMode="decimal" defaultValue={defaults.lng ?? ""} />
         </Field>
       </div>
+      <Field label="Schwerpunkte / Highlights (für die Roadtrip-Tabelle)" error={fe.highlights}>
+        <textarea name="highlights" rows={2} defaultValue={defaults.highlights ?? ""} />
+      </Field>
       <Field label="Notizen" error={fe.notes}>
         <textarea name="notes" rows={3} defaultValue={defaults.notes ?? ""} />
       </Field>
