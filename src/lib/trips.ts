@@ -1,6 +1,14 @@
-import { and, eq } from "drizzle-orm";
+import { and, count, eq } from "drizzle-orm";
 import { db } from "@/db";
-import { trips, tripMembers, users } from "@/db/schema";
+import {
+  trips,
+  tripMembers,
+  users,
+  itineraryItems,
+  documents,
+  savedSpots,
+  expenses,
+} from "@/db/schema";
 import {
   checkRemoveMember,
   checkRoleChange,
@@ -71,6 +79,24 @@ export async function getTripForUser(userId: string, tripId: string) {
     .where(and(eq(trips.id, tripId), eq(tripMembers.userId, userId)))
     .limit(1);
   return row ?? null;
+}
+
+/** Per-section item counts for the trip overview (membership-checked). */
+export async function getTripCounts(userId: string, tripId: string) {
+  const role = await getMembership(userId, tripId);
+  if (!role) throw new AccessError("Du hast keinen Zugriff auf diese Reise.");
+  const [it, doc, sp, ex] = await Promise.all([
+    db.select({ c: count() }).from(itineraryItems).where(eq(itineraryItems.tripId, tripId)),
+    db.select({ c: count() }).from(documents).where(eq(documents.tripId, tripId)),
+    db.select({ c: count() }).from(savedSpots).where(eq(savedSpots.tripId, tripId)),
+    db.select({ c: count() }).from(expenses).where(eq(expenses.tripId, tripId)),
+  ]);
+  return {
+    itinerary: it[0]?.c ?? 0,
+    documents: doc[0]?.c ?? 0,
+    spots: sp[0]?.c ?? 0,
+    expenses: ex[0]?.c ?? 0,
+  };
 }
 
 function toRow(input: TripInput) {

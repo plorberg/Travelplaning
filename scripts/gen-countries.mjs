@@ -69,6 +69,20 @@ export function currencyForCountry(code?: string | null): string | null {
   return BY_CODE.get(code.toUpperCase())?.currency ?? null;
 }
 
+/** German country name for an ISO-3166 alpha-2 code, or null. */
+export function countryName(code?: string | null): string | null {
+  if (!code) return null;
+  return BY_CODE.get(code.toUpperCase())?.name ?? null;
+}
+
+/** Flag emoji (regional-indicator pair) for an ISO-3166 alpha-2 code. */
+export function countryFlag(code?: string | null): string {
+  if (!code || code.length !== 2) return "";
+  const cc = code.toUpperCase();
+  if (!/^[A-Z]{2}$/.test(cc)) return "";
+  return String.fromCodePoint(...[...cc].map((c) => 0x1f1e6 + c.charCodeAt(0) - 65));
+}
+
 /** All distinct currencies, sorted — used to populate the currency dropdown. */
 export const CURRENCIES: string[] = Array.from(
   new Set(COUNTRIES.map((c) => c.currency)),

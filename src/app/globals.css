@@ -276,6 +276,10 @@ button:disabled {
 .nav-card .nav-label {
   font-weight: 600;
 }
+.nav-card .nav-count {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
 
 /* Clickable card (e.g. dashboard trips) */
 .card-link {

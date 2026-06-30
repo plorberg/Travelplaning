@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
-import { getTripForUser, listMembers } from "@/lib/trips";
+import { getTripForUser, getTripCounts, listMembers } from "@/lib/trips";
 import { listStops } from "@/lib/stops";
 import { getExpenseSummary } from "@/lib/expenses";
 import { BudgetBar } from "@/app/trips/_components/BudgetBar";
 import { countOwners, hasAtLeastRole } from "@/lib/authz";
-import { stopDateWarnings } from "@/lib/dates";
+import { stopDateWarnings, tripCountdown } from "@/lib/dates";
+import { countryFlag, countryName } from "@/lib/countries";
 import {
   changeMemberRoleAction,
   deleteTripAction,
@@ -42,15 +43,21 @@ export default async function TripPage({
   const trip = await getTripForUser(user.id, tripId);
   if (!trip) notFound();
 
-  const [members, stops, summary] = await Promise.all([
+  const [members, stops, summary, counts] = await Promise.all([
     listMembers(user.id, tripId),
     listStops(user.id, tripId),
     getExpenseSummary(user.id, tripId),
+    getTripCounts(user.id, tripId),
   ]);
   const isOwner = trip.role === "owner";
   const canEdit = hasAtLeastRole(trip.role, "editor");
   const ownerCount = countOwners(members);
   const invitations = isOwner ? await listTripInvitations(user.id, tripId) : [];
+
+  const countdown = tripCountdown(trip, new Date().toISOString().slice(0, 10));
+  const country = trip.destinationCountry;
+  const plural = (n: number, one: string, many: string) =>
+    `${n} ${n === 1 ? one : many}`;
 
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
@@ -82,9 +89,23 @@ export default async function TripPage({
         </div>
       </header>
 
+      {countdown ? (
+        <p style={{ margin: "0.35rem 0 0", color: "var(--muted)", fontSize: "0.9rem" }}>
+          🗓️ {countdown}
+        </p>
+      ) : null}
+
       <dl style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: "0.25rem 1rem" }}>
         <dt style={{ opacity: 0.7 }}>Ziel</dt>
         <dd style={{ margin: 0 }}>{trip.mainDestination ?? "—"}</dd>
+        {country ? (
+          <>
+            <dt style={{ opacity: 0.7 }}>Land</dt>
+            <dd style={{ margin: 0 }}>
+              {countryFlag(country)} {countryName(country) ?? country}
+            </dd>
+          </>
+        ) : null}
         <dt style={{ opacity: 0.7 }}>Zeitraum</dt>
         <dd style={{ margin: 0 }}>
           {formatDate(trip.startDate)} → {formatDate(trip.endDate)}
@@ -119,6 +140,7 @@ export default async function TripPage({
         <Link href={`/trips/${tripId}/itinerary`} className="nav-card">
           <span className="nav-icon">🗓️</span>
           <span className="nav-label">Reiseplan</span>
+          <span className="nav-count">{plural(counts.itinerary, "Eintrag", "Einträge")}</span>
         </Link>
         <Link href={`/trips/${tripId}/map`} className="nav-card">
           <span className="nav-icon">🗺️</span>
@@ -131,14 +153,17 @@ export default async function TripPage({
         <Link href={`/trips/${tripId}/spots`} className="nav-card">
           <span className="nav-icon">⭐</span>
           <span className="nav-label">Empfehlungen</span>
+          <span className="nav-count">{plural(counts.spots, "Spot", "Spots")}</span>
         </Link>
         <Link href={`/trips/${tripId}/documents`} className="nav-card">
           <span className="nav-icon">📄</span>
           <span className="nav-label">Dokumente</span>
+          <span className="nav-count">{plural(counts.documents, "Dokument", "Dokumente")}</span>
         </Link>
         <Link href={`/trips/${tripId}/expenses`} className="nav-card">
           <span className="nav-icon">💶</span>
           <span className="nav-label">Ausgaben &amp; Budget</span>
+          <span className="nav-count">{plural(counts.expenses, "Ausgabe", "Ausgaben")}</span>
         </Link>
       </nav>
 
