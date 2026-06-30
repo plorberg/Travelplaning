@@ -3,16 +3,26 @@ import Link from "next/link";
 import "./globals.css";
 import { getCurrentUser } from "@/lib/auth";
 import { SignOutButton } from "@/app/_components/SignOutButton";
+import { ServiceWorkerRegister } from "@/app/_components/ServiceWorkerRegister";
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  themeColor: "#1d4ed8",
 };
 
 export const metadata: Metadata = {
   title: "Travelplaning",
   description:
     "Reisen planen, organisieren und verwalten – allein oder mit einer kleinen Gruppe.",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Travelplaning",
+  },
+  icons: {
+    apple: "/icons/apple-touch-icon.png",
+  },
 };
 
 export default async function RootLayout({
@@ -37,6 +47,7 @@ export default async function RootLayout({
           </div>
         </header>
         {children}
+        <ServiceWorkerRegister />
       </body>
     </html>
   );
