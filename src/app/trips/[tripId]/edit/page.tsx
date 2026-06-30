@@ -35,6 +35,7 @@ export default async function EditTripPage({
         defaults={{
           name: trip.name,
           mainDestination: trip.mainDestination ?? "",
+          destinationCountry: trip.destinationCountry ?? "",
           startDate: trip.startDate ?? "",
           endDate: trip.endDate ?? "",
           homeCurrency: trip.homeCurrency,

@@ -109,6 +109,7 @@ export const trips = pgTable("trips", {
   id: uuid("id").defaultRandom().primaryKey(),
   name: text("name").notNull(),
   mainDestination: text("main_destination"),
+  destinationCountry: text("destination_country"), // ISO 3166-1 alpha-2
   startDate: date("start_date"),
   endDate: date("end_date"),
   homeCurrency: text("home_currency").notNull().default("EUR"),

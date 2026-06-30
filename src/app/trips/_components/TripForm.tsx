@@ -4,10 +4,12 @@ import { useActionState } from "react";
 import type { FormState } from "@/app/trips/actions";
 import { tripStatusValues, travelStyleValues } from "@/lib/validation";
 import { tripStatusLabels, travelStyleLabels } from "@/lib/labels";
+import { COUNTRIES } from "@/lib/countries";
 
 type Defaults = {
   name?: string;
   mainDestination?: string;
+  destinationCountry?: string;
   startDate?: string;
   endDate?: string;
   homeCurrency?: string;
@@ -65,6 +67,16 @@ export function TripForm({
           name="mainDestination"
           defaultValue={defaults.mainDestination ?? ""}
         />
+      </Field>
+      <Field label="Zielland (bestimmt die Reisewährung)" error={fe.destinationCountry}>
+        <select name="destinationCountry" defaultValue={defaults.destinationCountry ?? ""}>
+          <option value="">— kein Land —</option>
+          {COUNTRIES.map((c) => (
+            <option key={c.code} value={c.code}>
+              {c.name} ({c.currency})
+            </option>
+          ))}
+        </select>
       </Field>
       <div className="field-row" style={{ display: "flex", gap: "0.75rem" }}>
         <Field label="Startdatum" error={fe.startDate}>

@@ -5,6 +5,7 @@ import { getTripForUser, listMembers } from "@/lib/trips";
 import { listStops } from "@/lib/stops";
 import { getExpense } from "@/lib/expenses";
 import { hasAtLeastRole } from "@/lib/authz";
+import { currencyForCountry } from "@/lib/countries";
 import { localCurrencyForDestination } from "@/lib/currency/local-currency";
 import { updateExpenseAction } from "@/app/trips/expense-actions";
 import { ExpenseForm } from "@/app/trips/_components/ExpenseForm";
@@ -32,10 +33,13 @@ export default async function EditExpensePage({
   if (!expense) notFound();
 
   const action = updateExpenseAction.bind(null, tripId, expenseId);
-  const localCurrency = localCurrencyForDestination(
-    trip.mainDestination,
-    tripStops.map((s) => s.country),
-  );
+  const localCurrency =
+    currencyForCountry(trip.destinationCountry) ??
+    localCurrencyForDestination(
+      trip.mainDestination,
+      tripStops.map((s) => s.country),
+    ) ??
+    "EUR";
 
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "2.5rem 1.5rem" }}>

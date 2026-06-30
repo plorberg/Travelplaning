@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import type { FormState } from "@/app/trips/actions";
 import { expenseCategoryValues } from "@/lib/validation";
 import { expenseCategoryLabels } from "@/lib/labels";
+import { CURRENCIES } from "@/lib/countries";
 
 type Defaults = {
   stopId?: string;
@@ -63,10 +64,12 @@ export function ExpenseForm({
   const fe = state.fieldErrors ?? {};
   const split = new Set(defaults.splitWith ?? []);
 
-  // Offer € and the trip's local currency; keep a saved currency selectable too.
-  const currencyOptions = Array.from(
-    new Set(["EUR", localCurrency, defaults.currency].filter(Boolean) as string[]),
+  // Currency dropdown: the trip's local currency + € pinned on top for quick
+  // switching, then every currency. Prefilled to the local currency.
+  const pinned = Array.from(
+    new Set([localCurrency, "EUR", defaults.currency].filter(Boolean) as string[]),
   );
+  const otherCurrencies = CURRENCIES.filter((c) => !pinned.includes(c));
   const defaultCurrency =
     defaults.currency ?? (localCurrency && localCurrency !== "EUR" ? localCurrency : "EUR");
 
@@ -95,9 +98,15 @@ export function ExpenseForm({
         </Field>
         <Field label="Währung" error={fe.currency}>
           <select name="currency" defaultValue={defaultCurrency}>
-            {currencyOptions.map((c) => (
+            {pinned.map((c) => (
               <option key={c} value={c}>
                 {c === "EUR" ? "€ (EUR)" : c}
+              </option>
+            ))}
+            <option disabled>──────────</option>
+            {otherCurrencies.map((c) => (
+              <option key={c} value={c}>
+                {c}
               </option>
             ))}
           </select>

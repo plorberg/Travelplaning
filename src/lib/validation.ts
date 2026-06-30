@@ -35,6 +35,11 @@ export const tripInputSchema = z
   .object({
     name: z.string().trim().min(1, "Reisename ist erforderlich.").max(200),
     mainDestination: optionalText(200),
+    destinationCountry: z.preprocess(
+      (v) =>
+        typeof v === "string" && v.trim() !== "" ? v.trim().toUpperCase() : undefined,
+      z.string().length(2, "Ungültiges Land.").optional(),
+    ),
     startDate: optionalDate,
     endDate: optionalDate,
     homeCurrency: z.preprocess(

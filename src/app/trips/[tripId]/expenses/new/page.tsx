@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { getTripForUser, listMembers } from "@/lib/trips";
 import { listStops } from "@/lib/stops";
 import { hasAtLeastRole } from "@/lib/authz";
+import { currencyForCountry } from "@/lib/countries";
 import { localCurrencyForDestination } from "@/lib/currency/local-currency";
 import { createExpenseAction } from "@/app/trips/expense-actions";
 import { ExpenseForm } from "@/app/trips/_components/ExpenseForm";
@@ -30,10 +31,13 @@ export default async function NewExpensePage({
 
   const action = createExpenseAction.bind(null, tripId);
   const today = new Date().toISOString().slice(0, 10);
-  const localCurrency = localCurrencyForDestination(
-    trip.mainDestination,
-    tripStops.map((s) => s.country),
-  );
+  const localCurrency =
+    currencyForCountry(trip.destinationCountry) ??
+    localCurrencyForDestination(
+      trip.mainDestination,
+      tripStops.map((s) => s.country),
+    ) ??
+    "EUR";
 
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "2.5rem 1.5rem" }}>

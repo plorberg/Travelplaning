@@ -55,6 +55,7 @@ export async function getTripForUser(userId: string, tripId: string) {
       id: trips.id,
       name: trips.name,
       mainDestination: trips.mainDestination,
+      destinationCountry: trips.destinationCountry,
       startDate: trips.startDate,
       endDate: trips.endDate,
       homeCurrency: trips.homeCurrency,
@@ -76,6 +77,7 @@ function toRow(input: TripInput) {
   return {
     name: input.name,
     mainDestination: input.mainDestination ?? null,
+    destinationCountry: input.destinationCountry ?? null,
     startDate: input.startDate ?? null,
     endDate: input.endDate ?? null,
     homeCurrency: input.homeCurrency,
