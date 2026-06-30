@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { getTripForUser, listMembers } from "@/lib/trips";
 import { listStops } from "@/lib/stops";
 import { hasAtLeastRole } from "@/lib/authz";
+import { localCurrencyForDestination } from "@/lib/currency/local-currency";
 import { createExpenseAction } from "@/app/trips/expense-actions";
 import { ExpenseForm } from "@/app/trips/_components/ExpenseForm";
 
@@ -29,6 +30,10 @@ export default async function NewExpensePage({
 
   const action = createExpenseAction.bind(null, tripId);
   const today = new Date().toISOString().slice(0, 10);
+  const localCurrency = localCurrencyForDestination(
+    trip.mainDestination,
+    tripStops.map((s) => s.country),
+  );
 
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
@@ -42,7 +47,8 @@ export default async function NewExpensePage({
         stops={tripStops.map((s) => ({ id: s.id, city: s.city }))}
         members={members.map((m) => ({ id: m.userId, label: m.name ?? m.email }))}
         homeCurrency={trip.homeCurrency}
-        defaults={{ date: today, currency: trip.homeCurrency }}
+        localCurrency={localCurrency}
+        defaults={{ date: today }}
       />
     </main>
   );

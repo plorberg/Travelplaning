@@ -74,19 +74,9 @@ export function TripForm({
           <input type="date" name="endDate" defaultValue={defaults.endDate ?? ""} />
         </Field>
       </div>
-      <div className="field-row" style={{ display: "flex", gap: "0.75rem" }}>
-        <Field label="Heimatwährung" error={fe.homeCurrency}>
-          <input
-            name="homeCurrency"
-            defaultValue={defaults.homeCurrency ?? "EUR"}
-            maxLength={3}
-            style={{ width: 80 }}
-          />
-        </Field>
-        <Field label="Budget" error={fe.budget}>
-          <input name="budget" inputMode="decimal" defaultValue={defaults.budget ?? ""} />
-        </Field>
-      </div>
+      <Field label="Budget (€)" error={fe.budget}>
+        <input name="budget" inputMode="decimal" defaultValue={defaults.budget ?? ""} />
+      </Field>
       <div className="field-row" style={{ display: "flex", gap: "0.75rem" }}>
         <Field label="Status" error={fe.status}>
           <select name="status" defaultValue={defaults.status ?? "planning"}>

@@ -46,6 +46,7 @@ export function ExpenseForm({
   stops,
   members,
   homeCurrency,
+  localCurrency,
 }: {
   action: (prev: FormState, formData: FormData) => Promise<FormState>;
   defaults?: Defaults;
@@ -53,6 +54,7 @@ export function ExpenseForm({
   stops: { id: string; city: string }[];
   members: { id: string; label: string }[];
   homeCurrency: string;
+  localCurrency?: string | null;
 }) {
   const [state, formAction, pending] = useActionState<FormState, FormData>(
     action,
@@ -60,6 +62,13 @@ export function ExpenseForm({
   );
   const fe = state.fieldErrors ?? {};
   const split = new Set(defaults.splitWith ?? []);
+
+  // Offer € and the trip's local currency; keep a saved currency selectable too.
+  const currencyOptions = Array.from(
+    new Set(["EUR", localCurrency, defaults.currency].filter(Boolean) as string[]),
+  );
+  const defaultCurrency =
+    defaults.currency ?? (localCurrency && localCurrency !== "EUR" ? localCurrency : "EUR");
 
   return (
     <form
@@ -85,12 +94,13 @@ export function ExpenseForm({
           <input name="amount" inputMode="decimal" defaultValue={defaults.amount ?? ""} required />
         </Field>
         <Field label="Währung" error={fe.currency}>
-          <input
-            name="currency"
-            maxLength={3}
-            defaultValue={defaults.currency ?? homeCurrency}
-            style={{ width: 80 }}
-          />
+          <select name="currency" defaultValue={defaultCurrency}>
+            {currencyOptions.map((c) => (
+              <option key={c} value={c}>
+                {c === "EUR" ? "€ (EUR)" : c}
+              </option>
+            ))}
+          </select>
         </Field>
       </div>
       <Field
