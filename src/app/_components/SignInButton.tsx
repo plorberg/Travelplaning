@@ -44,7 +44,7 @@ export function SignInButton() {
       >
         {pending ? "Signing in…" : "Sign in with Google"}
       </button>
-      {error ? <p style={{ color: "crimson" }}>{error}</p> : null}
+      {error ? <p style={{ color: "var(--danger)" }}>{error}</p> : null}
     </div>
   );
 }

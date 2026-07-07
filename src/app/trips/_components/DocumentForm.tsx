@@ -36,7 +36,7 @@ function Field({
       <span style={{ fontSize: "0.85rem", opacity: 0.8 }}>{label}</span>
       {children}
       {error?.length ? (
-        <span style={{ color: "crimson", fontSize: "0.8rem" }}>{error[0]}</span>
+        <span style={{ color: "var(--danger)", fontSize: "0.8rem" }}>{error[0]}</span>
       ) : null}
     </label>
   );
@@ -86,7 +86,7 @@ export function DocumentForm({
 
   return (
     <form action={formAction} style={{ display: "grid", gap: "0.75rem", maxWidth: 480 }}>
-      <div style={{ display: "flex", gap: "0.75rem" }}>
+      <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
         <Field label="Type" error={fe.type}>
           <select name="type" defaultValue={defaults.type ?? "flight"}>
             {documentTypeValues.map((t) => (
@@ -106,7 +106,7 @@ export function DocumentForm({
           display: "grid",
           gap: "0.35rem",
           padding: "0.6rem 0.75rem",
-          border: "1px solid #ddd",
+          border: "1px solid var(--border)",
           borderRadius: 6,
         }}
       >
@@ -114,7 +114,7 @@ export function DocumentForm({
         <input type="file" onChange={onFile} disabled={uploading} />
         {uploading ? <span style={{ fontSize: "0.8rem" }}>Uploading to Drive…</span> : null}
         {drive ? (
-          <span style={{ color: "green", fontSize: "0.85rem" }}>
+          <span style={{ color: "var(--success)", fontSize: "0.85rem" }}>
             Attached:{" "}
             <a href={drive.url} target="_blank" rel="noreferrer">
               {drive.name} ↗
@@ -122,13 +122,13 @@ export function DocumentForm({
           </span>
         ) : null}
         {uploadError ? (
-          <span style={{ color: "crimson", fontSize: "0.8rem" }}>{uploadError}</span>
+          <span style={{ color: "var(--danger)", fontSize: "0.8rem" }}>{uploadError}</span>
         ) : null}
         <input type="hidden" name="driveFileId" value={drive?.id ?? ""} />
         <input type="hidden" name="driveFileUrl" value={drive?.url ?? ""} />
       </div>
 
-      <div style={{ display: "flex", gap: "0.75rem" }}>
+      <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
         <Field label="Vendor / provider" error={fe.vendor}>
           <input name="vendor" defaultValue={defaults.vendor ?? ""} />
         </Field>
@@ -146,7 +146,7 @@ export function DocumentForm({
           ))}
         </select>
       </Field>
-      <div style={{ display: "flex", gap: "0.75rem" }}>
+      <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
         <Field label="Start" error={fe.startAt}>
           <input type="datetime-local" name="startAt" defaultValue={defaults.startAt ?? ""} />
         </Field>
@@ -157,7 +157,7 @@ export function DocumentForm({
       <Field label="Location" error={fe.location}>
         <input name="location" defaultValue={defaults.location ?? ""} />
       </Field>
-      <div style={{ display: "flex", gap: "0.75rem" }}>
+      <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
         <Field label="Price" error={fe.price}>
           <input name="price" inputMode="decimal" defaultValue={defaults.price ?? ""} />
         </Field>
@@ -172,7 +172,7 @@ export function DocumentForm({
         <textarea name="notes" rows={3} defaultValue={defaults.notes ?? ""} />
       </Field>
 
-      {state.error ? <p style={{ color: "crimson" }}>{state.error}</p> : null}
+      {state.error ? <p style={{ color: "var(--danger)" }}>{state.error}</p> : null}
       <button type="submit" disabled={pending || uploading} style={{ padding: "0.5rem 1rem" }}>
         {pending ? "Saving…" : submitLabel}
       </button>

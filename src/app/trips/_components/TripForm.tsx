@@ -30,7 +30,7 @@ function Field({
       <span style={{ fontSize: "0.85rem", opacity: 0.8 }}>{label}</span>
       {children}
       {error?.length ? (
-        <span style={{ color: "crimson", fontSize: "0.8rem" }}>{error[0]}</span>
+        <span style={{ color: "var(--danger)", fontSize: "0.8rem" }}>{error[0]}</span>
       ) : null}
     </label>
   );
@@ -65,7 +65,7 @@ export function TripForm({
           defaultValue={defaults.mainDestination ?? ""}
         />
       </Field>
-      <div style={{ display: "flex", gap: "0.75rem" }}>
+      <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
         <Field label="Start date" error={fe.startDate}>
           <input type="date" name="startDate" defaultValue={defaults.startDate ?? ""} />
         </Field>
@@ -73,7 +73,7 @@ export function TripForm({
           <input type="date" name="endDate" defaultValue={defaults.endDate ?? ""} />
         </Field>
       </div>
-      <div style={{ display: "flex", gap: "0.75rem" }}>
+      <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
         <Field label="Home currency" error={fe.homeCurrency}>
           <input
             name="homeCurrency"
@@ -86,7 +86,7 @@ export function TripForm({
           <input name="budget" inputMode="decimal" defaultValue={defaults.budget ?? ""} />
         </Field>
       </div>
-      <div style={{ display: "flex", gap: "0.75rem" }}>
+      <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
         <Field label="Status" error={fe.status}>
           <select name="status" defaultValue={defaults.status ?? "planning"}>
             {tripStatusValues.map((s) => (
@@ -111,7 +111,7 @@ export function TripForm({
         <textarea name="notes" rows={4} defaultValue={defaults.notes ?? ""} />
       </Field>
 
-      {state.error ? <p style={{ color: "crimson" }}>{state.error}</p> : null}
+      {state.error ? <p style={{ color: "var(--danger)" }}>{state.error}</p> : null}
       <button type="submit" disabled={pending} style={{ padding: "0.5rem 1rem" }}>
         {pending ? "Saving…" : submitLabel}
       </button>

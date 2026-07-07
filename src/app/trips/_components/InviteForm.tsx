@@ -22,7 +22,7 @@ export function InviteForm({
       <div style={{ display: "grid", gap: "0.2rem" }}>
         <input name="email" type="email" placeholder="email@example.com" required />
         {fe.email?.length ? (
-          <span style={{ color: "crimson", fontSize: "0.8rem" }}>{fe.email[0]}</span>
+          <span style={{ color: "var(--danger)", fontSize: "0.8rem" }}>{fe.email[0]}</span>
         ) : null}
       </div>
       <select name="role" defaultValue="editor">
@@ -32,8 +32,8 @@ export function InviteForm({
       <button type="submit" disabled={pending}>
         {pending ? "Inviting…" : "Invite"}
       </button>
-      {state.error ? <span style={{ color: "crimson" }}>{state.error}</span> : null}
-      {state.success ? <span style={{ color: "green" }}>{state.success}</span> : null}
+      {state.error ? <span style={{ color: "var(--danger)" }}>{state.error}</span> : null}
+      {state.success ? <span style={{ color: "var(--success)" }}>{state.success}</span> : null}
     </form>
   );
 }

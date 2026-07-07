@@ -1,5 +1,29 @@
 :root {
   color-scheme: light dark;
+
+  --bg: #ffffff;
+  --fg: #1a1a1a;
+  --surface: #f6f7f9;
+  --border: #d9dce1;
+  --muted: #6b7280;
+  --accent: #2563eb;
+  --danger: #c62a48;
+  --success: #15803d;
+  --warning: #b8860b;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1216;
+    --fg: #e6e8eb;
+    --surface: #191d23;
+    --border: #2b313a;
+    --muted: #9aa2ad;
+    --accent: #6ea8fe;
+    --danger: #ff6b81;
+    --success: #4ade80;
+    --warning: #e0b341;
+  }
 }
 
 * {
@@ -15,6 +39,9 @@ body {
 body {
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   line-height: 1.5;
+  background: var(--bg);
+  color: var(--fg);
+  -webkit-text-size-adjust: 100%;
 }
 
 a {
@@ -23,4 +50,49 @@ a {
 
 button {
   cursor: pointer;
+}
+
+/* Native controls inherit the font; color-scheme themes them in light/dark. */
+input,
+select,
+textarea,
+button {
+  font: inherit;
+}
+
+input,
+select,
+textarea {
+  max-width: 100%;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* Wide content (e.g. tables) scrolls instead of breaking the mobile layout. */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Leaflet map: themed surface avoids a white flash before dark tiles load. */
+.leaflet-container {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.leaflet-container img {
+  max-width: none;
+}
+
+@media (max-width: 560px) {
+  /* When two-up form rows wrap, let each field take the full width. */
+  input,
+  select,
+  textarea {
+    width: 100%;
+  }
 }

@@ -51,7 +51,7 @@ export default async function ItineraryPage({
             {it.cost ? ` · ${it.cost} ${it.currency ?? ""}` : ""}
           </div>
           {conflicts.has(it.id) ? (
-            <div style={{ color: "#b8860b", fontSize: "0.8rem" }}>⚠ Overlaps another item</div>
+            <div style={{ color: "var(--warning)", fontSize: "0.8rem" }}>⚠ Overlaps another item</div>
           ) : null}
           {it.notes ? <div style={{ fontSize: "0.85rem" }}>{it.notes}</div> : null}
         </div>

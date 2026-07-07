@@ -17,6 +17,7 @@ import {
 } from "@/app/trips/invite-actions";
 import { listTripInvitations } from "@/lib/invitations";
 import { InviteForm } from "@/app/trips/_components/InviteForm";
+import { StopsMap } from "@/app/trips/_components/StopsMap";
 
 export const dynamic = "force-dynamic";
 
@@ -42,6 +43,15 @@ export default async function TripPage({
   const canEdit = hasAtLeastRole(trip.role, "editor");
   const ownerCount = countOwners(members);
   const invitations = isOwner ? await listTripInvitations(user.id, tripId) : [];
+
+  const mapPoints = stops
+    .filter((s) => s.lat != null && s.lng != null)
+    .map((s) => ({
+      id: s.id,
+      label: s.country ? `${s.city}, ${s.country}` : s.city,
+      lat: s.lat as number,
+      lng: s.lng as number,
+    }));
 
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
@@ -112,6 +122,7 @@ export default async function TripPage({
           <h2>Stops</h2>
           {canEdit ? <Link href={`/trips/${tripId}/stops/new`}>+ Add stop</Link> : null}
         </div>
+        {mapPoints.length > 0 ? <StopsMap points={mapPoints} /> : null}
         {stops.length === 0 ? (
           <p style={{ opacity: 0.8 }}>No stops yet.</p>
         ) : (
@@ -138,7 +149,7 @@ export default async function TripPage({
                         {stop.accommodationName ? ` · ${stop.accommodationName}` : ""}
                       </div>
                       {warnings.map((w) => (
-                        <div key={w} style={{ color: "#b8860b", fontSize: "0.8rem" }}>
+                        <div key={w} style={{ color: "var(--warning)", fontSize: "0.8rem" }}>
                           ⚠ {w}
                         </div>
                       ))}

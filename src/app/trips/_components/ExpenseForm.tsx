@@ -32,7 +32,7 @@ function Field({
       <span style={{ fontSize: "0.85rem", opacity: 0.8 }}>{label}</span>
       {children}
       {error?.length ? (
-        <span style={{ color: "crimson", fontSize: "0.8rem" }}>{error[0]}</span>
+        <span style={{ color: "var(--danger)", fontSize: "0.8rem" }}>{error[0]}</span>
       ) : null}
     </label>
   );
@@ -65,7 +65,7 @@ export function ExpenseForm({
       action={formAction}
       style={{ display: "grid", gap: "0.75rem", maxWidth: 480 }}
     >
-      <div style={{ display: "flex", gap: "0.75rem" }}>
+      <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
         <Field label="Date" error={fe.date}>
           <input type="date" name="date" defaultValue={defaults.date ?? ""} required />
         </Field>
@@ -79,7 +79,7 @@ export function ExpenseForm({
           </select>
         </Field>
       </div>
-      <div style={{ display: "flex", gap: "0.75rem" }}>
+      <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
         <Field label="Amount" error={fe.amount}>
           <input name="amount" inputMode="decimal" defaultValue={defaults.amount ?? ""} required />
         </Field>
@@ -108,7 +108,7 @@ export function ExpenseForm({
           ))}
         </select>
       </Field>
-      <div style={{ display: "flex", gap: "0.75rem" }}>
+      <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
         <Field label="Payment method" error={fe.paymentMethod}>
           <input name="paymentMethod" defaultValue={defaults.paymentMethod ?? ""} />
         </Field>
@@ -124,7 +124,7 @@ export function ExpenseForm({
         </Field>
       </div>
       {members.length > 0 ? (
-        <fieldset style={{ border: "1px solid #ddd", borderRadius: 6, display: "grid", gap: "0.25rem" }}>
+        <fieldset style={{ border: "1px solid var(--border)", borderRadius: 6, display: "grid", gap: "0.25rem" }}>
           <legend style={{ fontSize: "0.8rem", opacity: 0.8 }}>Split with</legend>
           {members.map((m) => (
             <label key={m.id} style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
@@ -146,7 +146,7 @@ export function ExpenseForm({
         <textarea name="notes" rows={3} defaultValue={defaults.notes ?? ""} />
       </Field>
 
-      {state.error ? <p style={{ color: "crimson" }}>{state.error}</p> : null}
+      {state.error ? <p style={{ color: "var(--danger)" }}>{state.error}</p> : null}
       <button type="submit" disabled={pending} style={{ padding: "0.5rem 1rem" }}>
         {pending ? "Saving…" : submitLabel}
       </button>

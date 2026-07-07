@@ -32,7 +32,7 @@ function Field({
       <span style={{ fontSize: "0.85rem", opacity: 0.8 }}>{label}</span>
       {children}
       {error?.length ? (
-        <span style={{ color: "crimson", fontSize: "0.8rem" }}>{error[0]}</span>
+        <span style={{ color: "var(--danger)", fontSize: "0.8rem" }}>{error[0]}</span>
       ) : null}
     </label>
   );
@@ -72,7 +72,7 @@ export function ItineraryForm({
           ))}
         </select>
       </Field>
-      <div style={{ display: "flex", gap: "0.75rem" }}>
+      <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
         <Field label="Start" error={fe.startAt}>
           <input type="datetime-local" name="startAt" defaultValue={defaults.startAt ?? ""} />
         </Field>
@@ -93,7 +93,7 @@ export function ItineraryForm({
       <Field label="Location" error={fe.location}>
         <input name="location" defaultValue={defaults.location ?? ""} />
       </Field>
-      <div style={{ display: "flex", gap: "0.75rem" }}>
+      <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
         <Field label="Latitude" error={fe.lat}>
           <input name="lat" inputMode="decimal" defaultValue={defaults.lat ?? ""} />
         </Field>
@@ -101,7 +101,7 @@ export function ItineraryForm({
           <input name="lng" inputMode="decimal" defaultValue={defaults.lng ?? ""} />
         </Field>
       </div>
-      <div style={{ display: "flex", gap: "0.75rem" }}>
+      <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
         <Field label="Cost" error={fe.cost}>
           <input name="cost" inputMode="decimal" defaultValue={defaults.cost ?? ""} />
         </Field>
@@ -113,7 +113,7 @@ export function ItineraryForm({
         <textarea name="notes" rows={3} defaultValue={defaults.notes ?? ""} />
       </Field>
 
-      {state.error ? <p style={{ color: "crimson" }}>{state.error}</p> : null}
+      {state.error ? <p style={{ color: "var(--danger)" }}>{state.error}</p> : null}
       <button type="submit" disabled={pending} style={{ padding: "0.5rem 1rem" }}>
         {pending ? "Saving…" : submitLabel}
       </button>

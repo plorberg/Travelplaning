@@ -29,7 +29,7 @@ function Field({
       <span style={{ fontSize: "0.85rem", opacity: 0.8 }}>{label}</span>
       {children}
       {error?.length ? (
-        <span style={{ color: "crimson", fontSize: "0.8rem" }}>{error[0]}</span>
+        <span style={{ color: "var(--danger)", fontSize: "0.8rem" }}>{error[0]}</span>
       ) : null}
     </label>
   );
@@ -61,7 +61,7 @@ export function StopForm({
       <Field label="Country" error={fe.country}>
         <input name="country" defaultValue={defaults.country ?? ""} />
       </Field>
-      <div style={{ display: "flex", gap: "0.75rem" }}>
+      <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
         <Field label="Arrival date" error={fe.arrivalDate}>
           <input type="date" name="arrivalDate" defaultValue={defaults.arrivalDate ?? ""} />
         </Field>
@@ -78,7 +78,7 @@ export function StopForm({
           defaultValue={defaults.accommodationAddress ?? ""}
         />
       </Field>
-      <div style={{ display: "flex", gap: "0.75rem" }}>
+      <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
         <Field label="Latitude" error={fe.lat}>
           <input name="lat" inputMode="decimal" defaultValue={defaults.lat ?? ""} />
         </Field>
@@ -90,7 +90,7 @@ export function StopForm({
         <textarea name="notes" rows={3} defaultValue={defaults.notes ?? ""} />
       </Field>
 
-      {state.error ? <p style={{ color: "crimson" }}>{state.error}</p> : null}
+      {state.error ? <p style={{ color: "var(--danger)" }}>{state.error}</p> : null}
       <button type="submit" disabled={pending} style={{ padding: "0.5rem 1rem" }}>
         {pending ? "Saving…" : submitLabel}
       </button>

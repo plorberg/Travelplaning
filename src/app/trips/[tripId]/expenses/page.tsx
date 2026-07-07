@@ -71,7 +71,7 @@ export default async function ExpensesPage({
           flexWrap: "wrap",
           margin: "1rem 0",
           padding: "0.75rem 1rem",
-          border: "1px solid #ddd",
+          border: "1px solid var(--border)",
           borderRadius: 8,
         }}
       >
@@ -85,7 +85,7 @@ export default async function ExpensesPage({
         </div>
         <div>
           <div style={{ opacity: 0.7, fontSize: "0.8rem" }}>Remaining</div>
-          <strong style={{ color: remaining != null && remaining < 0 ? "crimson" : undefined }}>
+          <strong style={{ color: remaining != null && remaining < 0 ? "var(--danger)" : undefined }}>
             {remaining != null ? fmt(remaining) : "—"}
           </strong>
         </div>
