@@ -108,17 +108,18 @@ export function TripMap({ points }: { points: MapPoint[] }) {
     <div style={{ display: "grid", gap: "0.5rem" }}>
       <div
         ref={ref}
+        aria-label="Karte mit Stationen und Empfehlungen der Reise"
         style={{ height: 480, width: "100%", borderRadius: 8, overflow: "hidden" }}
       />
       <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem 1rem", fontSize: "0.85rem", opacity: 0.85 }}>
         {points.some((p) => p.kind === "stop") ? (
           <span>
-            <span style={{ color: STOP_COLOR }}>●</span> Stationen
+            <span aria-hidden="true" style={{ color: STOP_COLOR }}>●</span> Stationen
           </span>
         ) : null}
         {spotCategories.map((c) => (
           <span key={c || "spot"}>
-            <span style={{ color: spotColor(c) }}>●</span>{" "}
+            <span aria-hidden="true" style={{ color: spotColor(c) }}>●</span>{" "}
             {c ? spotCategoryLabels[c] ?? c : "Empfehlung"}
           </span>
         ))}

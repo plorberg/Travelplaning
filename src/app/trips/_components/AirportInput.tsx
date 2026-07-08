@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 
 type Airport = {
   code: string;
@@ -24,11 +24,14 @@ export function AirportInput({
   const [results, setResults] = useState<Airport[]>([]);
   const [open, setOpen] = useState(false);
   const [picked, setPicked] = useState(false);
+  const [active, setActive] = useState(-1); // keyboard-highlighted option
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const listId = useId();
 
   function onType(v: string) {
     setText(v);
     setPicked(false);
+    setActive(-1);
     onSelect(""); // not a confirmed airport until one is picked
     if (timer.current) clearTimeout(timer.current);
     if (v.trim().length < 2) {
@@ -54,6 +57,26 @@ export function AirportInput({
     setPicked(true);
     onSelect(a.code);
     setOpen(false);
+    setActive(-1);
+  }
+
+  function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (!open || results.length === 0) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActive((i) => (i + 1) % results.length);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActive((i) => (i <= 0 ? results.length - 1 : i - 1));
+    } else if (e.key === "Enter") {
+      if (active >= 0 && active < results.length) {
+        e.preventDefault();
+        pick(results[active]);
+      }
+    } else if (e.key === "Escape") {
+      setOpen(false);
+      setActive(-1);
+    }
   }
 
   return (
@@ -62,18 +85,27 @@ export function AirportInput({
       <input
         value={text}
         onChange={(e) => onType(e.target.value)}
+        onKeyDown={onKeyDown}
         onFocus={() => results.length > 0 && setOpen(true)}
         onBlur={() => setTimeout(() => setOpen(false), 150)}
         placeholder={placeholder}
         autoComplete="off"
+        role="combobox"
+        aria-expanded={open}
+        aria-controls={listId}
+        aria-autocomplete="list"
+        aria-activedescendant={active >= 0 ? `${listId}-${active}` : undefined}
       />
       {!picked && text.trim().length >= 2 && !open ? (
-        <span style={{ fontSize: "0.75rem", color: "#b45309" }}>
+        <span style={{ fontSize: "0.75rem", color: "var(--warning)" }}>
           Bitte einen Flughafen aus der Liste wählen.
         </span>
       ) : null}
       {open && results.length > 0 ? (
         <ul
+          id={listId}
+          role="listbox"
+          aria-label={label}
           style={{
             position: "absolute",
             top: "100%",
@@ -91,20 +123,27 @@ export function AirportInput({
             boxShadow: "var(--shadow)",
           }}
         >
-          {results.map((a) => (
-            <li key={a.code}>
+          {results.map((a, i) => (
+            <li
+              key={a.code}
+              id={`${listId}-${i}`}
+              role="option"
+              aria-selected={i === active}
+            >
               <button
                 type="button"
+                tabIndex={-1}
                 onMouseDown={(e) => {
                   e.preventDefault(); // keep focus / beat the blur
                   pick(a);
                 }}
+                onMouseEnter={() => setActive(i)}
                 style={{
                   display: "block",
                   width: "100%",
                   textAlign: "left",
                   border: "none",
-                  background: "none",
+                  background: i === active ? "var(--hover)" : "none",
                   borderRadius: 0,
                   padding: "0.4rem 0.6rem",
                 }}
