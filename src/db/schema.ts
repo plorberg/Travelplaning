@@ -2,6 +2,7 @@ import {
   pgTable,
   pgEnum,
   text,
+  boolean,
   integer,
   numeric,
   doublePrecision,
@@ -327,4 +328,23 @@ export const airports = pgTable("airports", {
   country: text("country"), // ISO 3166-1 alpha-2
   lat: doublePrecision("lat"),
   lng: doublePrecision("lng"),
+});
+
+/* ----------------------------------------------------------------------------
+ * Packing list — simple per-trip checklist items.
+ * ------------------------------------------------------------------------- */
+
+export const packingItems = pgTable("packing_items", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  tripId: uuid("trip_id")
+    .notNull()
+    .references(() => trips.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  done: boolean("done").notNull().default(false),
+  createdBy: text("created_by")
+    .notNull()
+    .references(() => users.id),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
 });
