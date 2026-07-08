@@ -23,6 +23,7 @@ export async function listPackingItems(userId: string, tripId: string) {
     .select({
       id: packingItems.id,
       name: packingItems.name,
+      category: packingItems.category,
       done: packingItems.done,
     })
     .from(packingItems)
@@ -30,9 +31,18 @@ export async function listPackingItems(userId: string, tripId: string) {
     .orderBy(asc(packingItems.createdAt));
 }
 
-export async function addPackingItem(userId: string, tripId: string, name: string) {
+export async function addPackingItem(
+  userId: string,
+  tripId: string,
+  input: { name: string; category?: string },
+) {
   await requireEditor(userId, tripId);
-  await db.insert(packingItems).values({ tripId, name, createdBy: userId });
+  await db.insert(packingItems).values({
+    tripId,
+    name: input.name,
+    category: input.category ?? null,
+    createdBy: userId,
+  });
 }
 
 export async function togglePackingItem(userId: string, tripId: string, itemId: string) {

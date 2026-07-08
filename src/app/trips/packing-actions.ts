@@ -10,7 +10,15 @@ import {
   togglePackingItem,
 } from "@/lib/packing";
 
-const nameSchema = z.string().trim().min(1).max(200);
+const itemSchema = z.object({
+  name: z.string().trim().min(1).max(200),
+  category: z
+    .string()
+    .trim()
+    .max(100)
+    .transform((s) => (s === "" ? undefined : s))
+    .optional(),
+});
 
 async function requireUserId(): Promise<string> {
   const user = await getCurrentUser();
@@ -23,7 +31,10 @@ export async function addPackingItemAction(
   formData: FormData,
 ): Promise<void> {
   const userId = await requireUserId();
-  const parsed = nameSchema.safeParse(formData.get("name"));
+  const parsed = itemSchema.safeParse({
+    name: formData.get("name"),
+    category: formData.get("category") ?? "",
+  });
   if (!parsed.success) return; // empty/overlong input: nothing to add
   await addPackingItem(userId, tripId, parsed.data);
   revalidatePath(`/trips/${tripId}/packing`);

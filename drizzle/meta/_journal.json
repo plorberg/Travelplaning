@@ -50,6 +50,13 @@
       "when": 1783501221171,
       "tag": "0006_marvelous_lockheed",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1783513033032,
+      "tag": "0007_crazy_riptide",
+      "breakpoints": true
     }
   ]
 }
