@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ConfirmSubmit } from "@/app/_components/ConfirmSubmit";
 import { notFound, redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { getTripForUser } from "@/lib/trips";
@@ -68,7 +69,7 @@ export default async function SpotsPage({
                 <div style={{ display: "flex", gap: "0.5rem", alignItems: "flex-start" }}>
                   <Link href={`/trips/${tripId}/spots/${s.id}/edit`}>Bearbeiten</Link>
                   <form action={deleteSpotAction.bind(null, tripId, s.id)}>
-                    <button type="submit">Löschen</button>
+                    <ConfirmSubmit message="Diese Empfehlung löschen?">Löschen</ConfirmSubmit>
                   </form>
                 </div>
               ) : null}

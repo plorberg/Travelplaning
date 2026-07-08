@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ConfirmSubmit } from "@/app/_components/ConfirmSubmit";
 import { notFound, redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { getTripForUser } from "@/lib/trips";
@@ -66,7 +67,7 @@ export default async function DocumentsPage({
                   <div style={{ display: "flex", gap: "0.5rem", alignItems: "flex-start" }}>
                     <Link href={`/trips/${tripId}/documents/${d.id}/edit`}>Bearbeiten</Link>
                     <form action={deleteDocumentAction.bind(null, tripId, d.id)}>
-                      <button type="submit">Löschen</button>
+                      <ConfirmSubmit message="Dieses Dokument löschen?">Löschen</ConfirmSubmit>
                     </form>
                   </div>
                 ) : null}

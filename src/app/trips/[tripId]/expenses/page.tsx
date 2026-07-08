@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ConfirmSubmit } from "@/app/_components/ConfirmSubmit";
 import { notFound, redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { getTripForUser } from "@/lib/trips";
@@ -87,7 +88,7 @@ export default async function ExpensesPage({
         </div>
         <div>
           <div style={{ opacity: 0.7, fontSize: "0.8rem" }}>Verbleibend</div>
-          <strong style={{ color: remaining != null && remaining < 0 ? "crimson" : undefined }}>
+          <strong style={{ color: remaining != null && remaining < 0 ? "var(--danger)" : undefined }}>
             {remaining != null ? fmt(remaining) : "—"}
           </strong>
         </div>
@@ -179,7 +180,7 @@ export default async function ExpensesPage({
                 <div style={{ display: "flex", gap: "0.5rem", alignItems: "flex-start" }}>
                   <Link href={`/trips/${tripId}/expenses/${e.id}/edit`}>Bearbeiten</Link>
                   <form action={deleteExpenseAction.bind(null, tripId, e.id)}>
-                    <button type="submit">Löschen</button>
+                    <ConfirmSubmit message="Diese Ausgabe löschen?">Löschen</ConfirmSubmit>
                   </form>
                 </div>
               ) : null}
