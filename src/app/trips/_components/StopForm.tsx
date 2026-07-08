@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useRef, useState } from "react";
 import type { FormState } from "@/app/trips/actions";
+import { geocodeAction } from "@/app/trips/geocode-action";
 
 type Defaults = {
   city?: string;
@@ -49,9 +50,42 @@ export function StopForm({
     {},
   );
   const fe = state.fieldErrors ?? {};
+  const formRef = useRef<HTMLFormElement>(null);
+  const [lat, setLat] = useState(defaults.lat ?? "");
+  const [lng, setLng] = useState(defaults.lng ?? "");
+  const [geo, setGeo] = useState<{ busy: boolean; msg: string | null }>({
+    busy: false,
+    msg: null,
+  });
+
+  async function findCoordinates() {
+    const form = formRef.current;
+    if (!form) return;
+    const read = (n: string) =>
+      (form.elements.namedItem(n) as HTMLInputElement | null)?.value.trim() ??
+      "";
+    const query = [read("city"), read("country")].filter(Boolean).join(", ");
+    if (!query) {
+      setGeo({ busy: false, msg: "Enter a city or country first." });
+      return;
+    }
+    setGeo({ busy: true, msg: "Searching…" });
+    const res = await geocodeAction(query);
+    if (res) {
+      setLat(res.lat.toFixed(6));
+      setLng(res.lng.toFixed(6));
+      setGeo({ busy: false, msg: `Found: ${res.displayName}` });
+    } else {
+      setGeo({
+        busy: false,
+        msg: "Couldn't find that location — enter coordinates manually.",
+      });
+    }
+  }
 
   return (
     <form
+      ref={formRef}
       action={formAction}
       style={{ display: "grid", gap: "0.75rem", maxWidth: 480 }}
     >
@@ -80,11 +114,34 @@ export function StopForm({
       </Field>
       <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
         <Field label="Latitude" error={fe.lat}>
-          <input name="lat" inputMode="decimal" defaultValue={defaults.lat ?? ""} />
+          <input
+            name="lat"
+            inputMode="decimal"
+            value={lat}
+            onChange={(e) => setLat(e.target.value)}
+          />
         </Field>
         <Field label="Longitude" error={fe.lng}>
-          <input name="lng" inputMode="decimal" defaultValue={defaults.lng ?? ""} />
+          <input
+            name="lng"
+            inputMode="decimal"
+            value={lng}
+            onChange={(e) => setLng(e.target.value)}
+          />
         </Field>
+      </div>
+      <div style={{ display: "grid", gap: "0.25rem" }}>
+        <button
+          type="button"
+          onClick={findCoordinates}
+          disabled={geo.busy}
+          style={{ justifySelf: "start", padding: "0.35rem 0.75rem" }}
+        >
+          {geo.busy ? "Searching…" : "📍 Find coordinates from city"}
+        </button>
+        {geo.msg ? (
+          <span style={{ fontSize: "0.8rem", opacity: 0.8 }}>{geo.msg}</span>
+        ) : null}
       </div>
       <Field label="Notes" error={fe.notes}>
         <textarea name="notes" rows={3} defaultValue={defaults.notes ?? ""} />
