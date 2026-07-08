@@ -6,6 +6,24 @@ import type { MapPoint } from "@/lib/map-points";
 import { STOP_COLOR, spotColor } from "@/lib/spot-colors";
 import { spotCategoryLabels } from "@/lib/labels";
 
+// CARTO basemaps render English/Latin place labels (raw OSM tiles show each
+// country's native language) and ship matching light + dark styles.
+const CARTO_LIGHT = "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
+const CARTO_DARK = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
+const TILE_ATTRIBUTION =
+  '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende © <a href="https://carto.com/attributions">CARTO</a>';
+
+function themeIsDark(): boolean {
+  const attr = document.documentElement.getAttribute("data-theme");
+  if (attr === "dark") return true;
+  if (attr === "light") return false;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches;
+}
+
+function tileUrl(): string {
+  return themeIsDark() ? CARTO_DARK : CARTO_LIGHT;
+}
+
 function escapeHtml(s: string): string {
   return s
     .replace(/&/g, "&amp;")
@@ -21,16 +39,31 @@ export function TripMap({ points }: { points: MapPoint[] }) {
     let cancelled = false;
     // Leaflet touches `window`, so load it only on the client (in the effect).
     let map: import("leaflet").Map | undefined;
+    let tiles: import("leaflet").TileLayer | undefined;
+    let mql: MediaQueryList | undefined;
+    let onThemeChange: (() => void) | undefined;
+    let observer: MutationObserver | undefined;
 
     (async () => {
       const L = (await import("leaflet")).default;
       if (cancelled || !ref.current) return;
 
       map = L.map(ref.current);
-      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      tiles = L.tileLayer(tileUrl(), {
         maxZoom: 19,
-        attribution: "© OpenStreetMap-Mitwirkende",
+        attribution: TILE_ATTRIBUTION,
       }).addTo(map);
+
+      // Keep the basemap in sync with the active theme (toggle or OS change).
+      const refreshTiles = () => tiles?.setUrl(tileUrl());
+      mql = window.matchMedia("(prefers-color-scheme: dark)");
+      onThemeChange = refreshTiles;
+      mql.addEventListener("change", onThemeChange);
+      observer = new MutationObserver(refreshTiles);
+      observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["data-theme"],
+      });
 
       const latlngs: [number, number][] = [];
       for (const p of points) {
@@ -60,6 +93,8 @@ export function TripMap({ points }: { points: MapPoint[] }) {
 
     return () => {
       cancelled = true;
+      if (mql && onThemeChange) mql.removeEventListener("change", onThemeChange);
+      observer?.disconnect();
       map?.remove();
     };
   }, [points]);
