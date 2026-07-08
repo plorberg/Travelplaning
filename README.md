@@ -60,16 +60,14 @@ no-key defaults (see `CLAUDE.md`).
 
 ## Deploy to Vercel
 
-Next.js is auto-detected — no `vercel.json` needed. The `vercel-build` script
-runs `drizzle-kit migrate` before `next build`, so **every deploy applies
-pending migrations automatically** (using the `DATABASE_URL` from the Vercel
-environment).
+Next.js is auto-detected — no `vercel.json` needed (build command `next build`,
+the default).
 
-1. **Database** — create a Neon project. Migrations are applied on deploy; to
-   run them manually instead (e.g. before the very first deploy):
+1. **Database** — create a Neon project and apply migrations to it once:
    ```bash
    DATABASE_URL="<prod-neon-url>" npm run db:migrate
    ```
+   (Vercel's build does **not** run migrations.)
 2. **Environment variables** — in the Vercel project settings, add every value
    from `.env.local` (see `.env.example`): `DATABASE_URL`, the Firebase admin
    secrets, and the `NEXT_PUBLIC_FIREBASE_*` client config. `ALLOWED_SERVER_ACTION_ORIGINS`
@@ -80,8 +78,8 @@ environment).
    **Authentication → Settings → Authorized domains**, and add it to the
    Google OAuth client's authorized origins (required for Google sign-in and
    the per-user Google Drive uploads).
-4. **Deploy** — import the repo in Vercel and deploy. New migrations are
-   applied automatically on each deploy.
+4. **Deploy** — import the repo in Vercel and deploy. Re-run step&nbsp;1 whenever
+   new migrations are added.
 
 > Vercel Hobby is free but **non-commercial**. The stack is portable (Node +
 > Postgres + Firebase Auth), so moving to Vercel Pro / Netlify / a VPS later
