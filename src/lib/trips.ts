@@ -8,6 +8,7 @@ import {
   documents,
   savedSpots,
   expenses,
+  packingItems,
 } from "@/db/schema";
 import {
   checkRemoveMember,
@@ -85,17 +86,19 @@ export async function getTripForUser(userId: string, tripId: string) {
 export async function getTripCounts(userId: string, tripId: string) {
   const role = await getMembership(userId, tripId);
   if (!role) throw new AccessError("Du hast keinen Zugriff auf diese Reise.");
-  const [it, doc, sp, ex] = await Promise.all([
+  const [it, doc, sp, ex, pk] = await Promise.all([
     db.select({ c: count() }).from(itineraryItems).where(eq(itineraryItems.tripId, tripId)),
     db.select({ c: count() }).from(documents).where(eq(documents.tripId, tripId)),
     db.select({ c: count() }).from(savedSpots).where(eq(savedSpots.tripId, tripId)),
     db.select({ c: count() }).from(expenses).where(eq(expenses.tripId, tripId)),
+    db.select({ c: count() }).from(packingItems).where(eq(packingItems.tripId, tripId)),
   ]);
   return {
     itinerary: it[0]?.c ?? 0,
     documents: doc[0]?.c ?? 0,
     spots: sp[0]?.c ?? 0,
     expenses: ex[0]?.c ?? 0,
+    packing: pk[0]?.c ?? 0,
   };
 }
 
@@ -140,6 +143,23 @@ export async function updateTrip(
   await db
     .update(trips)
     .set({ ...toRow(input), updatedAt: new Date() })
+    .where(eq(trips.id, tripId));
+}
+
+/** Changes only the trip status (e.g. the one-click lifecycle nudge). */
+export async function setTripStatus(
+  userId: string,
+  tripId: string,
+  status: (typeof trips.status.enumValues)[number],
+): Promise<void> {
+  const role = await getMembership(userId, tripId);
+  if (!role) throw new AccessError("Du hast keinen Zugriff auf diese Reise.");
+  if (!hasAtLeastRole(role, "editor")) {
+    throw new AccessError("Nur Bearbeiter oder der Eigentümer können den Status ändern.");
+  }
+  await db
+    .update(trips)
+    .set({ status, updatedAt: new Date() })
     .where(eq(trips.id, tripId));
 }
 

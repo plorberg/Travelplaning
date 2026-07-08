@@ -12,7 +12,9 @@ import {
   changeMemberRoleAction,
   deleteTripAction,
   removeMemberAction,
+  setTripStatusAction,
 } from "@/app/trips/actions";
+import { suggestTripStatus } from "@/lib/trip-status";
 import { deleteStopAction, moveStopAction } from "@/app/trips/stop-actions";
 import {
   inviteAction,
@@ -20,6 +22,7 @@ import {
 } from "@/app/trips/invite-actions";
 import { listTripInvitations } from "@/lib/invitations";
 import { InviteForm } from "@/app/trips/_components/InviteForm";
+import { ConfirmSubmit } from "@/app/_components/ConfirmSubmit";
 import {
   tripStatusLabels,
   travelStyleLabels,
@@ -54,7 +57,9 @@ export default async function TripPage({
   const ownerCount = countOwners(members);
   const invitations = isOwner ? await listTripInvitations(user.id, tripId) : [];
 
-  const countdown = tripCountdown(trip, new Date().toISOString().slice(0, 10));
+  const today = new Date().toISOString().slice(0, 10);
+  const countdown = tripCountdown(trip, today);
+  const statusNudge = canEdit ? suggestTripStatus(trip, today) : null;
   const country = trip.destinationCountry;
   const plural = (n: number, one: string, many: string) =>
     `${n} ${n === 1 ? one : many}`;
@@ -83,7 +88,7 @@ export default async function TripPage({
           ) : null}
           {isOwner ? (
             <form action={deleteTripAction.bind(null, tripId)}>
-              <button type="submit">Reise löschen</button>
+              <ConfirmSubmit message="Diese Reise mit allen Stationen, Dokumenten, Ausgaben und Plänen endgültig löschen?">Reise löschen</ConfirmSubmit>
             </form>
           ) : null}
         </div>
@@ -93,6 +98,30 @@ export default async function TripPage({
         <p style={{ margin: "0.35rem 0 0", color: "var(--muted)", fontSize: "0.9rem" }}>
           🗓️ {countdown}
         </p>
+      ) : null}
+
+      {statusNudge ? (
+        <div
+          className="card list-row"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "0.75rem",
+            margin: "0.75rem 0 0",
+            padding: "0.6rem 0.9rem",
+          }}
+        >
+          <span style={{ flex: 1 }}>
+            {statusNudge.reason} Status auf{" "}
+            <strong>{tripStatusLabels[statusNudge.status] ?? statusNudge.status}</strong>{" "}
+            setzen?
+          </span>
+          <form action={setTripStatusAction.bind(null, tripId, statusNudge.status)}>
+            <button type="submit" className="btn-primary" style={{ padding: "0.35rem 0.75rem" }}>
+              Aktualisieren
+            </button>
+          </form>
+        </div>
       ) : null}
 
       <dl style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: "0.25rem 1rem" }}>
@@ -165,6 +194,11 @@ export default async function TripPage({
           <span className="nav-label">Ausgaben &amp; Budget</span>
           <span className="nav-count">{plural(counts.expenses, "Ausgabe", "Ausgaben")}</span>
         </Link>
+        <Link href={`/trips/${tripId}/packing`} className="nav-card">
+          <span className="nav-icon">🎒</span>
+          <span className="nav-label">Packliste</span>
+          <span className="nav-count">{plural(counts.packing, "Eintrag", "Einträge")}</span>
+        </Link>
       </nav>
 
       {trip.notes ? (
@@ -220,7 +254,7 @@ export default async function TripPage({
                         {stop.accommodationName ? ` · ${stop.accommodationName}` : ""}
                       </div>
                       {warnings.map((w) => (
-                        <div key={w} style={{ color: "#b8860b", fontSize: "0.8rem" }}>
+                        <div key={w} style={{ color: "var(--warning)", fontSize: "0.8rem" }}>
                           ⚠ {w}
                         </div>
                       ))}
@@ -228,7 +262,7 @@ export default async function TripPage({
                     {canEdit ? (
                       <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
                         <form action={moveStopAction.bind(null, tripId, stop.id, "up")}>
-                          <button type="submit" disabled={i === 0} title="Nach oben">
+                          <button type="submit" disabled={i === 0} title="Nach oben" aria-label={`${stop.city} nach oben verschieben`}>
                             ↑
                           </button>
                         </form>
@@ -236,7 +270,7 @@ export default async function TripPage({
                           <button
                             type="submit"
                             disabled={i === stops.length - 1}
-                            title="Nach unten"
+                            title="Nach unten" aria-label={`${stop.city} nach unten verschieben`}
                           >
                             ↓
                           </button>
@@ -245,7 +279,7 @@ export default async function TripPage({
                           Bearbeiten
                         </Link>
                         <form action={deleteStopAction.bind(null, tripId, stop.id)}>
-                          <button type="submit">Löschen</button>
+                          <ConfirmSubmit message="Diese Station löschen?">Löschen</ConfirmSubmit>
                         </form>
                       </div>
                     ) : null}
@@ -285,7 +319,7 @@ export default async function TripPage({
                       <button type="submit">Speichern</button>
                     </form>
                     <form action={removeMemberAction.bind(null, tripId, m.userId)}>
-                      <button type="submit">Entfernen</button>
+                      <ConfirmSubmit message="Dieses Mitglied aus der Reise entfernen?">Entfernen</ConfirmSubmit>
                     </form>
                   </>
                 ) : (
@@ -314,7 +348,7 @@ export default async function TripPage({
                       ausstehend
                     </span>
                     <form action={revokeInvitationAction.bind(null, tripId, inv.id)}>
-                      <button type="submit">Widerrufen</button>
+                      <ConfirmSubmit message="Diese Einladung widerrufen?">Widerrufen</ConfirmSubmit>
                     </form>
                   </li>
                 ))}

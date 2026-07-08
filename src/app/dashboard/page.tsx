@@ -24,6 +24,13 @@ export default async function DashboardPage() {
     getTripSpendTotals(user.id),
   ]);
 
+  // Group by status in lifecycle order; headings only appear when there is
+  // more than one group (a flat list stays a flat list).
+  const statusOrder = ["active", "booked", "planning", "completed", "archived"] as const;
+  const groups = statusOrder
+    .map((status) => ({ status, trips: trips.filter((t) => t.status === status) }))
+    .filter((g) => g.trips.length > 0);
+
   return (
     <main style={{ maxWidth: 760, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
       {invitations.length > 0 ? (
@@ -70,8 +77,15 @@ export default async function DashboardPage() {
           <Link href="/trips/new">Erstelle deine erste Reise</Link>.
         </p>
       ) : (
+        groups.map((group) => (
+        <section key={group.status} style={{ marginBottom: "1.25rem" }}>
+          {groups.length > 1 ? (
+            <h2 style={{ fontSize: "0.95rem", color: "var(--muted)", margin: "0 0 0.5rem" }}>
+              {tripStatusLabels[group.status] ?? group.status}
+            </h2>
+          ) : null}
         <div style={{ display: "grid", gap: "0.6rem" }}>
-          {trips.map((trip) => (
+          {group.trips.map((trip) => (
             <Link key={trip.id} href={`/trips/${trip.id}`} className="card-link">
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: "0.75rem", flexWrap: "wrap" }}>
                 <strong style={{ fontSize: "1.05rem" }}>{trip.name}</strong>
@@ -97,6 +111,8 @@ export default async function DashboardPage() {
             </Link>
           ))}
         </div>
+        </section>
+        ))
       )}
     </main>
   );

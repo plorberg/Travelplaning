@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ConfirmSubmit } from "@/app/_components/ConfirmSubmit";
 import { notFound, redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { getTripForUser } from "@/lib/trips";
@@ -76,7 +77,7 @@ export default async function ItineraryPage({
             </div>
           ) : null}
           {conflicts.has(it.id) ? (
-            <div style={{ color: "#b8860b", fontSize: "0.8rem" }}>
+            <div style={{ color: "var(--warning)", fontSize: "0.8rem" }}>
               ⚠ Überschneidet sich mit einem anderen Eintrag
             </div>
           ) : null}
@@ -86,7 +87,7 @@ export default async function ItineraryPage({
           <div style={{ display: "flex", gap: "0.5rem", alignItems: "flex-start" }}>
             <Link href={`/trips/${tripId}/itinerary/${it.id}/edit`}>Bearbeiten</Link>
             <form action={deleteItineraryAction.bind(null, tripId, it.id)}>
-              <button type="submit">Löschen</button>
+              <ConfirmSubmit message="Diesen Eintrag löschen?">Löschen</ConfirmSubmit>
             </form>
           </div>
         ) : null}
@@ -111,7 +112,7 @@ export default async function ItineraryPage({
             width: 10,
             height: 10,
             borderRadius: "50%",
-            background: conflicted ? "#b8860b" : "var(--primary)",
+            background: conflicted ? "var(--warning)" : "var(--primary)",
             border: "2px solid var(--surface)",
           }}
         />
@@ -135,7 +136,7 @@ export default async function ItineraryPage({
               </div>
             ) : null}
             {conflicted ? (
-              <div style={{ color: "#b8860b", fontSize: "0.8rem" }}>
+              <div style={{ color: "var(--warning)", fontSize: "0.8rem" }}>
                 ⚠ Überschneidet sich mit einem anderen Eintrag
               </div>
             ) : null}
@@ -145,7 +146,7 @@ export default async function ItineraryPage({
             <div style={{ display: "flex", gap: "0.5rem", alignItems: "flex-start" }}>
               <Link href={`/trips/${tripId}/itinerary/${it.id}/edit`}>Bearbeiten</Link>
               <form action={deleteItineraryAction.bind(null, tripId, it.id)}>
-                <button type="submit">Löschen</button>
+                <ConfirmSubmit message="Diesen Eintrag löschen?">Löschen</ConfirmSubmit>
               </form>
             </div>
           ) : null}
@@ -170,7 +171,14 @@ export default async function ItineraryPage({
       </p>
       <header className="list-row" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
         <h1 style={{ margin: 0 }}>Reiseplan</h1>
-        {canEdit ? <Link href={`/trips/${tripId}/itinerary/new`} className="btn btn-primary">+ Eintrag hinzufügen</Link> : null}
+        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
+          {items.some((i) => i.startAt) ? (
+            <a href={`/trips/${tripId}/itinerary/export`} className="btn">
+              📅 Kalender-Export (.ics)
+            </a>
+          ) : null}
+          {canEdit ? <Link href={`/trips/${tripId}/itinerary/new`} className="btn btn-primary">+ Eintrag hinzufügen</Link> : null}
+        </div>
       </header>
 
       <p style={{ display: "flex", gap: "1rem", margin: "0.5rem 0 1rem" }}>

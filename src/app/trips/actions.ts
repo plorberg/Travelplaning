@@ -4,13 +4,14 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
-import { tripInputSchema } from "@/lib/validation";
+import { tripInputSchema, tripStatusValues } from "@/lib/validation";
 import {
   AccessError,
   changeMemberRole,
   createTrip,
   deleteTrip,
   removeMember,
+  setTripStatus,
   updateTrip,
 } from "@/lib/trips";
 
@@ -72,6 +73,19 @@ export async function deleteTripAction(
   await deleteTrip(userId, tripId);
   revalidatePath("/dashboard");
   redirect("/dashboard");
+}
+
+const statusSchema = z.enum(tripStatusValues);
+
+export async function setTripStatusAction(
+  tripId: string,
+  status: string,
+  _formData?: FormData,
+): Promise<void> {
+  const userId = await requireUserId();
+  await setTripStatus(userId, tripId, statusSchema.parse(status));
+  revalidatePath(`/trips/${tripId}`);
+  revalidatePath("/dashboard");
 }
 
 const roleSchema = z.enum(["owner", "editor", "viewer"]);
