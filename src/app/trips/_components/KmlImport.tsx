@@ -138,15 +138,15 @@ export function KmlImport({
         {fileName ? <span style={{ fontSize: "0.8rem", opacity: 0.7 }}>{fileName}</span> : null}
       </div>
 
-      {error ? <p style={{ color: "crimson" }}>{error}</p> : null}
+      {error ? <p style={{ color: "var(--danger)" }}>{error}</p> : null}
 
       {result?.imported ? (
-        <p style={{ color: "green" }}>
+        <p style={{ color: "var(--success)" }}>
           ✓ {result.imported} Orte importiert.{" "}
           <a href={spotsHref}>Zu den Empfehlungen →</a>
         </p>
       ) : null}
-      {result?.error ? <p style={{ color: "crimson" }}>{result.error}</p> : null}
+      {result?.error ? <p style={{ color: "var(--danger)" }}>{result.error}</p> : null}
 
       {spots ? (
         <div style={{ display: "grid", gap: "0.6rem" }}>

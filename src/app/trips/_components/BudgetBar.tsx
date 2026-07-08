@@ -24,7 +24,7 @@ export function BudgetBar({
   const pct = Math.max(0, Math.min(100, (spent / budget) * 100));
   const over = spent > budget;
   const remaining = budget - spent;
-  const barColor = over ? "var(--danger)" : pct > 85 ? "#b45309" : "var(--primary)";
+  const barColor = over ? "var(--danger)" : pct > 85 ? "var(--warning)" : "var(--primary)";
 
   return (
     <div style={{ display: "grid", gap: "0.3rem" }}>

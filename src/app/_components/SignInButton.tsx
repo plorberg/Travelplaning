@@ -101,7 +101,7 @@ export function SignInButton() {
       >
         {pending ? "Anmeldung läuft…" : "Mit Google anmelden"}
       </button>
-      {error ? <p style={{ color: "crimson" }}>{error}</p> : null}
+      {error ? <p style={{ color: "var(--danger)" }}>{error}</p> : null}
     </div>
   );
 }

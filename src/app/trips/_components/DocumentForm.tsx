@@ -62,7 +62,7 @@ function Field({
       <span style={{ fontSize: "0.85rem", opacity: 0.8 }}>{label}</span>
       {children}
       {error?.length ? (
-        <span style={{ color: "crimson", fontSize: "0.8rem" }}>{error[0]}</span>
+        <span style={{ color: "var(--danger)", fontSize: "0.8rem" }}>{error[0]}</span>
       ) : null}
     </label>
   );
@@ -177,13 +177,13 @@ export function DocumentForm({
         <input type="file" accept="application/pdf,*/*" onChange={onFile} disabled={uploading || parsing} />
         {parsing ? <span style={{ fontSize: "0.8rem" }}>PDF wird gelesen…</span> : null}
         {parsedCount > 0 ? (
-          <span style={{ color: "green", fontSize: "0.8rem" }}>
+          <span style={{ color: "var(--success)", fontSize: "0.8rem" }}>
             🔎 {parsedCount} Feld(er) aus dem PDF übernommen — bitte prüfen.
           </span>
         ) : null}
         {uploading ? <span style={{ fontSize: "0.8rem" }}>Wird zu Drive hochgeladen…</span> : null}
         {drive ? (
-          <span style={{ color: "green", fontSize: "0.85rem" }}>
+          <span style={{ color: "var(--success)", fontSize: "0.85rem" }}>
             Angehängt:{" "}
             <a href={drive.url} target="_blank" rel="noreferrer">
               {drive.name} ↗
@@ -191,7 +191,7 @@ export function DocumentForm({
           </span>
         ) : null}
         {uploadError ? (
-          <span style={{ color: "crimson", fontSize: "0.8rem" }}>{uploadError}</span>
+          <span style={{ color: "var(--danger)", fontSize: "0.8rem" }}>{uploadError}</span>
         ) : null}
         <input type="hidden" name="driveFileId" value={drive?.id ?? ""} />
         <input type="hidden" name="driveFileUrl" value={drive?.url ?? ""} />
@@ -241,7 +241,7 @@ export function DocumentForm({
         <textarea name="notes" rows={3} defaultValue={defaults.notes ?? ""} />
       </Field>
 
-      {state.error ? <p style={{ color: "crimson" }}>{state.error}</p> : null}
+      {state.error ? <p style={{ color: "var(--danger)" }}>{state.error}</p> : null}
       <button type="submit" className="btn-primary" disabled={pending || uploading} style={{ padding: "0.5rem 1rem" }}>
         {pending ? "Wird gespeichert…" : submitLabel}
       </button>

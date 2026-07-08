@@ -63,7 +63,7 @@ export function GeocodeFields({
 
   const label = { display: "grid", gap: "0.25rem" } as const;
   const small = { fontSize: "0.85rem", opacity: 0.8 } as const;
-  const err = { color: "crimson", fontSize: "0.8rem" } as const;
+  const err = { color: "var(--danger)", fontSize: "0.8rem" } as const;
 
   return (
     <div style={{ display: "grid", gap: "0.4rem" }}>

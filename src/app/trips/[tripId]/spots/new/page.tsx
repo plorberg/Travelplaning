@@ -128,7 +128,7 @@ export default async function NewSpotPage({
         </form>
 
         {searchFailed ? (
-          <p style={{ color: "crimson", fontSize: "0.85rem" }}>
+          <p style={{ color: "var(--danger)", fontSize: "0.85rem" }}>
             Suche derzeit nicht verfügbar. Du kannst die Empfehlung unten manuell eingeben.
           </p>
         ) : null}
