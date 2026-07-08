@@ -1,3 +1,4 @@
+import { fetchWithTimeout } from "@/lib/http";
 import type { PlaceKind, PlaceResult } from "./types";
 import { PLACE_KINDS } from "./kinds";
 import { mapOsmCategory } from "./osm-tags";
@@ -87,7 +88,7 @@ export async function searchOverpass(
   limit = 25,
 ): Promise<PlaceResult[]> {
   const query = buildOverpassQuery(center.lat, center.lng, kind);
-  const res = await fetch(ENDPOINT, {
+  const res = await fetchWithTimeout(ENDPOINT, {
     method: "POST",
     headers: {
       "User-Agent": USER_AGENT,

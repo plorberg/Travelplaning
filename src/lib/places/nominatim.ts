@@ -1,3 +1,4 @@
+import { fetchWithTimeout } from "@/lib/http";
 import type { PlaceResult, PlacesProvider } from "./types";
 import { mapOsmCategory } from "./osm-tags";
 import { searchOverpass } from "./overpass";
@@ -62,7 +63,7 @@ async function nominatimSearch(
   });
   if (opts?.lang) params.set("accept-language", opts.lang);
 
-  const res = await fetch(`${BASE}/search?${params.toString()}`, {
+  const res = await fetchWithTimeout(`${BASE}/search?${params.toString()}`, {
     headers: { "User-Agent": USER_AGENT, Accept: "application/json" },
     next: { revalidate: 86400 },
   });

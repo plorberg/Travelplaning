@@ -42,6 +42,22 @@ const nextConfig: NextConfig = {
   // miss, which crashes the function at cold start (HTTP 500 on every route
   // that verifies the session). Load it from node_modules at runtime instead.
   serverExternalPackages: ["firebase-admin"],
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          // The app never needs to be embedded; blocks clickjacking.
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "Content-Security-Policy", value: "frame-ancestors 'none'" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          // Only geolocation might ever be wanted; everything else off.
+          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(self)" },
+        ],
+      },
+    ];
+  },
   ...(allowedOrigins.length
     ? { experimental: { serverActions: { allowedOrigins } } }
     : {}),

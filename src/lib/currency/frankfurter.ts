@@ -1,3 +1,4 @@
+import { fetchWithTimeout } from "@/lib/http";
 import type { CurrencyProvider } from "./provider";
 
 // Frankfurter: free European Central Bank rates, no API key, ~30 currencies.
@@ -11,7 +12,7 @@ export const frankfurterProvider: CurrencyProvider = {
     const url = `https://api.frankfurter.dev/v1/latest?base=${encodeURIComponent(
       from,
     )}&symbols=${encodeURIComponent(to)}`;
-    const res = await fetch(url, { next: { revalidate: 3600 } });
+    const res = await fetchWithTimeout(url, { next: { revalidate: 3600 } });
     if (!res.ok) throw new Error("Currency rate lookup failed.");
     const data = (await res.json()) as { rates?: Record<string, number> };
     const rate = data.rates?.[to];

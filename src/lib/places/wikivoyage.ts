@@ -1,3 +1,4 @@
+import { fetchWithTimeout } from "@/lib/http";
 import type { SpotCategory } from "@/lib/validation";
 import type { PlaceResult, PlacesProvider } from "./types";
 import { filterResultsByKind } from "./kinds";
@@ -172,7 +173,7 @@ export const wikivoyageProvider: PlacesProvider = {
       formatversion: "2",
       redirects: "1",
     });
-    const res = await fetch(`https://${LANG}.wikivoyage.org/w/api.php?${params.toString()}`, {
+    const res = await fetchWithTimeout(`https://${LANG}.wikivoyage.org/w/api.php?${params.toString()}`, {
       headers: { "User-Agent": USER_AGENT, Accept: "application/json" },
       next: { revalidate: 86400 },
     });

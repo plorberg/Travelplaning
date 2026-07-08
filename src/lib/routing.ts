@@ -1,3 +1,5 @@
+import { fetchWithTimeout } from "@/lib/http";
+
 // Driving distance/time between two points, behind a small provider seam.
 // Default driver: OSRM (free, no key). Always resolves — if routing is
 // unavailable it falls back to straight-line (haversine) distance so the
@@ -37,7 +39,7 @@ const OSRM_URL = process.env.OSRM_URL ?? "https://router.project-osrm.org";
 async function osrmRoute(from: LatLng, to: LatLng): Promise<RouteResult | null> {
   try {
     const url = `${OSRM_URL}/route/v1/driving/${from.lng},${from.lat};${to.lng},${to.lat}?overview=false`;
-    const res = await fetch(url, { next: { revalidate: 604800 } });
+    const res = await fetchWithTimeout(url, { next: { revalidate: 604800 } });
     if (!res.ok) return null;
     return parseOsrmRoute(await res.json());
   } catch {
