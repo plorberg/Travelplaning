@@ -98,6 +98,7 @@ export default async function TripPage({
       </dl>
 
       <p style={{ display: "flex", gap: "1.25rem", flexWrap: "wrap" }}>
+        <Link href={`/trips/${tripId}/flights`}>Flights →</Link>
         <Link href={`/trips/${tripId}/itinerary`}>Itinerary →</Link>
         <Link href={`/trips/${tripId}/documents`}>Documents →</Link>
         <Link href={`/trips/${tripId}/expenses`}>Expenses &amp; budget →</Link>
